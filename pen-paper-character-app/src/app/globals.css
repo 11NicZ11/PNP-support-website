@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 262 80% 50%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 24 95% 53%;
+  --destructive: 0 84.2% 60.2%;
+  --border: 214.3 31.8% 91.4%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: linear-gradient(135deg, #1a1c2e 0%, #2a1f3d 100%);
+  min-height: 100vh;
+  color: var(--foreground);
+}
+
+.dice-glow {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}

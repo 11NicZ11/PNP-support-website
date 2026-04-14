@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Character {
+  id        String   @id @default(cuid())
+  name      String
+  level     Int      @default(1)
+  race      String
+  class     String
+  background String  @default("")
+  alignment String   @default("")
+  experience Int      @default(0)
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+  maxHp        Int @default(10)
+  currentHp    Int @default(10)
+  tempHp       Int @default(0)
+  tempMaxHp    Int @default(0)
+  armorClass   Int @default(10)
+  speed        Int @default(30)
+  initiativeBonus  Int @default(0)
+  proficiencyBonus Int @default(2)
+
+  savingThrowStrength     Boolean @default(false)
+  savingThrowDexterity    Boolean @default(false)
+  savingThrowConstitution Boolean @default(false)
+  savingThrowIntelligence Boolean @default(false)
+  savingThrowWisdom       Boolean @default(false)
+  savingThrowCharisma     Boolean @default(false)
+
+  skills       String @default("{}")
+  spells       String @default("[]")
+  inventory    String @default("[]")
+  features     String @default("[]")
+  notes        String @default("")
+  customFields String @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  damageImmunities  String @default("[]")   // ["Feuer", "Kälte"]
+  damageResistances String @default("[]")   // ["Blitz", "Donner"]
+  conditionImmunities String @default("[]") // ["Vergiftet", "Paralyziert"]
+}
