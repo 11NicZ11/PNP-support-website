@@ -1,13 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import { rollInitiative } from '@/lib/diceSystem';
 
 interface InitiativeButtonProps {
   dexterity: number;
   initiativeBonus: number;
+  characterId?: string;
+  characterName?: string;
 }
 
-export function InitiativeButton({ dexterity, initiativeBonus }: InitiativeButtonProps) {
+export function InitiativeButton({ 
+  dexterity, 
+  initiativeBonus, 
+  characterId,
+  characterName 
+}: InitiativeButtonProps) {
   const [rolling, setRolling] = useState(false);
   const [lastRoll, setLastRoll] = useState<number | null>(null);
 
@@ -16,45 +24,50 @@ export function InitiativeButton({ dexterity, initiativeBonus }: InitiativeButto
   };
 
   const totalBonus = getModifier(dexterity) + initiativeBonus;
+  const bonusText = totalBonus >= 0 ? `+${totalBonus}` : `${totalBonus}`;
 
-  const rollInitiative = async () => {
+  const handleRoll = async () => {
     setRolling(true);
-    const roll = Math.floor(Math.random() * 20) + 1;
-    const total = roll + totalBonus;
     
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Kurze Verzögerung für Animation
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Verwende die spezielle Initiative-Funktion für korrektes Logging
+    const { total } = rollInitiative(totalBonus, {
+      characterId: characterId,
+      characterName: characterName,
+    });
     
     setLastRoll(total);
     setRolling(false);
   };
 
   return (
-    <div className="bg-gray-800/50 rounded-lg p-4">
+    <div className="bg-gray-800/50 rounded-lg p-3">
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm text-gray-400 mb-1">🎯 Initiative</h3>
-          <div className="text-3xl font-bold text-purple-400">
-            +{totalBonus}
-          </div>
-          <div className="text-xs text-gray-500">
-            Geschick {getModifier(dexterity) >= 0 ? `+${getModifier(dexterity)}` : getModifier(dexterity)} 
-            {initiativeBonus !== 0 && ` + ${initiativeBonus} Bonus`}
-          </div>
-        </div>
+        {/* Linke Seite: Initiative Text */}
+        <span className="text-sm text-gray-400">🎯 Initiative</span>
         
-        <div className="text-center">
-          <button
-            onClick={rollInitiative}
-            disabled={rolling}
-            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2 text-lg"
-          >
-            {rolling ? '🎲' : '🎯'} Würfeln
-          </button>
+        {/* Rechte Seite: Letzter Wurf und Bonus als Button */}
+        <div className="flex items-center gap-3">
           {lastRoll !== null && (
-            <div className="mt-2 text-sm text-gray-400">
-              Letzter Wurf: <span className="text-xl font-bold text-orange-400">{lastRoll}</span>
+            <div className="text-right">
+              <div className="text-xs text-gray-500">Letzter Wurf</div>
+              <div className="text-2xl font-bold text-orange-400">{lastRoll}</div>
             </div>
           )}
+          
+          <button
+            onClick={handleRoll}
+            disabled={rolling}
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 min-w-[70px] text-center"
+          >
+            {rolling ? (
+              <span className="animate-spin inline-block">🎲</span>
+            ) : (
+              <span>{bonusText}</span>
+            )}
+          </button>
         </div>
       </div>
     </div>

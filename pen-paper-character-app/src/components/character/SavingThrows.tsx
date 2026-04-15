@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useDice } from '@/hooks/useDice';
+import { AdvantageToggle, AdvantageState } from '@/components/dice/AdvantageToggle';
 
 interface SavingThrowsProps {
   characterId: string;
+  characterName: string;
   strength: number;
   dexterity: number;
   constitution: number;
@@ -23,13 +26,16 @@ interface SavingThrowsProps {
 }
 
 export function SavingThrows({ 
-  characterId, 
+  characterId,
+  characterName,
   strength, dexterity, constitution, intelligence, wisdom, charisma,
   proficiencyBonus,
   savingThrows,
   onUpdate 
 }: SavingThrowsProps) {
   const [rolling, setRolling] = useState<string | null>(null);
+  const [advantageStates, setAdvantageStates] = useState<Record<string, AdvantageState>>({});
+  const { abilityCheck } = useDice({ id: characterId, name: characterName });
 
   const calculateModifier = (score: number): number => {
     return Math.floor((score - 10) / 2);
@@ -40,24 +46,18 @@ export function SavingThrows({
     return hasProficiency ? modifier + proficiencyBonus : modifier;
   };
 
-  const rollSavingThrow = async (ability: string, bonus: number) => {
+  const handleRoll = async (ability: string, bonus: number, advantage: AdvantageState = 'normal') => {
     setRolling(ability);
-    const roll = Math.floor(Math.random() * 20) + 1;
-    const total = roll + bonus;
-    
-    // Würfelanimation
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    alert(`${ability.toUpperCase()} Rettungswurf: ${roll} + ${bonus} = ${total}${roll === 20 ? ' 💥 KRITISCH!' : roll === 1 ? ' 😱 PATZER!' : ''}`);
+    await abilityCheck(ability, bonus, { advantage });
     setRolling(null);
   };
 
-  const toggleProficiency = async (ability: string) => {
+  const toggleProficiency = async (ability: string, currentValue: boolean) => {
     const updateField = `savingThrow${ability.charAt(0).toUpperCase() + ability.slice(1)}`;
     const response = await fetch(`/api/characters/${characterId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [updateField]: !savingThrows[ability as keyof typeof savingThrows] }),
+      body: JSON.stringify({ [updateField]: !currentValue }),
     });
     if (response.ok) {
       const updated = await response.json();
@@ -75,46 +75,65 @@ export function SavingThrows({
   ];
 
   return (
-    <div className="bg-gray-800/50 rounded-lg p-4">
+    <div>
       <h3 className="text-lg font-semibold mb-3">🎲 Rettungswürfe</h3>
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {savingThrowsList.map((save) => {
           const bonus = getSavingThrowBonus(save.score, savingThrows[save.key as keyof typeof savingThrows]);
           const isProficient = savingThrows[save.key as keyof typeof savingThrows];
           const isRolling = rolling === save.key;
+          const modifierValue = calculateModifier(save.score);
+          const currentAdvantage = advantageStates[save.key] || 'normal';
           
           return (
-            <div key={save.key} className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 w-32">
-                <span className="text-lg">{save.icon}</span>
-                <span className="text-sm font-medium">{save.name}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
+            <div 
+              key={save.key} 
+              className="bg-gray-800/50 rounded-lg p-2 text-center hover:bg-gray-800 transition"
+            >
+              {/* Obere Reihe: Icon + Name + Status (Proficiency) */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1">
+                  <span className="text-sm">{save.icon}</span>
+                  <span className="text-xs text-gray-300">{save.name}</span>
+                </div>
                 <button
-                  onClick={() => toggleProficiency(save.key)}
-                  className={`px-2 py-0.5 text-xs rounded transition ${
+                  onClick={() => toggleProficiency(save.key, isProficient)}
+                  className={`w-5 h-5 rounded text-xs font-bold transition ${
                     isProficient 
                       ? 'bg-purple-600 text-white' 
-                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      : 'bg-gray-700 text-gray-500 hover:bg-gray-600'
                   }`}
                   title={isProficient ? 'Übung entfernen' : 'Übung hinzufügen'}
                 >
-                  {isProficient ? '✓ Übung' : '○ Übung'}
+                  {isProficient ? '✓' : '○'}
                 </button>
-                
-                <div className="w-12 text-right">
-                  <span className={`font-mono font-bold ${bonus >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {bonus >= 0 ? `+${bonus}` : `${bonus}`}
-                  </span>
-                </div>
-                
+              </div>
+              
+              {/* Mitte: Statuswert (Score) */}
+              <div className="text-xl font-bold text-gray-200 mb-2">
+                {save.score}
+              </div>
+              
+              {/* Untere Reihe: Vorteil-Toggle + Modifier Button */}
+              <div className="flex items-center gap-1">
+                <AdvantageToggle 
+                  onAdvantageChange={(state) => setAdvantageStates(prev => ({ ...prev, [save.key]: state }))}
+                  size="small"
+                />
                 <button
-                  onClick={() => rollSavingThrow(save.key, bonus)}
+                  onClick={() => handleRoll(save.name, bonus, currentAdvantage)}
                   disabled={isRolling}
-                  className="w-16 px-2 py-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded text-xs font-semibold hover:from-purple-500 hover:to-purple-600 transition disabled:opacity-50"
+                  className={`flex-1 py-1.5 rounded-lg font-bold text-sm transition ${
+                    bonus >= 0 
+                      ? 'bg-green-600/50 hover:bg-green-600 text-green-100' 
+                      : 'bg-red-600/50 hover:bg-red-600 text-red-100'
+                  } ${isRolling ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {isRolling ? '🎲' : 'Würfeln'}
+                  {isRolling ? (
+                    <span className="animate-spin inline-block">🎲</span>
+                  ) : (
+                    <span>{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -122,8 +141,8 @@ export function SavingThrows({
         })}
       </div>
       
-      <div className="mt-3 pt-2 border-t border-gray-700 text-xs text-gray-500">
-        💡 Tipp: Klicke auf "Übung" um zu markieren, ob der Charakter in diesem Rettungswurf geübt ist.
+      <div className="mt-3 pt-2 text-xs text-gray-500 text-center">
+        💡 Tipp: Klick auf das grüne/rote Dreieck für Vorteil/Nachteil • Klick auf ✓/○ für Übung
       </div>
     </div>
   );
