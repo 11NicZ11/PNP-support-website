@@ -169,7 +169,7 @@ export function StatusEffectsModal({
             >
               📚 Bibliothek
             </a>
-            <button onClick={onClose} className="text-2xl">
+            <button type="button" onClick={onClose} className="text-2xl">
               ×
             </button>
           </div>
@@ -181,7 +181,7 @@ export function StatusEffectsModal({
               <h3 className="text-md font-semibold text-purple-300">
                 Verfügbare Effekte
               </h3>
-              <button
+              <button type="button"
                 onClick={() => setShowForm(!showForm)}
                 className="px-3 py-1 bg-purple-600 rounded-lg text-sm"
               >
@@ -224,14 +224,14 @@ export function StatusEffectsModal({
                   className="w-full px-3 py-2 bg-gray-700 rounded-lg mb-2"
                 />
                 <div className="flex gap-2">
-                  <button
+                  <button type="button"
                     onClick={addCustomAndPersist}
                     disabled={!custom.name.trim()}
                     className="flex-1 py-2 bg-green-600 rounded-lg disabled:opacity-50"
                   >
                     Anlegen & aktivieren
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => {
                       setShowForm(false);
                       setCustom({ name: '', description: '', icon: '✨' });
@@ -264,7 +264,7 @@ export function StatusEffectsModal({
                   onMouseEnter={() => setHovered(e.name)}
                   onMouseLeave={() => setHovered(null)}
                 >
-                                    <button
+                                    <button type="button"
                     onClick={() =>
                       toggleEffect({
                         name: e.name,
@@ -337,7 +337,7 @@ export function StatusEffectsModal({
                         </div>
                       )}
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() =>
                         toggleEffect({
                           name: e.name,
@@ -357,7 +357,7 @@ export function StatusEffectsModal({
         </div>
 
         <div className="p-4 border-t sticky bottom-0 bg-gray-900">
-          <button
+          <button type="button"
             onClick={onClose}
             className="w-full py-2 bg-purple-600 rounded-lg"
           >

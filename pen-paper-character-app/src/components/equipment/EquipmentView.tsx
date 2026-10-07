@@ -221,7 +221,7 @@ export function EquipmentView({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">🎒 Ausrüstung</h2>
-        <button
+        <button type="button"
           onClick={onAddItem}
           className="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition"
         >

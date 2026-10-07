@@ -267,10 +267,10 @@ export function AttributesEditor({
             onChange={(e) => setNewAttrValue(parseInt(e.target.value) || 0)}
             className="w-24 px-2 py-1 bg-gray-700 rounded text-sm"
           />
-          <button onClick={addCustomAttribute} className="px-3 bg-green-600 rounded text-sm">
+          <button type="button" onClick={addCustomAttribute} className="px-3 bg-green-600 rounded text-sm">
             Hinzufügen
           </button>
-          <button
+          <button type="button"
             onClick={() => setShowNewForm(false)}
             className="px-3 bg-gray-600 rounded text-sm"
           >

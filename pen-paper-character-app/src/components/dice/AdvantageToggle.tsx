@@ -80,7 +80,7 @@ export function AdvantageToggle({
   };
 
   return (
-    <button
+    <button type="button"
       onClick={handleClick}
       className={`${sizeClasses[size]} ${getColors()} rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 ${className}`}
       title={getTitle()}

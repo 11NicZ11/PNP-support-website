@@ -58,7 +58,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold mb-4">Probiere den Würfel aus!</h2>
             <p className="text-gray-400 mb-8">W20 Demo - Spüre den Nervenkitzel</p>
             
-            <button
+            <button type="button"
               onClick={rollDice}
               disabled={isRolling}
               className="relative w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-purple-600 to-orange-600 rounded-2xl shadow-2xl dice-glow transition-all hover:scale-105 disabled:opacity-50"

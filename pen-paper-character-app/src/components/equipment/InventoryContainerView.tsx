@@ -77,7 +77,7 @@ export function InventoryContainerView({
             )}
           </div>
         </div>
-        <button
+        <button type="button"
           onClick={handleToggleExpand}
           className="px-2 py-1 text-xs bg-gray-600/50 hover:bg-gray-600 rounded transition"
         >

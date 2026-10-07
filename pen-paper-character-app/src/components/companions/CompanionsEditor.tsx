@@ -244,7 +244,7 @@ export function CompanionsEditor({
                   ? 'Gefährte bearbeiten'
                   : 'Neuer Gefährte'}
               </h2>
-              <button
+              <button type="button"
                 onClick={() => {
                   setShowEditor(false);
                   setEditingCompanion(null);

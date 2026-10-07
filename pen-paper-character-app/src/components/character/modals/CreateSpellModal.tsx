@@ -409,7 +409,7 @@ export function CreateSpellModal({
       <div className="bg-gray-900 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/30">
         <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-bold">✨ Neuen Zauber erstellen</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
             ×
           </button>
         </div>

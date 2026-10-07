@@ -68,8 +68,7 @@ export function ClassFeatureEditor({
     setFeature((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!feature.name.trim()) {
       alert('Name ist erforderlich');
       return;
@@ -91,12 +90,12 @@ export function ClassFeatureEditor({
             {isEditing ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
             <span className="ml-2 text-sm text-gray-400">({className})</span>
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
             ×
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <div className="p-4 space-y-4">
           {/* Kategorie */}
           <div>
             <label className="block text-sm font-medium mb-1">Kategorie *</label>
@@ -369,7 +368,8 @@ export function ClassFeatureEditor({
 
           <div className="flex gap-3 pt-4 border-t border-gray-700">
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               className="flex-1 py-2 bg-gradient-to-r from-purple-500 to-orange-500 rounded-lg font-semibold hover:opacity-90 transition"
             >
               {isEditing ? 'Speichern' : 'Hinzufügen'}
@@ -396,7 +396,7 @@ export function ClassFeatureEditor({
               Abbrechen
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

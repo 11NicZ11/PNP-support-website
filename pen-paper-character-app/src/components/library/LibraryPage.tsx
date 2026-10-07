@@ -117,7 +117,7 @@ function LibraryPageInner() {
             neuen Kampagne sofort zur Verfügung.
           </p>
         </div>
-        <button
+        <button type="button"
           onClick={reload}
           className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm"
         >
@@ -128,7 +128,7 @@ function LibraryPageInner() {
       {/* Tabs */}
       <div className="flex gap-2 flex-wrap mb-4">
         {TYPE_TABS.map((tab) => (
-          <button
+          <button type="button"
             key={tab.value}
             onClick={() => handleTypeChange(tab.value)}
             className={`px-3 py-1.5 rounded-lg text-sm transition ${
@@ -150,7 +150,7 @@ function LibraryPageInner() {
         <div className="flex gap-2 flex-wrap mb-4">
           <span className="text-xs text-gray-400 self-center">Kategorie:</span>
           {categoryChips.map((cat) => (
-            <button
+            <button type="button"
               key={cat.category}
               onClick={() => toggleCategory(cat.category)}
               className={`px-3 py-1.5 rounded-lg text-sm transition ${
@@ -172,7 +172,7 @@ function LibraryPageInner() {
           <span className="text-xs text-gray-400">Gefiltert nach:</span>
           <span className="px-2 py-1 bg-purple-600/30 border border-purple-500/40 rounded-full text-xs flex items-center gap-1">
             {CATEGORY_LABELS[activeCategory] || activeCategory}
-            <button
+            <button type="button"
               onClick={clearCategoryFilter}
               className="text-red-400 hover:text-red-300"
               title="Filter entfernen"

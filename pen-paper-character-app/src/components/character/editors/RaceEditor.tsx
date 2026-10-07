@@ -350,7 +350,7 @@ export function RaceEditor({
               className="px-2 py-0.5 bg-purple-600/30 rounded-full text-sm flex items-center gap-1"
             >
               {lang}
-              <button
+              <button type="button"
                 onClick={() => removeLanguage(lang)}
                 className="text-red-400"
               >
@@ -511,7 +511,7 @@ export function RaceEditor({
                 </span>
               )}
             </div>
-            <button
+            <button type="button"
               onClick={() => removeSkillProficiency(idx)}
               className="text-red-400"
             >
@@ -556,14 +556,14 @@ export function RaceEditor({
               className="w-full px-2 py-1 bg-gray-700 rounded text-sm"
             />
             <div className="flex gap-1">
-              <button
+              <button type="button"
                 onClick={addSkillProficiency}
                 disabled={!newSkillProf.skillName.trim()}
                 className="px-2 py-1 bg-green-600 rounded text-sm disabled:opacity-50"
               >
                 Hinzufügen
               </button>
-              <button
+              <button type="button"
                 onClick={() => setShowAddSkillProf(false)}
                 className="px-2 py-1 bg-gray-600 rounded text-sm"
               >
@@ -588,7 +588,7 @@ export function RaceEditor({
           <div key={idx} className="bg-gray-800/50 rounded p-2 mb-1">
             <div className="flex justify-between">
               <span className="font-semibold">{trait.name}</span>
-              <button onClick={() => removeTrait(idx)} className="text-red-400">
+              <button type="button" onClick={() => removeTrait(idx)} className="text-red-400">
                 ✕
               </button>
             </div>
@@ -616,13 +616,13 @@ export function RaceEditor({
               className="w-full px-2 py-1 bg-gray-700 rounded text-sm resize-none"
             />
             <div className="flex gap-1">
-              <button
+              <button type="button"
                 onClick={addTrait}
                 className="px-2 py-1 bg-green-600 rounded text-sm"
               >
                 Hinzufügen
               </button>
-              <button
+              <button type="button"
                 onClick={() => setShowAddTrait(false)}
                 className="px-2 py-1 bg-gray-600 rounded text-sm"
               >
@@ -679,7 +679,7 @@ export function RaceEditor({
                     placeholder="Unterrassenname"
                     className="flex-1 px-2 py-1 bg-gray-700 rounded text-sm font-semibold"
                   />
-                  <button
+                  <button type="button"
                     onClick={() => removeSubrace(idx)}
                     className="ml-2 text-red-400"
                   >
@@ -719,13 +719,13 @@ export function RaceEditor({
                   className="w-full px-2 py-1 bg-gray-700 rounded text-sm resize-none"
                 />
                 <div className="flex gap-1">
-                  <button
+                  <button type="button"
                     onClick={addSubrace}
                     className="px-2 py-1 bg-green-600 rounded text-sm"
                   >
                     Hinzufügen
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => setShowAddSubrace(false)}
                     className="px-2 py-1 bg-gray-600 rounded text-sm"
                   >

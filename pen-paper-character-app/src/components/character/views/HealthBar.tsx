@@ -248,11 +248,11 @@ export function HealthBar({
                 </div>
               )}
               <div className="flex gap-1 justify-center">
-                <button onClick={() => setAdvantageMode('advantage')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'advantage' ? 'bg-green-600' : 'bg-gray-700'}`}>ðŸŸ¢</button>
-                <button onClick={() => setAdvantageMode('normal')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'normal' ? 'bg-purple-600' : 'bg-gray-700'}`}>âšª</button>
-                <button onClick={() => setAdvantageMode('disadvantage')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'disadvantage' ? 'bg-red-600' : 'bg-gray-700'}`}>ðŸ”´</button>
+                <button type="button" onClick={() => setAdvantageMode('advantage')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'advantage' ? 'bg-green-600' : 'bg-gray-700'}`}>ðŸŸ¢</button>
+                <button type="button" onClick={() => setAdvantageMode('normal')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'normal' ? 'bg-purple-600' : 'bg-gray-700'}`}>âšª</button>
+                <button type="button" onClick={() => setAdvantageMode('disadvantage')} className={`px-2 py-1 text-xs rounded ${advantageMode === 'disadvantage' ? 'bg-red-600' : 'bg-gray-700'}`}>ðŸ”´</button>
               </div>
-              <button onClick={handleDeathSave} disabled={rollingDeathSave} className="w-full py-2 bg-purple-600 rounded-lg text-sm disabled:opacity-50">
+              <button type="button" onClick={handleDeathSave} disabled={rollingDeathSave} className="w-full py-2 bg-purple-600 rounded-lg text-sm disabled:opacity-50">
                 {rollingDeathSave ? 'ðŸŽ² wÃ¼rfelt...' : 'Todesrettungswurf'}
               </button>
             </div>
@@ -264,7 +264,7 @@ export function HealthBar({
       <div className="bg-gray-800/50 rounded-lg p-3 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-green-300">ðŸ’š Heilung / Buffs</span>
-          <button
+          <button type="button"
             onClick={() => setIsPercent(!isPercent)}
             className={`text-xs px-2 py-0.5 rounded ${isPercent ? 'bg-purple-600' : 'bg-gray-600'}`}
           >
@@ -294,7 +294,7 @@ export function HealthBar({
             placeholder={isPercent ? '+ Max Temp (%)' : '+ Max Temp'}
             className="w-24 px-2 py-1 bg-gray-700 rounded text-sm"
           />
-          <button
+          <button type="button"
             onClick={handleApplyHealing}
             disabled={healingSaving || (!healValue && !tempHealValue && !maxTempHealValue)}
             className="px-4 py-1 bg-green-600 rounded text-sm disabled:opacity-50"

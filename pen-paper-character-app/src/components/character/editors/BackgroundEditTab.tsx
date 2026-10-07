@@ -340,7 +340,7 @@ export function BackgroundEditTab({
               className="px-2 py-0.5 bg-blue-600/30 rounded-full text-sm flex items-center gap-1"
             >
               {tool}
-              <button onClick={() => removeTool(tool)} className="text-red-400">
+              <button type="button" onClick={() => removeTool(tool)} className="text-red-400">
                 ×
               </button>
             </span>

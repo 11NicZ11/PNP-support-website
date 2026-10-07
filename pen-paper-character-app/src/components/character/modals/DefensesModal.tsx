@@ -170,14 +170,14 @@ export function DefensesModal({
             >
               📚 Bibliothek
             </a>
-            <button onClick={onClose} className="text-2xl">
+            <button type="button" onClick={onClose} className="text-2xl">
               ×
             </button>
           </div>
         </div>
 
         <div className="flex border-b px-4">
-          <button
+          <button type="button"
             onClick={() => setActiveTab('immunities')}
             className={`px-4 py-2 text-sm ${
               activeTab === 'immunities'
@@ -188,7 +188,7 @@ export function DefensesModal({
             ✨ Immunitäten (
             {local.filter((d) => d.type === 'damage_immunity').length})
           </button>
-          <button
+          <button type="button"
             onClick={() => setActiveTab('resistances')}
             className={`px-4 py-2 text-sm ${
               activeTab === 'resistances'
@@ -199,7 +199,7 @@ export function DefensesModal({
             🛡️ Resistenzen (
             {local.filter((d) => d.type === 'damage_resistance').length})
           </button>
-          <button
+          <button type="button"
             onClick={() => setActiveTab('conditions')}
             className={`px-4 py-2 text-sm ${
               activeTab === 'conditions'
@@ -218,7 +218,7 @@ export function DefensesModal({
               <h3 className="text-md font-semibold text-purple-300">
                 Aus Bibliothek
               </h3>
-              <button
+              <button type="button"
                 onClick={() => setShowForm(!showForm)}
                 className="px-3 py-1 bg-purple-600 rounded-lg text-sm"
               >
@@ -251,14 +251,14 @@ export function DefensesModal({
                   className="w-full px-3 py-2 bg-gray-700 rounded-lg mb-2 resize-none"
                 />
                 <div className="flex gap-2">
-                  <button
+                  <button type="button"
                     onClick={addCustomAndPersist}
                     disabled={!custom.name.trim()}
                     className="flex-1 py-2 bg-green-600 rounded-lg disabled:opacity-50"
                   >
                     Anlegen & hinzufügen
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => {
                       setShowForm(false);
                       setCustom({ name: '', description: '' });
@@ -291,7 +291,7 @@ export function DefensesModal({
                   onMouseEnter={() => setHovered(s.name)}
                   onMouseLeave={() => setHovered(null)}
                 >
-                                    <button
+                                    <button type="button"
                     onClick={() =>
                       !isActive(s.name) &&
                       addItem({
@@ -354,7 +354,7 @@ export function DefensesModal({
                         </div>
                       )}
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() => removeItem(item.id)}
                       className="px-2 py-1 bg-red-600/50 rounded text-xs"
                     >
@@ -368,13 +368,13 @@ export function DefensesModal({
         </div>
 
         <div className="p-4 border-t flex gap-3 sticky bottom-0 bg-gray-900">
-          <button
+          <button type="button"
             onClick={handleSave}
             className="flex-1 py-2 bg-green-600 rounded-lg"
           >
             Übernehmen
           </button>
-          <button
+          <button type="button"
             onClick={onClose}
             className="flex-1 py-2 bg-gray-700 rounded-lg"
           >

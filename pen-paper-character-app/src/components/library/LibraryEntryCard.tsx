@@ -175,14 +175,14 @@ export function LibraryEntryCard({
         <div className="flex gap-1">
           {isEditing ? (
             <>
-              <button
+              <button type="button"
                 onClick={handleSave}
                 disabled={isSaving}
                 className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs disabled:opacity-50"
               >
                 ✓ Speichern
               </button>
-              <button
+              <button type="button"
                 onClick={handleCancel}
                 className="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs"
               >
@@ -192,7 +192,7 @@ export function LibraryEntryCard({
           ) : (
             <>
               {canEdit && (
-                <button
+                <button type="button"
                   onClick={() => setIsEditing(true)}
                   className="px-2 py-1 text-xs bg-blue-600/50 hover:bg-blue-600 rounded"
                   title="Bearbeiten"
@@ -201,7 +201,7 @@ export function LibraryEntryCard({
                 </button>
               )}
               {canDelete && (
-                <button
+                <button type="button"
                   onClick={handleDelete}
                   className="px-2 py-1 text-xs bg-red-600/50 hover:bg-red-600 rounded"
                   title="Löschen"

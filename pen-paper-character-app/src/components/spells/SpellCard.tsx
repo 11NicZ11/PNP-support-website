@@ -237,7 +237,7 @@ export function SpellCard({
         <div className="flex flex-col gap-1 ml-2">
           {/* Schaden würfeln */}
           {hasDamage && (
-            <button
+            <button type="button"
               onClick={handleDamageRoll}
               disabled={isLoading || isRolling}
               className="px-2 py-1 text-xs bg-orange-600/50 hover:bg-orange-600 rounded transition disabled:opacity-50 flex items-center justify-center gap-1 whitespace-nowrap"
@@ -249,7 +249,7 @@ export function SpellCard({
 
           {/* 🔥 NEU: Konzentration wirken */}
           {spell.concentration && onCastConcentration && (
-            <button
+            <button type="button"
               onClick={handleCastConcentration}
               disabled={isLoading}
               className="px-2 py-1 text-xs bg-yellow-600/50 hover:bg-yellow-600 rounded transition disabled:opacity-50 flex items-center justify-center gap-1 whitespace-nowrap"
@@ -260,7 +260,7 @@ export function SpellCard({
           )}
 
           {onTogglePrepared && !spell.alwaysPrepared && (
-            <button
+            <button type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onTogglePrepared(spell.id, !spell.prepared);
@@ -278,7 +278,7 @@ export function SpellCard({
           )}
 
           {editable && onEdit && (
-            <button
+            <button type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(spell);
@@ -292,7 +292,7 @@ export function SpellCard({
           )}
 
           {editable && onDelete && (
-            <button
+            <button type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(spell.id);

@@ -256,7 +256,7 @@ export function AlternateFormsEditor({
                   ? 'Form bearbeiten'
                   : 'Neue Form'}
               </h2>
-              <button
+              <button type="button"
                 onClick={() => {
                   setShowEditor(false);
                   setEditingForm(null);

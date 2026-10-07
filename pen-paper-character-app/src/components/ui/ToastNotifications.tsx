@@ -17,7 +17,7 @@ export function ToastNotifications() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
       {/* Pfeil-Button zum Löschen aller Toasts */}
-      <button
+      <button type="button"
         onClick={clearToasts}
         className="bg-gray-800 hover:bg-gray-700 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg transition"
         title="Alle Benachrichtigungen löschen"

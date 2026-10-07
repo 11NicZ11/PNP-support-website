@@ -131,7 +131,7 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
       <div className="bg-gray-900 rounded-xl max-w-2xl w-full mx-4 border border-purple-500/30 max-h-[85vh] overflow-y-auto">
         <div className="sticky top-0 bg-gray-900 border-b p-4 flex justify-between">
           <h2 className="text-xl font-bold">⚔️ Schaden nehmen</h2>
-          <button onClick={onClose} className="text-2xl">×</button>
+          <button type="button" onClick={onClose} className="text-2xl">×</button>
         </div>
         <div className="p-6 space-y-4">
           <div className="bg-gray-800/50 rounded-lg p-3 text-center">
@@ -168,7 +168,7 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
                     {suggestions.length > 0 && (
                       <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-gray-800 border rounded-lg max-h-40 overflow-y-auto">
                         {suggestions.map(s => (
-                          <button 
+                          <button type="button" 
                             key={s} 
                             onClick={() => { updateField(f.id, 'damageType', s); setSuggestions([]); }} 
                             className="w-full text-left px-3 py-2 hover:bg-gray-700"
@@ -179,7 +179,7 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
                       </div>
                     )}
                   </div>
-                  <button onClick={() => removeField(f.id)} className="px-3 py-2 bg-red-600/50 rounded-lg">✕</button>
+                  <button type="button" onClick={() => removeField(f.id)} className="px-3 py-2 bg-red-600/50 rounded-lg">✕</button>
                 </div>
                 <input 
                   type="text" 
@@ -191,7 +191,7 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
               </div>
             ))}
           </div>
-          <button onClick={addField} className="w-full py-2 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-purple-500 hover:text-purple-400">
+          <button type="button" onClick={addField} className="w-full py-2 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-purple-500 hover:text-purple-400">
             + Weiterer Schaden
           </button>
           <div className="border-t pt-4">
@@ -214,7 +214,7 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
                   className="w-full px-3 py-2 bg-gray-700 rounded-lg" 
                 />
               </div>
-              <button onClick={addCustomType} disabled={!customType.trim()} className="px-4 py-2 bg-purple-600 rounded-lg">
+              <button type="button" onClick={addCustomType} disabled={!customType.trim()} className="px-4 py-2 bg-purple-600 rounded-lg">
                 + Erstellen
               </button>
             </div>
@@ -231,8 +231,8 @@ export function DamageModal({ isOpen, onClose, characterId, currentHp, maxHp, te
           </div>
         </div>
         <div className="p-4 border-t flex gap-3 sticky bottom-0 bg-gray-900">
-          <button onClick={applyDamage} className="flex-1 py-2 bg-red-600 rounded-lg">Schaden anwenden</button>
-          <button onClick={onClose} className="flex-1 py-2 bg-gray-700 rounded-lg">Abbrechen</button>
+          <button type="button" onClick={applyDamage} className="flex-1 py-2 bg-red-600 rounded-lg">Schaden anwenden</button>
+          <button type="button" onClick={onClose} className="flex-1 py-2 bg-gray-700 rounded-lg">Abbrechen</button>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ export function ActiveEffectsList({ effects, onManageClick }: ActiveEffectsListP
 
   if (effects.length === 0) {
     return (
-      <button
+      <button type="button"
         onClick={onManageClick}
         className="px-3 py-1 bg-indigo-600/50 rounded-lg text-sm flex items-center gap-2"
       >
@@ -52,7 +52,7 @@ export function ActiveEffectsList({ effects, onManageClick }: ActiveEffectsListP
           +{effects.length - 5} weitere
         </div>
       )}
-      <button onClick={onManageClick} className="ml-2 px-2 py-1 bg-indigo-600 rounded-lg text-xs">
+      <button type="button" onClick={onManageClick} className="ml-2 px-2 py-1 bg-indigo-600 rounded-lg text-xs">
         Verwalten
       </button>
     </div>

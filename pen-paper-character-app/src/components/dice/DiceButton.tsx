@@ -86,7 +86,7 @@ export function DiceButton({
           size="small"
         />
       )}
-      <button
+      <button type="button"
         onClick={handleRoll}
         disabled={rolling}
         className={`inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 rounded-lg transition disabled:opacity-50 ${className}`}

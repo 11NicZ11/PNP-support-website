@@ -310,13 +310,13 @@ export function SavingThrowsEditor({
             className="flex-1 px-2 py-1 bg-gray-700 rounded text-sm"
             autoFocus
           />
-          <button
+          <button type="button"
             onClick={handleAddNewAttribute}
             className="px-3 bg-green-600 rounded text-sm"
           >
             Hinzufügen
           </button>
-          <button
+          <button type="button"
             onClick={() => setShowNewAttributeForm(false)}
             className="px-3 bg-gray-600 rounded text-sm"
           >

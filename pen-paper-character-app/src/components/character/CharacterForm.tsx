@@ -259,7 +259,7 @@ export function CharacterForm({
               Die Bearbeitung einzelner Zauber wird in einer späteren Version
               ergänzt.
             </p>
-            <button
+            <button type="button"
               onClick={() => state.setEditingSpell(null)}
               className="mt-4 w-full py-2 bg-gray-700 rounded-lg"
             >

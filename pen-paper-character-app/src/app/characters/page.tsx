@@ -50,7 +50,7 @@ export default function CharactersPage() {
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
         <div className="bg-red-500/20 border border-red-500 rounded-lg p-6">
           <p className="text-red-300">Fehler: {error}</p>
-          <button
+          <button type="button"
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-purple-600 rounded-lg"
           >

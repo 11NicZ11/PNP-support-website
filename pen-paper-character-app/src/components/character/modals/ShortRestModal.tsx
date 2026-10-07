@@ -129,7 +129,7 @@ export function ShortRestModal({
       <div className="bg-gray-900 rounded-xl max-w-2xl w-full border border-blue-500/30 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-bold">☕ Kurze Rast</h2>
-          <button
+          <button type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
           >
@@ -272,14 +272,14 @@ export function ShortRestModal({
         </div>
 
         <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-4 flex gap-3">
-          <button
+          <button type="button"
             onClick={handleRest}
             disabled={isResting || !canRest}
             className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold disabled:opacity-50"
           >
             {isResting ? '☕ Raste...' : '☕ Kurze Rast abschließen'}
           </button>
-          <button
+          <button type="button"
             onClick={onClose}
             disabled={isResting}
             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg disabled:opacity-50"

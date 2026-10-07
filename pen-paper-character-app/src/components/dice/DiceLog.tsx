@@ -154,7 +154,7 @@ export function DiceLog() {
       <div className="p-4 border-b border-purple-500/20 flex justify-between items-center">
         <h2 className="text-lg font-semibold">📜 Würfel-Log</h2>
         {logs.length > 0 && (
-          <button
+          <button type="button"
             onClick={clearLogs}
             className="text-xs px-2 py-1 bg-red-600/50 hover:bg-red-600 rounded transition"
           >
@@ -203,7 +203,7 @@ export function DiceLog() {
                     )}
                   </div>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => removeLog(log.id)}
                   className="text-gray-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100"
                   title="Löschen"

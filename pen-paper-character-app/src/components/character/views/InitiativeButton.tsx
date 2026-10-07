@@ -77,7 +77,7 @@ export function InitiativeButton({
             </div>
           )}
 
-          <button
+          <button type="button"
             onClick={handleRoll}
             disabled={rolling}
             className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 min-w-[80px] text-center text-base"

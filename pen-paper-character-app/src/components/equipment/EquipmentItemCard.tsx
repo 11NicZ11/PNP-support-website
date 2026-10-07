@@ -156,7 +156,7 @@ export function EquipmentItemCard({
         </div>
         <div className="flex flex-col gap-1 ml-2">
           {isWeaponWithDamage && item.equipped && (
-            <button
+            <button type="button"
               onClick={handleWeaponDamage}
               disabled={isLoading || isRolling}
               className="px-2 py-1 text-xs bg-orange-600/50 hover:bg-orange-600 rounded transition disabled:opacity-50 flex items-center justify-center gap-1"
@@ -164,7 +164,7 @@ export function EquipmentItemCard({
               {isRolling ? '🎲...' : '🎲 Schaden'}
             </button>
           )}
-          <button
+          <button type="button"
             onClick={() => onEquip(item.id, !item.equipped)}
             disabled={isLoading}
             className={`px-2 py-1 text-xs rounded transition ${
@@ -175,7 +175,7 @@ export function EquipmentItemCard({
           >
             {item.equipped ? 'Ablegen' : 'Ausrüsten'}
           </button>
-          <button
+          <button type="button"
             onClick={() => onDelete(item.id)}
             disabled={isLoading}
             className="px-2 py-1 text-xs bg-red-600/50 hover:bg-red-600 rounded transition flex items-center justify-center"

@@ -64,7 +64,7 @@ export function Navigation() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
+          <button type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden text-gray-300 hover:text-white"
           >

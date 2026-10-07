@@ -1187,7 +1187,7 @@ export function CreateItemModal({
       <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/30">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">{getTitle()}</h2>
-          <button
+          <button type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
           >
