@@ -1,3 +1,5 @@
+// pen-paper-character-app\src\app\page.tsx
+
 'use client';
 
 import Link from 'next/link';

@@ -79,3 +79,5 @@ debug.log
 prisma/studio/
 
 ideen
+
+*.db.backup-*

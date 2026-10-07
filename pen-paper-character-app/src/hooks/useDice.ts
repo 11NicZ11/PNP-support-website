@@ -1,3 +1,5 @@
+// pen-paper-character-app\src\hooks\useDice.ts
+
 'use client';
 
 import { useDiceLog } from '@/contexts/DiceLogContext';
@@ -6,8 +8,8 @@ import {
   abilityCheck as baseAbilityCheck,
   savingThrow as baseSavingThrow,
   rollInitiative as baseRollInitiative,
-} from '@/lib/diceSystem';
-import type { DiceType, RollOptions } from '@/lib/diceSystem';
+} from '@/lib/dice';
+import type { DiceType, RollOptions } from '@/lib/dice';
 
 export function useDice(character?: { id: string; name: string }) {
   const { addLog } = useDiceLog();

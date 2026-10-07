@@ -1,3 +1,5 @@
+// pen-paper-character-app\src\components\layout\Navigation.tsx
+
 'use client';
 
 import Link from 'next/link';
@@ -9,11 +11,12 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: 'Start', path: '/' },
-    { name: 'Charaktere', path: '/characters' },
-    { name: 'Würfel', path: '/dice' },
-    { name: 'Über', path: '/about' },
-  ];
+  { name: 'Start', path: '/' },
+  { name: 'Charaktere', path: '/characters' },
+  { name: 'Bibliothek', path: '/library' },
+  { name: 'Würfel', path: '/dice' },
+  { name: 'Über', path: '/about' },
+];
 
   return (
     <nav className="bg-gray-900/50 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50">

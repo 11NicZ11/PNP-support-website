@@ -1,8 +1,17 @@
+// pen-paper-character-app\src\contexts\DiceLogContext.tsx
+
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { RollResult } from '@/lib/dice';
-import { setGlobalLogCallback } from '@/lib/diceSystem';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import { RollResult, setGlobalLogCallback } from '@/lib/dice';
+import { useToast } from './ToastContext';
 
 interface DiceLogContextType {
   logs: RollResult[];
@@ -15,14 +24,13 @@ const DiceLogContext = createContext<DiceLogContextType | undefined>(undefined);
 
 export function DiceLogProvider({ children }: { children: React.ReactNode }) {
   const [logs, setLogs] = useState<RollResult[]>([]);
+  const { addToast } = useToast();
 
-  // Lade Logs aus localStorage beim Start
   useEffect(() => {
     const savedLogs = localStorage.getItem('diceLogs');
     if (savedLogs) {
       try {
         const parsed = JSON.parse(savedLogs);
-        // Konvertiere timestamp Strings zurück zu Date Objects
         const logsWithDates = parsed.map((log: any) => ({
           ...log,
           timestamp: new Date(log.timestamp)
@@ -34,36 +42,59 @@ export function DiceLogProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Speichere Logs in localStorage bei Änderung
+  // Persistierung debounced: localStorage-Schreiben ist synchron und blockiert
+  // bei jedem Wurf den Main-Thread, wenn das Log groß ist.
   useEffect(() => {
-    localStorage.setItem('diceLogs', JSON.stringify(logs));
+    const id = setTimeout(() => {
+      try {
+        localStorage.setItem('diceLogs', JSON.stringify(logs));
+      } catch (e) {
+        console.error('Fehler beim Speichern der Logs:', e);
+      }
+    }, 300);
+    return () => clearTimeout(id);
   }, [logs]);
 
-  // Registriere den globalen Callback für automatisches Logging
-  useEffect(() => {
-    setGlobalLogCallback(addLog);
-  }, []);
+  const addLog = useCallback(
+    (log: Omit<RollResult, 'id' | 'timestamp'>) => {
+      const newLog: RollResult = {
+        ...log,
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        timestamp: new Date(),
+      };
+      setLogs(prev => [newLog, ...prev].slice(0, 100));
 
-  const addLog = (log: Omit<RollResult, 'id' | 'timestamp'>) => {
-    const newLog: RollResult = {
-      ...log,
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      timestamp: new Date(),
-    };
-    setLogs(prev => [newLog, ...prev].slice(0, 100)); // Max 100 Logs
-  };
+      // Toast hinzufügen
+      let shortReason = log.reason;
+      shortReason = shortReason.replace(/ Probe$/, '').replace(/ Rettungswurf$/, '');
+      const message = `${shortReason}: ${log.total ?? log.result}`;
+      addToast(message);
+    },
+    [addToast]
+  );
 
-  const clearLogs = () => {
+  const clearLogs = useCallback(() => {
     setLogs([]);
     localStorage.removeItem('diceLogs');
-  };
+  }, []);
 
-  const removeLog = (id: string) => {
+  const removeLog = useCallback((id: string) => {
     setLogs(prev => prev.filter(log => log.id !== id));
-  };
+  }, []);
+
+  // Wichtig: Callback nach jedem Re-Render aktualisieren, sonst hält das
+  // Modul-globale Callback eine veraltete addLog-Closure fest.
+  useEffect(() => {
+    setGlobalLogCallback(addLog);
+  }, [addLog]);
+
+  const value = useMemo(
+    () => ({ logs, addLog, clearLogs, removeLog }),
+    [logs, addLog, clearLogs, removeLog]
+  );
 
   return (
-    <DiceLogContext.Provider value={{ logs, addLog, clearLogs, removeLog }}>
+    <DiceLogContext.Provider value={value}>
       {children}
     </DiceLogContext.Provider>
   );

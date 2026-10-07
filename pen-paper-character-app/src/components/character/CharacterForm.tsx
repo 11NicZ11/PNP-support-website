@@ -1,142 +1,273 @@
+// src/components/character/CharacterForm.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCharacterState } from './hooks/useCharacterState';
+import { useCharacterMemos } from './hooks/useCharacterMemos';
+import { useCharacterDataLoader } from './hooks/useCharacterDataLoader';
+import { useCharacterSyncs } from './hooks/useCharacterSyncs';
+import { useCharacterHandlers } from './hooks/useCharacterHandlers';
+import { useCharacterSubmit } from './hooks/useCharacterSubmit';
 
-export function CharacterForm() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    race: '',
-    class: '',
-    level: 1,
-    strength: 10,
-    dexterity: 10,
-    constitution: 10,
-    intelligence: 10,
-    wisdom: 10,
-    charisma: 10,
-    maxHp: 10,
-    armorClass: 10,
-    speed: 30,
+import { CharacterHeader } from './forms/CharacterHeader';
+import { CharacterBasicFields } from './forms/CharacterBasicFields';
+import { CharacterTabContent } from './forms/CharacterTabContent';
+import { CharacterFormActions } from './forms/CharacterFormActions';
+
+import { CreateItemModal } from './modals/CreateItemModal';
+import { CreateSpellModal } from './modals/CreateSpellModal';
+
+import { CharacterFormProps, CharacterFormData } from './forms/characterFormTypes';
+
+export type { CharacterFormData, CharacterFormProps };
+
+export function CharacterForm({
+  characterId,
+  initialData,
+  mode,
+  onSave,
+  onCancel,
+  readOnly = false,
+}: CharacterFormProps) {
+  const isNew = mode === 'create';
+  const isView = mode === 'view';
+  const hasInitialData = !!initialData;
+
+  const state = useCharacterState(characterId, initialData, isNew);
+  const memos = useCharacterMemos(state);
+
+  useCharacterDataLoader(state, {
+    characterId,
+    isNew,
+    hasInitialData,
+  });
+  useCharacterSyncs(state);
+
+  const handlers = useCharacterHandlers(state, memos, { characterId, isNew });
+  const { handleSubmit } = useCharacterSubmit(state, memos, {
+    characterId,
+    isNew,
+    isView,
+    onSave,
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  if (state.loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
-    try {
-      console.log('1. Sende Daten:', formData);
-      
-      const response = await fetch('/api/characters', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      console.log('2. Response Status:', response.status);
-      console.log('3. Response OK:', response.ok);
-      
-      const data = await response.json();
-      console.log('4. Response Data:', data);
-
-      if (!response.ok) {
-        throw new Error(data.error || data.details || `HTTP ${response.status}`);
-      }
-
-      console.log('5. Erfolg, redirecte...');
-      router.push('/characters');
-      router.refresh();
-    } catch (error: any) {
-      console.error('DETAILIERTER FEHLER:', error);
-      setError(error?.message || 'Ein unbekannter Fehler ist aufgetreten');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'name' || name === 'race' || name === 'class' 
-        ? value 
-        : parseInt(value) || 0
-    }));
-  };
+  const isEditable = mode === 'create' || mode === 'edit';
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      <CharacterHeader
+        characterId={characterId}
+        name={state.name}
+        isNew={isNew}
+        isView={isView}
+        activeForm={memos.activeForm}
+        unitSystem={state.unitSystem}
+        currentHp={state.currentHp}
+        totalHp={memos.totalHp}
+        tempHp={state.tempHp}
+        tempMaxHp={state.tempMaxHp}
+        tempMaxHpMax={state.tempMaxHpMax}
+        exhaustionLevel={state.exhaustionLevel}
+        constitutionValue={memos.constitutionValue}
+        resources={state.resources}
+        hitDice={state.hitDice}
+        spellSlots={state.spellSlots}
+        lastLongRest={state.lastLongRest}
+        onRestUpdated={handlers.handleRestUpdate}
+        onExhaustionChange={handlers.handleExhaustionChange}
+        onDeactivateForm={handlers.handleDeactivateForm}
+        onFormDamage={handlers.handleFormDamage}
+        onFormHeal={handlers.handleFormHeal}
+      />
+
       <div className="bg-gray-900/50 backdrop-blur rounded-xl p-6 border border-purple-500/20">
-        <h2 className="text-2xl font-bold mb-4">Neuen Charakter erstellen</h2>
-        
-        {error && (
-          <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4 text-red-300">
-            <strong>Fehler:</strong> {error}
-          </div>
-        )}
-        
-        <div className="grid gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Name *</label>
-            <input
-              type="text"
-              name="name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Rasse</label>
-              <input
-                type="text"
-                name="race"
-                value={formData.race}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none"
-              />
+        <form onSubmit={handleSubmit}>
+          <CharacterBasicFields
+            name={state.name}
+            onNameChange={state.setName}
+            levelingMode={state.levelingMode}
+            onLevelingModeChange={state.setLevelingMode}
+            unitSystem={state.unitSystem}
+            onUnitSystemChange={state.setUnitSystem}
+            disabled={isView}
+          />
+
+          <CharacterTabContent
+            activeTab={state.activeTab}
+            onTabChange={state.setActiveTab}
+            characterId={characterId}
+            mode={mode}
+            isView={isView}
+            unitSystem={state.unitSystem}
+            characterName={state.name}
+            equipmentRefresh={state.equipmentRefresh}
+
+            // Status
+            attributes={state.attributes}
+            onAttributesUpdate={state.setAttributes}
+            combatValueSources={state.combatValueSources}
+            onCombatValueSourcesUpdate={state.setCombatValueSources}
+            skills={state.skills}
+            onSkillsUpdate={state.setSkills}
+            proficiencyBonus={memos.proficiencyBonus}
+            onRenameAttribute={handlers.handleRenameAttribute}
+            onDeleteAttribute={handlers.handleDeleteAttribute}
+            onAddCustomSkill={handlers.addCustomSkill}
+            raceData={state.raceData}
+            background={state.background}
+            attributeMethod={state.attributeMethod}
+            onAttributeMethodChange={state.setAttributeMethod}
+            attributeMethodState={state.attributeMethodState}
+            onAttributeMethodStateUpdate={state.setAttributeMethodState}
+            classLevels={state.classLevels}
+            damageImmunities={memos.aggregatedDefenses.immunities}
+            damageResistances={memos.aggregatedDefenses.resistances}
+            conditionImmunities={memos.aggregatedDefenses.conditions}
+            onManualDefensesUpdate={handlers.handleManualDefensesUpdate}
+
+            // Background
+            onBackgroundUpdate={state.setBackground}
+            alignment={state.alignment}
+            onAlignmentChange={state.setAlignment}
+            proficiencies={state.proficiencies}
+            onProficienciesUpdate={state.setProficiencies}
+            notesCategories={state.notesCategories}
+            onNotesCategoriesUpdate={state.setNotesCategories}
+
+            // Race
+            onRaceDataUpdate={state.setRaceData}
+            raceDefenses={memos.raceDefenses}
+            onRaceDefensesChange={handlers.handleRaceDefensesChange}
+
+            // Classes
+            onClassLevelsUpdate={state.setClassLevels}
+            characterLevel={state.characterLevel}
+            onCharacterLevelChange={state.setCharacterLevel}
+            levelingMode={state.levelingMode}
+            experience={state.experience}
+            onExperienceChange={state.setExperience}
+            nextLevelExp={state.nextLevelExp}
+            onNextLevelExpChange={state.setNextLevelExp}
+            expMode={state.expMode}
+            onExpModeChange={state.setExpMode}
+            expThresholds={state.expThresholds}
+            onExpThresholdsChange={state.setExpThresholds}
+            classProgression={state.classProgression}
+            onClassProgressionChange={state.setClassProgression}
+            hpSources={state.hpSources}
+            onHpSourcesUpdate={state.setHpSources}
+            resources={state.resources}
+            onResourcesUpdate={state.setResources}
+            hitDice={state.hitDice}
+            onHitDiceUpdate={state.setHitDice}
+            hasHitDice={state.hasHitDice}
+            onHasHitDiceChange={state.setHasHitDice}
+            hitDiceMode={state.hitDiceMode}
+            onHitDiceModeChange={state.setHitDiceMode}
+            onHealFromHitDie={handlers.handleHealFromHitDie}
+            alternateForms={state.alternateForms}
+            onAlternateFormsUpdate={state.setAlternateForms}
+            companions={state.companions}
+            onCompanionsUpdate={state.setCompanions}
+            classDefensesByClass={memos.classDefensesByClass}
+            onClassDefensesChange={handlers.handleClassDefensesChange}
+
+            // Actions
+            actions={state.actions}
+            onActionsUpdate={state.setActions}
+            onOpenActionModal={() => handlers.openItemModal('action')}
+
+            // Forms
+            onActivateForm={handlers.handleActivateForm}
+            onDeactivateForm={handlers.handleDeactivateForm}
+
+            // Companions
+            onCompanionDamage={handlers.handleCompanionDamage}
+            onCompanionHeal={handlers.handleCompanionHeal}
+            onCompanionDismiss={handlers.handleCompanionDismiss}
+            onCompanionRecall={handlers.handleCompanionRecall}
+
+            // Spells
+            spells={state.spells}
+            onSpellsUpdate={state.setSpells}
+            spellSlots={state.spellSlots}
+            onSpellSlotsUpdate={state.setSpellSlots}
+            onOpenSpellModal={() => state.setSpellModalOpen(true)}
+            onEditSpell={(spell) => state.setEditingSpell(spell)}
+            onCastConcentration={handlers.handleCastConcentrationSpell}
+
+            // Features
+            onCompanionActivateFromFeature={
+              handlers.handleCompanionActivateFromFeature
+            }
+
+            // Equipment
+            onOpenItemModal={handlers.openItemModal}
+            containers={state.containers}
+            onContainersUpdate={state.setContainers}
+          />
+
+          {state.error && (
+            <div className="bg-red-500/20 p-3 rounded text-red-300 mt-6">
+              {state.error}
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Klasse</label>
-              <input
-                type="text"
-                name="class"
-                value={formData.class}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-1">Level</label>
-            <input
-              type="number"
-              name="level"
-              value={formData.level}
-              onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none"
-            />
+          )}
+
+          <CharacterFormActions
+            characterId={characterId}
+            isNew={isNew}
+            isEditable={isEditable}
+            saving={state.saving}
+            onCancel={onCancel}
+          />
+        </form>
+      </div>
+
+      {state.itemModalState.isOpen && (
+        <CreateItemModal
+          isOpen={state.itemModalState.isOpen}
+          onClose={handlers.closeItemModal}
+          characterId={characterId}
+          onCreated={handlers.handleItemCreated}
+          onItemCreated={handlers.handleItemCreated}
+          itemType={state.itemModalState.itemType}
+          containerId={state.itemModalState.containerId}
+          unitSystem={state.unitSystem}
+        />
+      )}
+
+      <CreateSpellModal
+        isOpen={state.spellModalOpen}
+        onClose={() => state.setSpellModalOpen(false)}
+        characterId={characterId}
+        onCreated={handlers.handleSpellCreated}
+        unitSystem={state.unitSystem}
+      />
+
+      {state.editingSpell && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border border-purple-500/30">
+            <h3 className="text-lg font-bold mb-3">Zauber bearbeiten</h3>
+            <p className="text-sm text-gray-400">
+              Die Bearbeitung einzelner Zauber wird in einer späteren Version
+              ergänzt.
+            </p>
+            <button
+              onClick={() => state.setEditingSpell(null)}
+              className="mt-4 w-full py-2 bg-gray-700 rounded-lg"
+            >
+              Schließen
+            </button>
           </div>
         </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-3 bg-gradient-to-r from-purple-500 to-orange-500 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
-        >
-          {isLoading ? 'Wird erstellt...' : 'Charakter erstellen'}
-        </button>
-      </div>
-    </form>
+      )}
+    </div>
   );
 }

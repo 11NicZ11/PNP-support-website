@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,47 +8,797 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+// ==================== CORE CHARACTER ====================
 model Character {
+  id          String   @id @default(cuid())
+  name        String
+  level       Int      @default(1)
+  race        String
+  class       String
+  alignment   String   @default("")
+  experience  Int      @default(0)
+  notes       String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  levelingMode     String @default("milestone")
+  unitSystem       String @default("metric")
+  classProgression String @default("normal")
+  nextLevelExp     Int    @default(300)
+
+  expMode       String  @default("next_only")
+  expThresholds String  @default("{}")
+  hasHitDice    Boolean @default(true)
+  hitDiceMode   String  @default("scaled")
+
+  attributeMethod  String @default("free")
+  attributeMethodState String @default("{}")
+  notesCategories  String @default("[]")
+
+  currentHp    Int @default(0)
+  tempHp       Int @default(0)
+  tempMaxHp    Int @default(0)
+  tempMaxHpMax Int @default(0)
+
+  exhaustionLevel Int       @default(0)
+  lastShortRest   DateTime?
+  lastLongRest    DateTime?
+
+  attributes          Attribute[]
+  hpSources           HpSource[]
+  skills              Skill[]
+  savingThrows        SavingThrow[]
+  proficiencies       Proficiency[]
+  statusEffects       StatusEffect[]
+  defenses            Defense[]
+  classLevels         CharacterClassLevel[]
+  equipment           Equipment[]
+  spells              Spell[]
+  spellSlots          SpellSlot[]
+  actions             Action[]
+  combatValueSources  CombatValueSource[]
+  background          Background?
+  raceData            Race?
+
+  inventoryContainers InventoryContainer[]
+  inventoryItems      InventoryItem[]
+
+  resources           CharacterResource[]
+  hitDice             CharacterHitDice[]
+
+  alternateForms      AlternateForm[]
+  companions          Companion[]
+
+  @@index([name])
+  @@index([createdAt])
+}
+
+// ==================== HP SOURCES ====================
+model HpSource {
+  id          String   @id @default(cuid())
+  name        String
+  value       Int
+  sourceType  String   @default("manual")
+  sourceName  String   @default("")
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([characterId])
+}
+
+// ==================== RACE ====================
+model Race {
+  id          String   @id @default(cuid())
+  name        String
+  sizeCategory String @default("Mittel")
+  size        String   @default("Mittel")
+  height      String   @default("")
+  weight      String   @default("")
+  age         String   @default("")
+  speed       Int      @default(30)
+  description String   @default("")
+  languages   String   @default("[]")
+  traits      String   @default("[]")
+  abilityScoreIncrease String @default("{\"type\":\"standard\",\"bonuses\":{}}")
+  subraces    String   @default("[]")
+  skillProficiencies String @default("[]")
+  alignment   String   @default("")
+  faith       String   @default("")
+  personality String   @default("")
+  bonds       String   @default("")
+  ideals      String   @default("")
+  flaws       String   @default("")
+
+  hasSubrace      Boolean @default(false)
+  bonusArmorClass Int     @default(0)
+  bonusHp         Int     @default(0)
+
+  characterId String   @unique
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== BACKGROUND ====================
+model Background {
+  id          String   @id @default(cuid())
+  name        String   @default("")
+  traits      String   @default("")
+  ideals      String   @default("")
+  bonds       String   @default("")
+  flaws       String   @default("")
+  features    String   @default("")
+  bonusSkills String   @default("[]")
+  bonusLanguages String @default("[]")
+  allies      String   @default("")
+  organizations String @default("")
+  abilityScoreIncrease String @default("{\"type\":\"standard\",\"bonuses\":{}}")
+  toolProficiencies String @default("[]")
+  characterId String   @unique
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== ATTRIBUTES ====================
+model Attribute {
+  id          String   @id @default(cuid())
+  name        String
+  value       Int      @default(10)
+  isDefault   Boolean  @default(false)
+  order       Int      @default(0)
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([characterId, name])
+  @@index([characterId])
+  @@index([isDefault])
+}
+
+// ==================== SKILLS ====================
+model Skill {
+  id          String   @id @default(cuid())
+  name        String
+  attributeName String
+  description String?
+  isProficient Boolean @default(false)
+  expertise   Boolean  @default(false)
+  proficiencySource String @default("")
+  sourceDetail String   @default("")
+  modifier    Int      @default(0)
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([characterId, name])
+  @@index([characterId])
+  @@index([isProficient])
+  @@index([attributeName])
+  @@index([libraryEntryId])
+}
+
+// ==================== SAVING THROWS ====================
+model SavingThrow {
+  id          String   @id @default(cuid())
+  name        String
+  attributeName String
+  isProficient Boolean @default(false)
+  expertise   Boolean  @default(false)
+  proficiencySource String @default("")
+  sourceDetail String   @default("")
+  modifier    Int      @default(0)
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([characterId, name])
+  @@index([characterId])
+  @@index([isProficient])
+  @@index([attributeName])
+  @@index([libraryEntryId])
+}
+
+// ==================== DEFENSES (relational) ====================
+// Zentrale Tabelle für alle Verteidigungen.
+// - source = 'class' | 'race' | 'manual'
+// - sourceName = Klassenname / Rassenname / 'Manuell'
+// - Equipment-Defenses werden NICHT hier gespeichert, sondern live im Client
+//   aus dem Equipment-Item aggregiert, wenn es equipped=true ist.
+model Defense {
+  id          String   @id @default(cuid())
+  type        String   // 'damage_immunity' | 'damage_resistance' | 'condition_immunity'
+  name        String
+  description String?
+  source      String   @default("manual")
+  sourceName  String   @default("")
+  isCustom    Boolean  @default(false)
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([characterId])
+  @@index([type])
+  @@index([source])
+  @@index([characterId, source, sourceName])
+  @@index([libraryEntryId])
+}
+
+// ==================== PROFICIENCIES ====================
+model Proficiency {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  icon        String   @default("📚")
+  isProficient Boolean @default(true)
+  proficiencySource String @default("")
+  sourceDetail String   @default("")
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([characterId, name, category])
+  @@index([characterId])
+  @@index([category])
+  @@index([libraryEntryId])
+}
+
+// ==================== STATUS EFFECTS ====================
+model StatusEffect {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String   @default("⚠️")
+  duration    Int?
+  durationUnit String?
+  isActive    Boolean  @default(true)
+  source      String?
+  sourceName  String?
+  level       Int      @default(1)
+  isConcentration Boolean @default(false)
+  linkedFeatureId String?
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([libraryEntryId])
+}
+
+// ==================== CLASS LEVELS ====================
+model CharacterClassLevel {
+  id          String   @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  className   String
+  subclass    String?
+  subclassLevel Int?
+  level       Int
+  hitDie      String   @default("d8")
+  features    String   @default("[]")
+  spellcastingAbility String @default("none")
+  isActive    Boolean  @default(true)
+  leftAtLevel Int?
+  notes       String   @default("")
+  sourceReference String @default("")
+
+  track       Int      @default(0)
+  savingThrowProficiencies String @default("[]")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  resources   CharacterResource[]
+  hitDice     CharacterHitDice[]
+
+  @@unique([characterId, className, level, track])
+  @@index([characterId, className])
+  @@index([characterId, isActive])
+  @@index([characterId, track])
+}
+
+// ==================== CHARACTER RESOURCES ====================
+model CharacterResource {
+  id           String   @id @default(cuid())
+  name         String
+  max          Int      @default(0)
+  current      Int      @default(0)
+  rechargeType String   @default("long")
+  source       String   @default("class")
+  sourceName   String   @default("")
+  icon         String   @default("✨")
+  description  String   @default("")
+  classLevelId String?
+  classLevel   CharacterClassLevel? @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
+  characterId  String
+  character    Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([classLevelId])
+  @@index([rechargeType])
+}
+
+// ==================== CHARACTER HIT DICE ====================
+model CharacterHitDice {
+  id           String   @id @default(cuid())
+  dieType      String
+  total        Int      @default(0)
+  used         Int      @default(0)
+  classLevelId String?
+  classLevel   CharacterClassLevel? @relation(fields: [classLevelId], references: [id], onDelete: SetNull)
+  characterId  String
+  character    Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([classLevelId])
+}
+
+// ==================== COMBAT VALUE SOURCES ====================
+model CombatValueSource {
+  id          String   @id @default(cuid())
+  type        String
+  name        String
+  value       Int
+  dependsOn   String?
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId, type])
+}
+
+// ==================== EQUIPMENT ====================
+model Equipment {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  subtype     String?
+  description String?
+  equipped    Boolean  @default(false)
+  quantity    Int      @default(1)
+  weight      Float?
+  costAmount  Int?
+  costUnit    String?
+  magicBonus  Int?     @default(0)
+
+  attackBonus Int?     @default(0)
+  damageDice  String?
+  damageType  String?
+  range       String?
+  weaponProperties String?
+
+  armorClassBonus Int? @default(0)
+  armorType   String?
+  maxDexBonus Int?
+  stealthDisadvantage Boolean @default(false)
+  strengthRequirement Int?
+
+  shieldBonus Int?     @default(2)
+
+  attunement  Boolean  @default(false)
+  attuned     Boolean  @default(false)
+  notes       String?
+  sourceReference String @default("")
+
+  // Verteidigungen aus Ausrüstung (greifen nur wenn equipped=true)
+  damageImmunities    String @default("[]")
+  damageResistances   String @default("[]")
+  conditionImmunities String @default("[]")
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inventoryItems InventoryItem[]
+
+  @@index([characterId])
+  @@index([type])
+  @@index([equipped])
+  @@index([attuned])
+  @@index([libraryEntryId])
+}
+
+// ==================== SPELL ====================
+model Spell {
+  id          String   @id @default(cuid())
+  name        String
+  level       Int      @default(0)
+  school      String?
+  castingTime String?
+  range       String?
+  rangeValue  Float?
+  materialComponent String?
+  duration    String?
+  description String?
+  higherLevels String?
+  concentration Boolean @default(false)
+  ritual      Boolean  @default(false)
+  prepared    Boolean  @default(false)
+  alwaysPrepared Boolean @default(false)
+  attackType  String?
+  savingThrow String?
+  damageDice  String?
+  damageType  String?
+
+  aoeShape    String?
+  aoeSize     Float?
+
+  upcastEnabled Boolean @default(false)
+  upcastType  String?
+  upcastValue String?
+
+  spellcastingClassLevelId String?
+
+  components SpellComponent[]
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([level])
+  @@index([prepared])
+  @@index([spellcastingClassLevelId])
+  @@index([libraryEntryId])
+}
+
+// Spell-Komponenten (V/S/M/…) — ersetzt die ehemalige JSON-Spalte Spell.components.
+// Reihenfolge = order; API-Grenze liefert weiterhin string[].
+model SpellComponent {
   id        String   @id @default(cuid())
-  name      String
-  level     Int      @default(1)
-  race      String
-  class     String
-  background String  @default("")
-  alignment String   @default("")
-  experience Int      @default(0)
+  spellId   String
+  spell     Spell    @relation(fields: [spellId], references: [id], onDelete: Cascade)
+  component String   // 'V' | 'S' | 'M' | 'F' | ...
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([spellId, component])
+  @@index([spellId])
+}
+
+// ==================== SPELL SLOT ====================
+model SpellSlot {
+  id          String   @id @default(cuid())
+  rank        Int
+  total       Int      @default(0)
+  used        Int      @default(0)
+  spellcastingClassLevelId String?
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([characterId, rank])
+  @@index([characterId])
+  @@index([spellcastingClassLevelId])
+}
+
+// ==================== ACTIONS ====================
+model Action {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  description String
+  sourceType  String
+  sourceId    String?
+  isCustom    Boolean  @default(false)
+
+  attackBonus Int?
+  damageDice  String?
+  damageType  String?
+  range       String?
+  areaOfEffect String?
+
+  usesPerDay  Int?
+  usesRemaining Int?
+  rechargeType String @default("long")
+  rechargeOnShortRest Boolean @default(false)
+  rechargeOnLongRest Boolean @default(false)
+
+  concentration Boolean @default(false)
+  savingThrow String?
+  savingThrowDC Int?
+
+  linkedFeatureId String?
+  linkedClassLevelId String?
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([type])
+  @@index([sourceType])
+  @@index([linkedFeatureId])
+  @@index([linkedClassLevelId])
+  @@index([libraryEntryId])
+}
+
+// ==================== PREDEFINED STATUS EFFECTS ====================
+model PredefinedStatusEffect {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String   @default("⚠️")
+  defaultDuration Int?
+  durationUnit String   @default("rounds")
+  immunityKey String?
+  createdAt   DateTime @default(now())
+}
+
+// ==================== INVENTORY CONTAINERS ====================
+model InventoryContainer {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("container")
+  description String?
+  capacity    Int?
+  weightLimit Float?
+  weightUnit  String   @default("kg")
+  sourceReference String @default("")
+  parentId    String?
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  parent      InventoryContainer? @relation("ContainerHierarchy", fields: [parentId], references: [id])
+  children    InventoryContainer[] @relation("ContainerHierarchy")
+  items       InventoryItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([parentId])
+  @@index([type])
+  @@index([libraryEntryId])
+}
+
+// ==================== INVENTORY ITEMS ====================
+model InventoryItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  quantity    Int      @default(1)
+  weight      Float?
+  value       Int?
+  equipped    Boolean  @default(false)
+  notes       String?
+  sourceReference String @default("")
+
+  equipmentId String?
+  equipment   Equipment? @relation(fields: [equipmentId], references: [id])
+
+  containerId String
+  container   InventoryContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  type        String?
+  subtype     String?
+  magicBonus  Int?     @default(0)
+  attackBonus Int?     @default(0)
+  damageDice  String?
+  damageType  String?
+  range       String?
+  weaponProperties String?
+  armorClassBonus Int? @default(0)
+  armorType   String?
+  maxDexBonus Int?     @default(0)
+  stealthDisadvantage Boolean @default(false)
+  strengthRequirement Int? @default(0)
+  shieldBonus Int?     @default(0)
+  attunement  Boolean  @default(false)
+  attuned     Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+
+  @@index([containerId])
+  @@index([characterId])
+  @@index([equipped])
+  @@index([equipmentId])
+  @@index([type])
+    @@index([libraryEntryId])
+}
+
+// ==================== ALTERNATE FORMS ====================
+model AlternateForm {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  source      String   @default("wild_shape")
+  sourceReference String @default("")
+  icon        String   @default("🐺")
+
+  challengeRating String @default("0")
+  size        String   @default("medium")
+  creatureType String  @default("")
+
+  armorClass  Int      @default(10)
+  hpMax       Int      @default(1)
+  hpCurrent   Int      @default(1)
+  hpFormula   String   @default("")
+
   strength     Int @default(10)
   dexterity    Int @default(10)
   constitution Int @default(10)
   intelligence Int @default(10)
   wisdom       Int @default(10)
   charisma     Int @default(10)
-  maxHp        Int @default(10)
-  currentHp    Int @default(10)
-  tempHp       Int @default(0)
-  tempMaxHp    Int @default(0)
-  armorClass   Int @default(10)
-  speed        Int @default(30)
-  initiativeBonus  Int @default(0)
-  proficiencyBonus Int @default(2)
 
-  savingThrowStrength     Boolean @default(false)
-  savingThrowDexterity    Boolean @default(false)
-  savingThrowConstitution Boolean @default(false)
-  savingThrowIntelligence Boolean @default(false)
-  savingThrowWisdom       Boolean @default(false)
-  savingThrowCharisma     Boolean @default(false)
+  speedWalk   Int @default(30)
+  speedFly    Int @default(0)
+  speedSwim   Int @default(0)
+  speedClimb  Int @default(0)
+  speedBurrow Int @default(0)
 
-  skills       String @default("{}")
-  spells       String @default("[]")
-  inventory    String @default("[]")
-  features     String @default("[]")
-  notes        String @default("")
-  customFields String @default("{}")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  attacks     String @default("[]")
+  abilities   String @default("[]")
 
-  damageImmunities  String @default("[]")   // ["Feuer", "Kälte"]
-  damageResistances String @default("[]")   // ["Blitz", "Donner"]
-  conditionImmunities String @default("[]") // ["Vergiftet", "Paralyziert"]
+  activationType String @default("action")
+  durationType   String @default("hours")
+  durationValue  Int    @default(1)
+  usesPerRest    Int?
+  rechargeType   String @default("short")
+  linkedResourceId String?
+  linkedFeatureId  String?
+
+  isActive       Boolean @default(false)
+  concentration  Boolean @default(false)
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+    libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([characterId, isActive])
+  @@index([linkedResourceId])
+  @@index([linkedFeatureId])
+  @@index([libraryEntryId])
+}
+
+// ==================== COMPANIONS ====================
+model Companion {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("familiar")
+  source      String   @default("find_familiar")
+  sourceReference String @default("")
+  icon        String   @default("🐾")
+
+  creatureType String @default("")
+  size         String @default("tiny")
+  challengeRating String @default("0")
+
+  armorClass  Int      @default(10)
+  hpMax       Int      @default(1)
+  hpCurrent   Int      @default(1)
+  tempHp      Int      @default(0)
+
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+
+  speedWalk   Int @default(30)
+  speedFly    Int @default(0)
+  speedSwim   Int @default(0)
+  speedClimb  Int @default(0)
+  speedBurrow Int @default(0)
+
+  senses    String @default("")
+  languages String @default("")
+
+  attacks   String @default("[]")
+  abilities String @default("[]")
+
+  isActive    Boolean @default(true)
+  isDismissed Boolean @default(false)
+  behavior    String  @default("follow")
+  behaviorNote String @default("")
+
+  linkedResourceId String?
+  linkedFeatureId  String?
+
+  notes String @default("")
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+    libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([characterId, isActive])
+  @@index([characterId, isDismissed])
+  @@index([linkedResourceId])
+  @@index([linkedFeatureId])
+  @@index([libraryEntryId])
+}
+
+
+// ==================== LIBRARY OF BABYLON ====================
+// Globale Vorlagen-Sammlung. Enthält geseedete D&D-Standards + user-erstellte Einträge.
+// - type: 'skill' | 'saving_throw' | 'proficiency' | 'defense' | 'status_effect'
+// - category: Unterkategorie (z.B. 'language', 'armor' bei proficiency,
+//   'damage_immunity' | 'damage_resistance' | 'condition_immunity' bei defense)
+// - data: JSON mit zusätzlichen Feldern (z.B. attributeName bei skill)
+// - isSeed: true = vom System geseedet, false = vom User erstellt
+// - seedKind: 'system' = unantastbar, 'template' = editierbar mit Warnung,
+//   null = User-Eintrag. `isSeed` bleibt unverändert (Rückwärtskompatibilität).
+// - isPublic: true = für alle User sichtbar (später), false = nur Ersteller
+model LibraryEntry {
+  id          String   @id @default(cuid())
+  type        String
+  category    String   @default("")
+  name        String
+  description String   @default("")
+  icon        String   @default("📚")
+  data        String   @default("{}")
+  isSeed      Boolean  @default(false)
+  seedKind    String?
+  isPublic    Boolean  @default(true)
+
+  skills         Skill[]
+  savingThrows   SavingThrow[]
+  proficiencies  Proficiency[]
+  defenses       Defense[]
+  statusEffects  StatusEffect[]
+  actions        Action[]
+  spells         Spell[]
+  equipment      Equipment[]
+  inventoryContainers InventoryContainer[]
+  inventoryItems InventoryItem[]
+  alternateForms AlternateForm[]
+  companions     Companion[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([type, category, name])
+  @@index([type])
+  @@index([type, category])
+  @@index([isSeed])
 }

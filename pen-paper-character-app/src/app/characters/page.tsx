@@ -1,9 +1,10 @@
+// src/app/characters/page.tsx
 'use client';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-interface Character {
+interface CharacterListItem {
   id: string;
   name: string;
   race: string;
@@ -12,18 +13,26 @@ interface Character {
 }
 
 export default function CharactersPage() {
-  const [characters, setCharacters] = useState<Character[]>([]);
+  const [characters, setCharacters] = useState<CharacterListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/characters')
-      .then(res => res.json())
-      .then(data => {
-        setCharacters(data);
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCharacters(data);
+        } else {
+          setCharacters([]);
+          if (data?.error) setError(data.error);
+          else setError('Ungültige Antwort vom Server');
+        }
         setLoading(false);
       })
-      .catch(err => {
-        console.error('Fehler:', err);
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setError('Verbindungsfehler zum Server');
         setLoading(false);
       });
   }, []);
@@ -32,6 +41,22 @@ export default function CharactersPage() {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
+        <div className="bg-red-500/20 border border-red-500 rounded-lg p-6">
+          <p className="text-red-300">Fehler: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-purple-600 rounded-lg"
+          >
+            Erneut versuchen
+          </button>
+        </div>
       </div>
     );
   }

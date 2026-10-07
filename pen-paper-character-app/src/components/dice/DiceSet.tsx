@@ -1,3 +1,5 @@
+// pen-paper-character-app\src\components\dice\DiceSet.tsx
+
 'use client';
 
 import { DiceButton } from './DiceButton';
