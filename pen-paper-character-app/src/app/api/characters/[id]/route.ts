@@ -775,7 +775,7 @@ export async function PUT(
           }
         }
       }
-    });
+    }, { timeout: 20000 });
 
     const updated = await prisma.character.findUnique({
       where: { id },
