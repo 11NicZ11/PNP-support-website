@@ -40,7 +40,7 @@ export function RaceView({
         </h2>
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div>
-            <span className="text-sm text-gray-400">GrÃ¶ÃŸenkategorie:</span>{' '}
+            <span className="text-sm text-gray-400">Größenkategorie:</span>{' '}
             {raceData.sizeCategory || 'Mittel'}
           </div>
           <div>
@@ -49,7 +49,7 @@ export function RaceView({
           </div>
           {raceData.height && (
             <div>
-              <span className="text-sm text-gray-400">GrÃ¶ÃŸe:</span>{' '}
+              <span className="text-sm text-gray-400">Größe:</span>{' '}
               {raceData.height}
             </div>
           )}
@@ -74,18 +74,18 @@ export function RaceView({
       {hasRaceBonuses && (
         <div className="bg-gray-800/30 rounded-lg p-4">
           <h3 className="text-md font-semibold text-purple-300 mb-2">
-            âœ¨ Weitere Rassen-Boni
+            ✨ Weitere Rassen-Boni
           </h3>
           <div className="flex flex-wrap gap-3 text-sm">
             {(raceData.bonusArmorClass ?? 0) !== 0 && (
               <span className="px-2 py-1 bg-blue-600/30 rounded-lg">
-                ðŸ›¡ï¸ RK {raceData.bonusArmorClass >= 0 ? '+' : ''}
+                🛡️ RK {raceData.bonusArmorClass >= 0 ? '+' : ''}
                 {raceData.bonusArmorClass}
               </span>
             )}
             {(raceData.bonusHp ?? 0) !== 0 && (
               <span className="px-2 py-1 bg-red-600/30 rounded-lg">
-                â¤ï¸ HP {raceData.bonusHp >= 0 ? '+' : ''}
+                ❤️ HP {raceData.bonusHp >= 0 ? '+' : ''}
                 {raceData.bonusHp}
               </span>
             )}
@@ -123,7 +123,7 @@ export function RaceView({
             {raceData.personality && (
               <div>
                 <span className="text-xs text-gray-400">
-                  PersÃ¶nlichkeitsmerkmale:
+                  Persönlichkeitsmerkmale:
                 </span>
                 <p className="text-gray-300 text-sm">{raceData.personality}</p>
               </div>

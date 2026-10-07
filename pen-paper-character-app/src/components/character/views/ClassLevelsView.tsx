@@ -81,7 +81,7 @@ export function ClassLevelsView({
       >
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-semibold text-purple-400">
-            {cls.className} {cls.subclass && `â€“ ${cls.subclass}`}
+            {cls.className} {cls.subclass && `– ${cls.subclass}`}
           </h3>
           <div className="text-right">
             <div className="text-xs text-gray-400">Level</div>
@@ -90,24 +90,24 @@ export function ClassLevelsView({
         </div>
 
         <div className="flex flex-wrap gap-3 text-xs text-gray-400 mb-3">
-          <span>ðŸŽ² TrefferwÃ¼rfel: {cls.hitDie}</span>
+          <span>🎲 Trefferwürfel: {cls.hitDie}</span>
           {cls.subclassLevel && <span>Subklasse ab Level {cls.subclassLevel}</span>}
           {cls.spellcastingAbility !== 'none' && (
             <span className="text-purple-300">
-              âœ¨ Spellcasting: {cls.spellcastingAbility.toUpperCase()}
+              ✨ Spellcasting: {cls.spellcastingAbility.toUpperCase()}
             </span>
           )}
           {!cls.isActive && (
             <span className="text-yellow-400">
-              âš ï¸ Verlassen auf Level {cls.leftAtLevel ?? cls.level}
+              ⚠️ Verlassen auf Level {cls.leftAtLevel ?? cls.level}
             </span>
           )}
-          {cls.sourceReference && <span className="text-gray-500">ðŸ“– {cls.sourceReference}</span>}
+          {cls.sourceReference && <span className="text-gray-500">📖 {cls.sourceReference}</span>}
         </div>
 
         {cls.savingThrowProficiencies && cls.savingThrowProficiencies.length > 0 && (
           <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-gray-400">RettungswÃ¼rfe:</span>
+            <span className="text-gray-400">Rettungswürfe:</span>
             {cls.savingThrowProficiencies.map((name) => (
               <span key={name} className="px-2 py-0.5 bg-purple-600/30 rounded">
                 {name}
@@ -118,7 +118,7 @@ export function ClassLevelsView({
 
         {cls.notes && (
           <div className="bg-gray-800/50 rounded p-2 text-xs text-gray-300 italic mb-3">
-            ðŸ“ {cls.notes}
+            📝 {cls.notes}
           </div>
         )}
 
@@ -136,7 +136,7 @@ export function ClassLevelsView({
                     {featuresAtLevel.map((f: any) => {
                       const kindData = CLASS_FEATURE_KINDS.find((k) => k.value === (f.kind ?? 'feature'));
                       const sourceIcon =
-                        CLASS_FEATURE_SOURCES.find((s) => s.value === f.source)?.icon || 'â€¢';
+                        CLASS_FEATURE_SOURCES.find((s) => s.value === f.source)?.icon || '•';
                       const typeData = CLASS_FEATURE_TYPES.find((t) => t.value === f.type);
                       const rechargeData = CLASS_FEATURE_RECHARGE.find(
                         (r) => r.value === f.rechargeType
@@ -156,14 +156,14 @@ export function ClassLevelsView({
                                 {typeData.icon} {typeData.label}
                               </span>
                             )}
-                            {f.isConcentration && <span className="text-xs text-yellow-400">ðŸ§ </span>}
-                            {f.attackRoll && <span className="text-xs text-orange-400">ðŸŽ¯</span>}
+                            {f.isConcentration && <span className="text-xs text-yellow-400">🧠</span>}
+                            {f.attackRoll && <span className="text-xs text-orange-400">🎯</span>}
                             {f.savingThrow && (
-                              <span className="text-xs text-red-400">ðŸ›¡ï¸ {f.savingThrow}</span>
+                              <span className="text-xs text-red-400">🛡️ {f.savingThrow}</span>
                             )}
                             {f.usesPerRest && rechargeData && (
                               <span className="text-xs text-blue-400">
-                                {f.usesPerRest}Ã— / {rechargeData.label}
+                                {f.usesPerRest}× / {rechargeData.label}
                               </span>
                             )}
                           </div>
@@ -174,7 +174,7 @@ export function ClassLevelsView({
                           )}
                           {f.sourceReference && (
                             <div className="text-xs text-gray-500 mt-1">
-                              ðŸ“– {f.sourceReference}
+                              📖 {f.sourceReference}
                             </div>
                           )}
                         </div>
@@ -195,9 +195,9 @@ export function ClassLevelsView({
 
   return (
     <div className="space-y-6">
-      {/* Level-Ãœbersicht */}
+      {/* Level-Übersicht */}
       <div className="bg-gray-800/30 rounded-lg p-4">
-        <h3 className="text-lg font-semibold mb-3">ðŸŽšï¸ Level</h3>
+        <h3 className="text-lg font-semibold mb-3">🎚️ Level</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-gray-800/50 rounded-lg p-3 text-center">
             <div className="text-xs text-gray-400">Gesamt-Level</div>
@@ -216,7 +216,7 @@ export function ClassLevelsView({
                 <div className="text-xl font-bold">{experience}</div>
               </div>
               <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                <div className="text-xs text-gray-400">NÃ¤chstes Level</div>
+                <div className="text-xs text-gray-400">Nächstes Level</div>
                 <div className="text-xl font-bold">{nextLevelExp}</div>
               </div>
             </>
@@ -228,7 +228,7 @@ export function ClassLevelsView({
               <span className="text-gray-400">Fortschritt</span>
               {hasReachedNextLevel && (
                 <span className="text-green-400 font-semibold">
-                  âœ¨ Level-Up verfÃ¼gbar!
+                  ✨ Level-Up verfügbar!
                 </span>
               )}
             </div>
@@ -245,7 +245,7 @@ export function ClassLevelsView({
       {/* HP-Quellen */}
       <div className="bg-gray-800/30 rounded-lg p-4">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-semibold">â¤ï¸ Trefferpunkte</h3>
+          <h3 className="text-lg font-semibold">❤️ Trefferpunkte</h3>
           <div className="text-2xl font-bold text-purple-400">{totalHp}</div>
         </div>
         <div className="space-y-1">
@@ -265,15 +265,15 @@ export function ClassLevelsView({
           ))}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          ðŸ’¡ Konstitutions-Modifikator: {getConMod() >= 0 ? '+' : ''}
-          {getConMod()} Ã— Level {characterLevel} = {getConModTotal()}
+          💡 Konstitutions-Modifikator: {getConMod() >= 0 ? '+' : ''}
+          {getConMod()} × Level {characterLevel} = {getConModTotal()}
         </p>
       </div>
 
-      {/* TrefferwÃ¼rfel */}
+      {/* Trefferwürfel */}
       {hasHitDice && hitDice.length > 0 && (
         <div className="bg-gray-800/30 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-3">ðŸŽ² TrefferwÃ¼rfel</h3>
+          <h3 className="text-lg font-semibold mb-3">🎲 Trefferwürfel</h3>
           <div className="flex flex-wrap gap-3">
             {hitDice.map((h) => {
               const available = h.total - h.used;
@@ -307,7 +307,7 @@ export function ClassLevelsView({
       {/* Ressourcen */}
       {resources.length > 0 && (
         <div className="bg-gray-800/30 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-3">âœ¨ Ressourcen</h3>
+          <h3 className="text-lg font-semibold mb-3">✨ Ressourcen</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {resources.map((r) => {
               const rechargeData = RESOURCE_RECHARGE_TYPES.find(
@@ -352,7 +352,7 @@ export function ClassLevelsView({
       {classProgression === 'dual' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-4">
-            <h4 className="text-md font-semibold text-blue-300">ðŸ“¦ Container A</h4>
+            <h4 className="text-md font-semibold text-blue-300">📦 Container A</h4>
             {track0Classes.length === 0 && (
               <div className="text-xs text-gray-500 italic text-center py-4">
                 Keine Klassen
@@ -361,7 +361,7 @@ export function ClassLevelsView({
             {classLevels.map((cls, idx) => (cls.track === 0 ? renderClass(cls, idx) : null))}
           </div>
           <div className="space-y-4">
-            <h4 className="text-md font-semibold text-orange-300">ðŸ“¦ Container B</h4>
+            <h4 className="text-md font-semibold text-orange-300">📦 Container B</h4>
             {track1Classes.length === 0 && (
               <div className="text-xs text-gray-500 italic text-center py-4">
                 Keine Klassen

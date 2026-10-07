@@ -44,8 +44,8 @@ export function BackgroundView({ background }: BackgroundViewProps) {
   if (!hasContent) {
     return (
       <div className="text-center text-gray-400 py-8">
-        <p className="text-lg">ðŸ“œ Keine Hintergrundinformationen vorhanden.</p>
-        <p className="text-sm mt-2">Klicke auf &quot;Bearbeiten&quot;, um einen Hintergrund hinzuzufÃ¼gen.</p>
+        <p className="text-lg">📜 Keine Hintergrundinformationen vorhanden.</p>
+        <p className="text-sm mt-2">Klicke auf &quot;Bearbeiten&quot;, um einen Hintergrund hinzuzufügen.</p>
       </div>
     );
   }
@@ -62,7 +62,7 @@ export function BackgroundView({ background }: BackgroundViewProps) {
       <div className="grid md:grid-cols-2 gap-4">
         {background.traits && (
           <div className="bg-gray-800/30 rounded-lg p-4">
-            <h3 className="text-md font-semibold text-purple-400">PersÃ¶nlichkeitsmerkmale</h3>
+            <h3 className="text-md font-semibold text-purple-400">Persönlichkeitsmerkmale</h3>
             <p className="text-gray-300 whitespace-pre-wrap">{background.traits}</p>
           </div>
         )}
@@ -80,7 +80,7 @@ export function BackgroundView({ background }: BackgroundViewProps) {
         )}
         {background.flaws && (
           <div className="bg-gray-800/30 rounded-lg p-4">
-            <h3 className="text-md font-semibold text-purple-400">SchwÃ¤chen</h3>
+            <h3 className="text-md font-semibold text-purple-400">Schwächen</h3>
             <p className="text-gray-300 whitespace-pre-wrap">{background.flaws}</p>
           </div>
         )}
@@ -95,7 +95,7 @@ export function BackgroundView({ background }: BackgroundViewProps) {
 
       {background.allies && (
         <div className="bg-gray-800/30 rounded-lg p-4">
-          <h3 className="text-md font-semibold text-purple-400">VerbÃ¼ndete</h3>
+          <h3 className="text-md font-semibold text-purple-400">Verbündete</h3>
           <p className="text-gray-300 whitespace-pre-wrap">{background.allies}</p>
         </div>
       )}
@@ -109,12 +109,12 @@ export function BackgroundView({ background }: BackgroundViewProps) {
 
       <AbilityScoreIncreaseView
         value={background.abilityScoreIncrease}
-        label="Statuswert-ErhÃ¶hungen"
+        label="Statuswert-Erhöhungen"
       />
 
       {background.toolProficiencies && background.toolProficiencies.length > 0 && (
         <div className="bg-gray-800/30 rounded-lg p-4">
-          <h3 className="text-md font-semibold text-purple-300 mb-2">Werkzeug-Ãœbungen</h3>
+          <h3 className="text-md font-semibold text-purple-300 mb-2">Werkzeug-Übungen</h3>
           <div className="flex flex-wrap gap-2">
             {background.toolProficiencies.map((tool: string) => (
               <span key={tool} className="px-2 py-1 bg-blue-600/30 rounded-lg text-sm">{tool}</span>
@@ -133,7 +133,7 @@ export function BackgroundView({ background }: BackgroundViewProps) {
                   <span key={s} className="px-2 py-1 bg-purple-600/30 rounded text-sm">{s}</span>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-2">Diese Fertigkeiten sind durch den Hintergrund geÃ¼bt.</p>
+              <p className="text-xs text-gray-400 mt-2">Diese Fertigkeiten sind durch den Hintergrund geübt.</p>
             </div>
           )}
           {background.bonusLanguages.length > 0 && (

@@ -64,15 +64,15 @@ export function ActiveFormBanner({
                   className="text-xs px-1.5 py-0.5 bg-yellow-600/40 text-yellow-200 rounded"
                   title="Konzentration"
                 >
-                  Ã°Å¸Â§Â  Konzentration
+                  🧠 Konzentration
                 </span>
               )}
             </div>
             <div className="text-xs text-orange-300/80 flex items-center gap-2 flex-wrap">
               <span>CR {form.challengeRating}</span>
-              <span>Ã¢â‚¬Â¢</span>
+              <span>•</span>
               <span>RK {form.armorClass}</span>
-              <span>Ã¢â‚¬Â¢</span>
+              <span>•</span>
               <span className={hpLow ? 'text-red-300 font-semibold' : ''}>
                 TP {form.hpCurrent} / {form.hpMax}
               </span>
@@ -86,7 +86,7 @@ export function ActiveFormBanner({
             onClick={() => setIsExpanded(!isExpanded)}
             className="px-3 py-1.5 text-xs bg-gray-800/60 hover:bg-gray-800 rounded"
           >
-            {isExpanded ? 'Ã¢â€“Â² Details' : 'Ã¢â€“Â¼ Details'}
+            {isExpanded ? '▲ Details' : '▼ Details'}
           </button>
           {!readOnly && (
             <button
@@ -98,7 +98,7 @@ export function ActiveFormBanner({
               }}
               className="px-3 py-1.5 text-xs bg-red-700 hover:bg-red-600 rounded font-medium"
             >
-              Ã¢â€ Â©Ã¯Â¸Â Form verlassen
+              ↩️ Form verlassen
             </button>
           )}
         </div>
@@ -132,7 +132,7 @@ export function ActiveFormBanner({
               disabled={!damageInput}
               className="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 rounded disabled:opacity-50"
             >
-              Ã¢Å¡â€Ã¯Â¸Â
+              ⚔️
             </button>
           </div>
           <div className="flex items-center gap-1">
@@ -150,12 +150,12 @@ export function ActiveFormBanner({
               disabled={!healInput}
               className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded disabled:opacity-50"
             >
-              Ã°Å¸â€™Å¡
+              💚
             </button>
           </div>
           {form.hpCurrent === 0 && (
             <span className="text-xs text-red-300 font-semibold animate-pulse">
-              Ã¢ËœÂ Ã¯Â¸Â Form bei 0 TP Ã¢â‚¬â€œ Form wird automatisch verlassen (Regel beachten)
+              ☠️ Form bei 0 TP – Form wird automatisch verlassen (Regel beachten)
             </span>
           )}
         </div>
