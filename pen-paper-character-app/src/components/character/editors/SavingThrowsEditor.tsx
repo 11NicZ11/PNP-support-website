@@ -10,6 +10,9 @@ export interface SavingThrow {
   attributeName: string;
   isProficient: boolean;
   expertise: boolean;
+  proficiencySource?: string;
+  sourceDetail?: string;
+  modifier?: number;
   // Library-Reference: FK auf LibraryEntry (nullable, SetNull).
   libraryEntryId?: string | null;
 }

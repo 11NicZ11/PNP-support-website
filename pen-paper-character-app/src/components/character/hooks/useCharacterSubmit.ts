@@ -58,7 +58,7 @@ function validateAttributeMethod(state: CharacterState): string | null {
   }
 
   if (method === 'roll') {
-    if (s.rolledValues.length === 0) {
+    if (!s.rolledValues || s.rolledValues.length === 0) {
       return 'Würfeln: Erst würfeln, dann alle 6 Werte verteilen.';
     }
     const assigned = Object.keys(s.rolledAssignments || {}).length;
@@ -90,10 +90,12 @@ export function useCharacterSubmit(
       }
 
       // ===== VALIDIERUNG: Attributs-Methode =====
-      const methodError = validateAttributeMethod(state);
-      if (methodError) {
-        state.setError(methodError);
-        return;
+      if (isNew) {
+        const methodError = validateAttributeMethod(state);
+        if (methodError) {
+          state.setError(methodError);
+          return;
+        }
       }
 
       state.setSaving(true);
@@ -102,12 +104,12 @@ export function useCharacterSubmit(
       const cleanSkills = state.skills.map((s) => ({
         name: s.name,
         attributeName: s.attributeName || '',
-        description: '',
+        description: s.description ?? '',
         isProficient: s.isProficient,
         expertise: s.expertise ?? false,
         proficiencySource: s.proficiencySource || '',
         sourceDetail: s.sourceDetail || '',
-        modifier: 0,
+        modifier: s.modifier ?? 0,
         libraryEntryId: s.libraryEntryId ?? null,
       }));
 
@@ -116,9 +118,9 @@ export function useCharacterSubmit(
         attributeName: st.attributeName,
         isProficient: st.isProficient,
         expertise: st.expertise ?? false,
-        proficiencySource: '',
-        sourceDetail: '',
-        modifier: 0,
+        proficiencySource: st.proficiencySource ?? '',
+        sourceDetail: st.sourceDetail ?? '',
+        modifier: st.modifier ?? 0,
         libraryEntryId: st.libraryEntryId ?? null,
       }));
 
@@ -159,11 +161,15 @@ export function useCharacterSubmit(
         expThresholds: state.expThresholds,
         hasHitDice: state.hasHitDice,
         hitDiceMode: state.hitDiceMode,
-        currentHp: state.currentHp || totalHp,
-        tempHp: state.tempHp,
-        tempMaxHp: state.tempMaxHp,
-        tempMaxHpMax: state.tempMaxHpMax,
-        exhaustionLevel: state.exhaustionLevel,
+        ...(isNew
+          ? {
+              currentHp: state.currentHp || totalHp,
+              tempHp: state.tempHp,
+              tempMaxHp: state.tempMaxHp,
+              tempMaxHpMax: state.tempMaxHpMax,
+              exhaustionLevel: state.exhaustionLevel,
+            }
+          : {}),
         attributes: cleanAttributes as any,
         hpSources: cleanHpSources,
         skills: cleanSkills as any,

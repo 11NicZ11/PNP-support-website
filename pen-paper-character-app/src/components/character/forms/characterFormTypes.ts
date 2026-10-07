@@ -43,11 +43,11 @@ export interface CharacterFormData {
   expThresholds: Record<number, number>;
   hasHitDice: boolean;
   hitDiceMode: HitDiceMode;
-  currentHp: number;
-  tempHp: number;
-  tempMaxHp: number;
-  tempMaxHpMax: number;
-  exhaustionLevel: number;
+  currentHp?: number;
+  tempHp?: number;
+  tempMaxHp?: number;
+  tempMaxHpMax?: number;
+  exhaustionLevel?: number;
   attributes: Attribute[];
   hpSources: HpSource[];
   skills: Skill[];
