@@ -36,10 +36,18 @@ export function useCharacterDataLoader(
     (async () => {
       try {
         const [attrsRes, skillsRes, savesRes, profsRes] = await Promise.all([
-          fetch('/api/library?type=attribute').then((r) => r.json()),
-          fetch('/api/library?type=skill').then((r) => r.json()),
-          fetch('/api/library?type=saving_throw').then((r) => r.json()),
-          fetch('/api/library?type=proficiency').then((r) => r.json()),
+          fetch('/api/library?type=attribute').then((r) =>
+            r.ok ? r.json() : Promise.reject(new Error('Attribute konnten nicht geladen werden'))
+          ),
+          fetch('/api/library?type=skill').then((r) =>
+            r.ok ? r.json() : Promise.reject(new Error('Fertigkeiten konnten nicht geladen werden'))
+          ),
+          fetch('/api/library?type=saving_throw').then((r) =>
+            r.ok ? r.json() : Promise.reject(new Error('Rettungswürfe konnten nicht geladen werden'))
+          ),
+          fetch('/api/library?type=proficiency').then((r) =>
+            r.ok ? r.json() : Promise.reject(new Error('Profizienzen konnten nicht geladen werden'))
+          ),
         ]);
 
         if (cancelled) return;
@@ -109,7 +117,11 @@ export function useCharacterDataLoader(
           }));
         });
       } catch (err) {
-        console.error('Fehler beim Laden der Library-Templates:', err);
+        state.setError(
+          err instanceof Error
+            ? err.message
+            : 'Fehler beim Laden der Library-Templates'
+        );
       } finally {
         if (!cancelled) state.setLoading(false);
       }
@@ -127,7 +139,11 @@ export function useCharacterDataLoader(
   useEffect(() => {
     if (isNew || hasInitialData || !characterId) return;
     fetch(`/api/characters/${characterId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok)
+          throw new Error('Charakter-Daten konnten nicht geladen werden');
+        return res.json();
+      })
       .then((data) => {
         state.setName(data.name || '');
         state.setLevelingMode(data.levelingMode || 'milestone');
@@ -183,6 +199,7 @@ export function useCharacterDataLoader(
       })
       .catch((err) => {
         state.setError(err.message);
+        state.setLoadFailed(true);
         state.setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,11 +211,15 @@ export function useCharacterDataLoader(
   useEffect(() => {
     if (isNew || !characterId || hasInitialData) return;
     fetch(`/api/characters/${characterId}/actions`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok)
+          throw new Error('Aktionen konnten nicht geladen werden');
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) state.setActions(data);
       })
-      .catch((err) => console.error('Fehler beim Laden der Aktionen:', err));
+      .catch((err) => state.setError(err.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId, isNew, hasInitialData]);
 
@@ -208,13 +229,15 @@ export function useCharacterDataLoader(
   useEffect(() => {
     if (isNew || !characterId) return;
     fetch(`/api/characters/${characterId}/equipment`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok)
+          throw new Error('Ausrüstung konnte nicht geladen werden');
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) state.setEquipmentForDefense(data);
       })
-      .catch((err) =>
-        console.error('Fehler beim Laden der Ausrüstung (Defenses):', err)
-      );
+      .catch((err) => state.setError(err.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId, isNew, state.equipmentRefresh]);
 }

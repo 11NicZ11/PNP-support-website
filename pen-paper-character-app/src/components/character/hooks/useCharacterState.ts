@@ -50,6 +50,7 @@ export function useCharacterState(
   const [loading, setLoading] = useState(!isNew && !initialData);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('status');
   const [equipmentRefresh, setEquipmentRefresh] = useState(0);
 
@@ -180,6 +181,7 @@ export function useCharacterState(
     loading, setLoading,
     saving, setSaving,
     error, setError,
+    loadFailed, setLoadFailed,
     activeTab, setActiveTab,
     equipmentRefresh, setEquipmentRefresh,
     name, setName,

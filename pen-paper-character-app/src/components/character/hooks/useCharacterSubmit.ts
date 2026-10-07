@@ -82,6 +82,12 @@ export function useCharacterSubmit(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (isView) return;
+      if (state.loadFailed) {
+        state.setError(
+          'Daten konnten nicht geladen werden — Speichern ist deaktiviert.'
+        );
+        return;
+      }
 
       // ===== VALIDIERUNG: Attributs-Methode =====
       const methodError = validateAttributeMethod(state);
