@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { CharacterState } from './useCharacterState';
 import { CharacterMemos } from './useCharacterMemos';
 import { CharacterFormData } from '../forms/characterFormTypes';
+import { useToast } from '@/contexts/ToastContext';
 import {
   POINT_BUY_COSTS,
   POINT_BUY_TOTAL,
@@ -76,6 +77,7 @@ export function useCharacterSubmit(
   { characterId, isNew, isView, onSave }: SubmitOptions
 ) {
   const router = useRouter();
+  const { addToast } = useToast();
   const { totalHp } = memos;
 
   const handleSubmit = useCallback(
@@ -210,6 +212,7 @@ export function useCharacterSubmit(
 
           if (isNew && state.actions.length > 0) {
             const newCharacterId = result.id;
+            const failedActions: string[] = [];
             // Parallel statt sequenziell: vorher kostete jede Aktion eine eigene
             // volle Round-Trip-Zeit (N Aktionen = N × Latenz).
             await Promise.all(
@@ -239,16 +242,26 @@ export function useCharacterSubmit(
                     linkedClassLevelId: (action as any).linkedClassLevelId || null,
                     libraryEntryId: (action as any).libraryEntryId ?? null,
                   };
-                  await fetch(`/api/characters/${newCharacterId}/actions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(actionPayload),
-                  });
+                  const res = await fetch(
+                    `/api/characters/${newCharacterId}/actions`,
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(actionPayload),
+                    }
+                  );
+                  if (!res.ok) failedActions.push(action.name);
                 } catch (err) {
                   console.error('Fehler beim Erstellen der Aktion:', err);
+                  failedActions.push(action.name);
                 }
               })
             );
+            if (failedActions.length > 0) {
+              addToast(
+                `Aktionen konnten nicht gespeichert werden: ${failedActions.join(', ')}`
+              );
+            }
           }
 
           if (isNew) {

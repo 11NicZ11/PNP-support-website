@@ -37,8 +37,11 @@ export async function POST(
     const { id } = await params;
     const body = await request.json();
 
-    if (!body.name || !body.type || !body.description) {
-      return apiError('Name, Typ und Beschreibung sind erforderlich', 400);
+    if (!body.name || !body.type || typeof body.description !== 'string') {
+      return apiError(
+        'Name und Typ sind erforderlich; Beschreibung muss ein Text sein',
+        400
+      );
     }
 
     const action = await prisma.action.create({
