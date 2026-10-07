@@ -92,3 +92,18 @@ function parse(data: any) { /* ... */ }
 
 - FK zu `LibraryEntry` IMMER mit `onDelete: SetNull`.
 - Cascade würde Char-Daten löschen, wenn ein Library-Eintrag entfernt wird.
+
+## Keine Voll-Checks in der Planungsphase
+
+- In der Planungsphase **KEIN** `npx tsc --noEmit`, **KEIN** `npx eslint .`,
+  **KEIN** `npm run build`, **KEIN** `npm run typecheck`, **KEIN** `npm run lint`.
+- Erlaubt in der Planung: Dateisuche (`rg`, `grep`), Dateien lesen,
+  `git diff`, `git status`, `git log`, Struktur-Analyse.
+- Vollständige Checks erst **nach** Codeänderungen — und dann bevorzugt
+  nur für die geänderten Dateien.
+- Denselben Check **nie mehrfach** hintereinander für unveränderten Code
+  ausführen.
+- Wenn ein Check-Ergebnis fehlt oder unklar ist: **frag den User**, statt
+  den Check zu wiederholen.
+- „Proceed While Running" **nicht** für `tsc`/`eslint`/`build` benutzen —
+  nur für echte Langläufer wie Dev-Server oder Watcher.

@@ -124,7 +124,3 @@ Geprüft:
 - ✅ TypeScript-Build
 - ✅ Neuer-Charakter-Flow
 - ⚠️ <was nicht getestet>
-
-Annahmen:
-- <falls unklar>
-```
