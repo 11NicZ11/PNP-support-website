@@ -201,7 +201,7 @@ export async function PUT(
           class: characterData.class,
           alignment: characterData.alignment,
           experience: characterData.experience,
-          notes: characterData.notes || '',
+          notes: characterData.notes ?? undefined,
           currentHp: characterData.currentHp,
           tempHp: characterData.tempHp,
           tempMaxHp: characterData.tempMaxHp,
