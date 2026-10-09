@@ -182,7 +182,11 @@ export function useCharacterSubmit(
         background: state.background,
         raceData: state.raceData,
         defenses: defensesForDb,
-        containers: state.containers,
+        // Container werden ueber /api/characters/[id]/inventory verwaltet, NICHT ueber
+        // die Character-PUT: Der PUT-Endpunkt hat kein containers-Handling und haette
+        // den Wert sonst stillschweigend verworfen (Datenverlust-Sinkhole). Nur beim
+        // POST (erstellen) mitschicken — dort legt der Server die Container an.
+        ...(isNew ? { containers: state.containers } : {}),
         spells: state.spells,
         spellSlots: state.spellSlots,
         resources: state.resources,

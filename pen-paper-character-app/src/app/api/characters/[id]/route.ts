@@ -9,94 +9,16 @@ import {
   asJsonObject,
 } from '@/lib/api/helpers';
 import { parseJsonArray, parseJsonObject } from '@/lib/utils';
-
-function migrateClassProgression(value: string | null | undefined): string {
-  if (!value) return 'normal';
-  if (value === 'single' || value === 'multi') return 'normal';
-  return value;
-}
-
-function parseClassLevels(classLevels: any[]) {
-  return classLevels.map((cl) => {
-    let savingThrowProficiencies: string[] = [];
-    try {
-      const parsed = JSON.parse(cl.savingThrowProficiencies || '[]');
-      if (Array.isArray(parsed)) savingThrowProficiencies = parsed;
-    } catch {
-      savingThrowProficiencies = [];
-    }
-    return {
-      ...cl,
-      features: parseJsonArray(cl.features || '[]'),
-      savingThrowProficiencies,
-      track: cl.track === 1 ? 1 : 0,
-    };
-  });
-}
-
-function parseAlternateForms(forms: any[]) {
-  return forms.map((f) => ({
-    ...f,
-    attacks: parseJsonArray(f.attacks || '[]'),
-    abilities: parseJsonArray(f.abilities || '[]'),
-  }));
-}
-
-function parseCompanions(companions: any[]) {
-  return companions.map((c) => ({
-    ...c,
-    attacks: parseJsonArray(c.attacks || '[]'),
-    abilities: parseJsonArray(c.abilities || '[]'),
-  }));
-}
-
-function parseRaceData(raceData: any) {
-  if (!raceData) return null;
-  return {
-    ...raceData,
-    languages: parseJsonArray(raceData.languages || '[]'),
-    traits: parseJsonArray(raceData.traits || '[]'),
-    abilityScoreIncrease: parseJsonObject(raceData.abilityScoreIncrease || '{}'),
-    subraces: parseJsonArray(raceData.subraces || '[]'),
-    skillProficiencies: parseJsonArray(raceData.skillProficiencies || '[]'),
-    hasSubrace: raceData.hasSubrace === true,
-    bonusArmorClass: raceData.bonusArmorClass ?? 0,
-    bonusHp: raceData.bonusHp ?? 0,
-  };
-}
-
-function parseBackgroundData(background: any) {
-  if (!background) return null;
-  return {
-    ...background,
-    bonusSkills: parseJsonArray(background.bonusSkills || '[]'),
-    bonusLanguages: parseJsonArray(background.bonusLanguages || '[]'),
-    abilityScoreIncrease: parseJsonObject(background.abilityScoreIncrease || '{}'),
-    toolProficiencies: parseJsonArray(background.toolProficiencies || '[]'),
-  };
-}
-
-function parseSpells(spells: any[]) {
-  return spells.map((spell) => ({
-    ...spell,
-    components: Array.isArray(spell.components)
-      ? spell.components.map((c: any) => c.component)
-      : [],
-  }));
-}
-
-function parseDefenses(defenses: any[]) {
-  return defenses.map((d) => ({
-    id: d.id,
-    type: d.type,
-    name: d.name,
-    description: d.description,
-    source: d.source || 'manual',
-    sourceName: d.sourceName || '',
-    isCustom: d.isCustom === true,
-    libraryEntryId: d.libraryEntryId ?? null,
-  }));
-}
+import {
+  migrateClassProgression,
+  parseClassLevels,
+  parseAlternateForms,
+  parseCompanions,
+  parseRaceData,
+  parseBackgroundData,
+  parseSpells,
+  parseDefenses,
+} from '@/lib/api/character-helpers';
 
 // ==================== GET ====================
 export async function GET(
@@ -183,7 +105,6 @@ export async function PUT(
       spellSlots,
       notesCategories,
       attributeMethodState,
-      containers,
       resources,
       hitDice,
       alternateForms,

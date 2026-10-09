@@ -2,6 +2,7 @@
 // Hilfsfunktionen für API-Routen
 
 import { NextResponse } from 'next/server';
+import { ApiError } from './errors';
 
 export const apiError = (message: string, status: number = 400): NextResponse =>
   NextResponse.json({ error: message }, { status });
@@ -10,8 +11,52 @@ export const apiSuccess = <T>(data: T, status: number = 200): NextResponse =>
   NextResponse.json(data, { status });
 
 export const handleApiError = (error: unknown, fallback: string = 'Ein Fehler ist aufgetreten'): NextResponse => {
+  // Echten Fehler immer mit Stack serverseitig loggen — unabhängig von der Klassifikation.
   console.error(error);
-  return NextResponse.json({ error: fallback }, { status: 500 });
+
+  // Bewusst geworfener ApiError: Status, Code und Meldung direkt übernehmen.
+  if (error instanceof ApiError) {
+    return NextResponse.json(
+      { error: error.message, code: error.code },
+      { status: error.status }
+    );
+  }
+
+  // request.json() auf kaputtem/leerem Body wirft SyntaxError → 400 statt 500.
+  if (error instanceof SyntaxError) {
+    return NextResponse.json(
+      { error: fallback, code: 'INVALID_JSON' },
+      { status: 400 }
+    );
+  }
+
+  // Prisma-Fehlercodes strukturell auslesen (gleicher Ansatz wie in
+  // api/library/route.ts — kein Import von @prisma/client nötig).
+  const prismaCode =
+    error && typeof error === 'object' && 'code' in error
+      ? String((error as { code: unknown }).code)
+      : null;
+
+  if (prismaCode === 'P2025') {
+    // "Record not found" → 404
+    return NextResponse.json(
+      { error: fallback, code: 'NOT_FOUND' },
+      { status: 404 }
+    );
+  }
+  if (prismaCode === 'P2002') {
+    // Unique-Constraint verletzt → 409
+    return NextResponse.json(
+      { error: fallback, code: 'CONFLICT' },
+      { status: 409 }
+    );
+  }
+
+  // Alles andere bleibt ein Serverfehler.
+  return NextResponse.json(
+    { error: fallback, code: 'INTERNAL' },
+    { status: 500 }
+  );
 };
 
 export const requireParams = (params: Record<string, string | undefined>, required: string[]): string | null => {
