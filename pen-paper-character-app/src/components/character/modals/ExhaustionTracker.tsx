@@ -22,7 +22,6 @@ export function ExhaustionTracker({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const safeLevel = Math.max(0, Math.min(MAX_EXHAUSTION_LEVEL, level));
-  const isDead = safeLevel >= 6;
   const effects = getExhaustionEffects(safeLevel);
 
   const colorClass = (() => {

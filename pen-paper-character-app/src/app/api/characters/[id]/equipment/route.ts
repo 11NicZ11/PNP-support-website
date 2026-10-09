@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, parseNumericParam, parseFloatParam, asJsonArray } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
 
 export async function GET(
   request: NextRequest,

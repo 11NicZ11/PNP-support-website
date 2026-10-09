@@ -13,18 +13,6 @@ interface SpellcastingHeaderProps {
   spellSlots?: { rank: number; total: number; used: number }[];
 }
 
-function mapAttributeNameToAbility(name: string): SpellcastingAbility | null {
-  const map: Record<string, SpellcastingAbility> = {
-    Stärke: 'str',
-    Geschick: 'dex',
-    Konstitution: 'con',
-    Intelligenz: 'int',
-    Weisheit: 'wis',
-    Charisma: 'cha',
-  };
-  return map[name] || null;
-}
-
 export function SpellcastingHeader({
   classLevels,
   attributes,

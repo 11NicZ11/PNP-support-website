@@ -14,7 +14,6 @@ export function useCharacterMemos(state: CharacterState) {
     alternateForms,
     equipmentForDefense,
     defenses,
-    raceData,
   } = state;
 
   const totalHp = hpSources.reduce((sum, s) => sum + s.value, 0);

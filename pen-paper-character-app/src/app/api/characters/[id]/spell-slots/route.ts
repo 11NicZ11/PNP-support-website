@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/spell-slots/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiSuccess, handleApiError, apiError } from '@/lib/api/helpers';
+import { apiSuccess, handleApiError } from '@/lib/api/helpers';
 
 export async function GET(
   request: NextRequest,

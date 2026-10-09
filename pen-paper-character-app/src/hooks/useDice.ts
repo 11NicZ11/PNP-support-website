@@ -2,7 +2,6 @@
 
 'use client';
 
-import { useDiceLog } from '@/contexts/DiceLogContext';
 import { 
   roll as baseRoll, 
   abilityCheck as baseAbilityCheck,
@@ -12,8 +11,6 @@ import {
 import type { DiceType, RollOptions } from '@/lib/dice';
 
 export function useDice(character?: { id: string; name: string }) {
-  const { addLog } = useDiceLog();
-
   // Einfacher Würfelwurf (loggt automatisch)
   const roll = (diceType: DiceType, options: Omit<RollOptions, 'characterId' | 'characterName'> = {}) => {
     return baseRoll(diceType, {

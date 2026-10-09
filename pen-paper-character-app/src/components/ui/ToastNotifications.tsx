@@ -3,11 +3,9 @@
 'use client';
 
 import { useToast } from '@/contexts/ToastContext';
-import { useEffect, useState } from 'react';
 
 export function ToastNotifications() {
   const { toasts, clearToasts } = useToast();
-  const [visible, setVisible] = useState(true);
 
   // Automatisch ausblenden nach 5 Sekunden? Laut Wunsch nicht, aber optional.
   // Wir behalten sie, bis der Benutzer den Pfeil klickt.

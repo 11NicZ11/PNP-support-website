@@ -19,8 +19,6 @@ interface ShortRestModalProps {
   onUpdated: (data: any) => void;
 }
 
-const VALID_DICE: DiceType[] = ['d6', 'd8', 'd10', 'd12'];
-
 export function ShortRestModal({
   isOpen,
   onClose,

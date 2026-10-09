@@ -188,7 +188,6 @@ export function InventoryItemComponent({
       );
 
       if (res.ok) {
-        const updated = await res.json();
         setEditMode(false);
         window.location.reload();
       }

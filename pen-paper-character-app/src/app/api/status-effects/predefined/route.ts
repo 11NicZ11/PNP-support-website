@@ -1,6 +1,6 @@
 // src/app/api/status-effects/predefined/route.ts
 import { prisma } from '@/lib/prisma';
-import { apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiSuccess } from '@/lib/api/helpers';
 
 export async function GET() {
   try {

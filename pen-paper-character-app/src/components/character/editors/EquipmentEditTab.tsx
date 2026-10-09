@@ -45,14 +45,10 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
     const [editingContainer, setEditingContainer] = useState<InventoryContainer | null>(null);
 
     const isNewCharacter = characterId === 'new';
-    const storageKey = `containers_${characterId}`;
 
     const containers = isNewCharacter
       ? externalContainers || internalContainers
       : internalContainers;
-    const setContainers = isNewCharacter
-      ? onContainersUpdate || setInternalContainers
-      : setInternalContainers;
 
     // ==================== LOAD CONTAINERS ====================
     const loadContainers = async (): Promise<void> => {

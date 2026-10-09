@@ -9,10 +9,8 @@ import { DAMAGE_TYPES } from '@/lib/enums/damageTypes';
 import { InventoryItem } from '@/types/inventory';
 import { UnitSystem } from '@/types/character';
 import {
-  displayWeightValue,
   getWeightUnitLabel,
   getDistanceUnitLabel,
-  parseWeightInput,
 } from '@/lib/units';
 import { useLibrary, type LibraryEntry } from '@/hooks/useLibrary';
 import type { Action } from '@/types/actions';

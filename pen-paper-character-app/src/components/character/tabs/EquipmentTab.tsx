@@ -31,7 +31,7 @@ export function EquipmentTab({
   onContainersUpdate,
 }: EquipmentTabProps) {
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const editTabRef = useRef<EquipmentEditTabRef | null>(null);
 
