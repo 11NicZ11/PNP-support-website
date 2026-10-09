@@ -759,26 +759,12 @@ export async function DELETE(
   try {
     const { id } = await params;
 
+    // Kind-Relationen werden ueber schema.prisma onDelete: Cascade geloescht
+    // (alle 21 Character-Relationen + Enkelkinder wie SpellComponent -> Spell
+    // und InventoryItem -> InventoryContainer). Der fruehere manuelle Block
+    // mit ~20 deleteMany-Aufrufen ist entfallen: er musste bei jeder neuen
+    // Relation manuell gepflegt werden und brach sonst beim Loeschen.
     await prisma.$transaction(async (tx) => {
-      await tx.skill.deleteMany({ where: { characterId: id } });
-      await tx.savingThrow.deleteMany({ where: { characterId: id } });
-      await tx.proficiency.deleteMany({ where: { characterId: id } });
-      await tx.statusEffect.deleteMany({ where: { characterId: id } });
-      await tx.defense.deleteMany({ where: { characterId: id } });
-      await tx.hpSource.deleteMany({ where: { characterId: id } });
-      await tx.attribute.deleteMany({ where: { characterId: id } });
-      await tx.characterResource.deleteMany({ where: { characterId: id } });
-      await tx.characterHitDice.deleteMany({ where: { characterId: id } });
-      await tx.alternateForm.deleteMany({ where: { characterId: id } });
-      await tx.companion.deleteMany({ where: { characterId: id } });
-      await tx.characterClassLevel.deleteMany({ where: { characterId: id } });
-      await tx.combatValueSource.deleteMany({ where: { characterId: id } });
-      await tx.background.deleteMany({ where: { characterId: id } });
-      await tx.race.deleteMany({ where: { characterId: id } });
-      await tx.spell.deleteMany({ where: { characterId: id } });
-      await tx.spellSlot.deleteMany({ where: { characterId: id } });
-      await tx.inventoryItem.deleteMany({ where: { characterId: id } });
-      await tx.inventoryContainer.deleteMany({ where: { characterId: id } });
       await tx.character.delete({ where: { id } });
     });
 
