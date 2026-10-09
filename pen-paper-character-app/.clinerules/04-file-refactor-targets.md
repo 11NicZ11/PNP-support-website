@@ -1,40 +1,24 @@
-# Refactor-Targets: Hardcoded → Library/Seed
+# 04-file-refactor-targets.md: hardcoded -> library / relational
 
-Diese Stellen enthalten hardcoded Daten, die in die Bibliothek gehören:
+Refactor only when a prompt asks for it. This file says where the debt is and how to classify it.
 
-## `src/components/character/forms/characterFormDefaults.ts`
+## Decision rule for a hardcoded list
+1. Shown to the user and chosen or edited by them: goes into the library.
+2. Fixed enum (e.g. `ActionType`, equipment types, spell schools): stays in code (`src/lib/enums/`).
+3. Rules knowledge that never changes (exhaustion levels, class feature kinds): stays in code.
+4. Pure UI suggestion lists (`ICON_SUGGESTIONS` in `AlternateFormsEditor`, `CompanionsEditor`, `ResourceEditor`): stay hardcoded.
 
-- `DEFAULT_COMBAT_VALUE_SOURCES` — Basis-RK, Speed, Initiative, Prof-Bonus
-  → in `LibraryEntry` (type `combat_value`, category `armorClass`/`speed`/...)
-- `DEFAULT_HP_SOURCES` — Basis HP
-  → in `LibraryEntry` (type `hp_source`)
+## Known targets
+- `characterFormDefaults.ts`: `DEFAULT_COMBAT_VALUE_SOURCES` (base AC, speed, initiative, proficiency bonus) -> library `combat_value`; `DEFAULT_HP_SOURCES` -> library `hp_source`.
+- `src/lib/defaults/notesCategories.ts`: default note categories belong in a gitignored local config (`src/config/notesCategories.local.ts` + `.local.example.ts`), backed by a `NoteCategory` table.
+- Remaining JSON columns on `Race`, `Background`, `CharacterClassLevel`, `AlternateForm`, `Companion`, `Equipment`, `InventoryItem` move to relational tables step by step (cleanup phase). Only the step named in the prompt, one table or field at a time.
 
-## `src/lib/defaults/*.ts`
+## Seed sources
+- `src/lib/defaults/*.ts` are seed sources. Runtime code reads them through `useLibrary`.
+- Known exception: `notesCategories.ts` is imported at runtime (`initializeNotesCategories`). Don't add further runtime imports from `defaults/`.
 
-- Alle Dateien in `src/lib/defaults/` sind **Seeds-Quellen**, keine
-  Runtime-Imports. Wenn ein Editor etwas davon braucht, lädt er es über
-  `useLibrary`. Ausnahme: reine Konstanten ohne Editierbedarf.
-
-## Icon-Listen in Editoren
-
-- `AlternateFormsEditor.tsx`: `ICON_SUGGESTIONS`
-- `CompanionsEditor.tsx`: `ICON_SUGGESTIONS`
-- `ResourceEditor.tsx`: `ICON_SUGGESTIONS`
-
-→ Diese dürfen hardcoded bleiben (rein UI, kein Mehrwert in DB).
-
-## `src/types/exhaustion.ts`
-
-- `EXHAUSTION_LEVELS` — bleibt hardcoded (Regelwerk-Referenz, unveränderlich).
-
-## `src/types/classFeatures.ts`
-
-- `CLASS_FEATURE_SOURCES`, `CLASS_FEATURE_TYPES`, `CLASS_FEATURE_KINDS`,
-  `CLASS_FEATURE_RECHARGE` — bleiben hardcoded (UI-Enums, keine User-Daten).
-
-## Regel für Refactor
-
-Wenn du eine hardcoded Liste findest:
-1. Wird sie im UI **angezeigt und vom User gewählt**? → Library
-2. Ist sie ein **festes Enum** (z. B. `ActionType`)? → bleibt Code
-3. Ist sie **Fachwissen** (z. B. Exhaustion-Level)? → bleibt Code
+## When doing a JSON -> relational step
+- New table with `onDelete: Cascade` to its parent, `@@index` on the parent FK, `order` column where order matters.
+- Migration via `migrate dev`. Backfill existing rows in the migration or seed.
+- The API boundary keeps returning the old shape (e.g. `string[]`) unless the prompt says otherwise. Update GET, POST and PUT handlers together, plus the DELETE cascade check.
+- Remove the old column only in its own, explicitly requested step.

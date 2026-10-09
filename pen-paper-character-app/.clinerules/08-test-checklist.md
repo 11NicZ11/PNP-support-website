@@ -1,126 +1,76 @@
-# Test-Checkliste — vor jedem „Fertig"
+# 08-test-checklist.md: Checklist before reporting "done"
 
-Bevor du einen Task als abgeschlossen meldest, gehst du diese Liste
-durch. Was nicht zutrifft, überspringst du. Was zutrifft und **nicht**
-passt, behebst du **bevor** du meldest.
+Go through it. Skip what doesn't apply. Fix what applies and fails before you report.
 
-## 1. Build & Types
+## 1. Build
+- [ ] `npx tsc --noEmit` has no errors.
+- [ ] `npx eslint .` has no new warnings compared to the baseline you recorded.
+- [ ] `npm run build` succeeds (only when routes, types or config changed).
+- [ ] No new `any` without comment, no `@ts-ignore`, all imports resolve.
 
-- [ ] `npx tsc --noEmit` läuft ohne Fehler durch.
-- [ ] `npm run build` (oder `next build`) bricht nicht ab.
-- [ ] Keine neuen `any` ohne Kommentar.
-- [ ] Keine neuen `// @ts-ignore` / `// @ts-expect-error`.
-- [ ] Alle neuen Imports lösen auf.
+## 2. API routes
+- [ ] `params` typed as `Promise<...>` and awaited.
+- [ ] Every child query scoped by `characterId`; `updateMany`/`deleteMany` followed by `findFirst`.
+- [ ] Status codes correct (201 / 400 / 403 / 404 / 409 / 500), `try/catch` with `handleApiError`.
+- [ ] Validation uses `=== undefined` / `typeof` where `''` or `0` is valid.
+- [ ] PUT scalars pass `undefined` through; no `|| ''` or `|| 0` on optional values.
+- [ ] JSON fields via `asJsonArray` / `parseJsonArray` helpers.
+- [ ] Long transactions have `{ timeout: 20000 }`.
 
-## 2. API-Routen (falls neue/geänderte Route)
+## 3. Client calls
+- [ ] Every `fetch` checks `res.ok`; failures reach `setError` (or a rollback).
+- [ ] No `try/catch` that only does `console.error`.
+- [ ] No `window.location.reload()`.
 
-- [ ] `params` ist als `Promise<{...}>` getypt und wird `await`ed.
-- [ ] Jede Query filtert nach `characterId` (Ownership).
-- [ ] Bei `updateMany`/`deleteMany` folgt ein `findFirst`-Check.
-- [ ] HTTP-Status korrekt: 201/400/403/404/500.
-- [ ] `try/catch` mit `handleApiError`.
-- [ ] JSON-Felder mit `asJsonArray`/`parseJsonArray`.
+## 4. Library and FK (if touched)
+- [ ] FK is `libraryEntryId String?` with `onDelete: SetNull`; Character relations `Cascade`.
+- [ ] `libraryEntryId` set on creation from a template and mapped in POST **and** PUT.
+- [ ] Snapshot fields filled.
+- [ ] Rename of an entry with FK shows the dialog; "Global" disabled for `seedKind='system'`.
+- [ ] Seeds use `upsert`, `isSeed: true`, `seedKind` set.
+- [ ] New type added to `TYPE_TABS` and `TYPE_LABELS`; editor uses `useLibrary`.
 
-## 3. Library-Integration
+## 5. State and flows
+- [ ] New state lives in `useCharacterState`; no `useEffect` that derives state.
+- [ ] Sync effects reset when the source is removed, use stable dependencies, and cause no loop in the console.
+- [ ] `isNew`: no request to `/api/characters/new/...`; one POST with the complete payload.
+- [ ] Existing character: partial PUT sends only changed fields; HP/rest/exhaustion actions don't wipe attributes, skills or notes.
+- [ ] Rebuilt collections (see `03-state-and-sync.md`) are not sent unnecessarily and their IDs are not stored elsewhere.
 
-- [ ] Neuer Typ taucht in `TYPE_TABS` (`LibraryPage.tsx`) auf.
-- [ ] `TYPE_LABELS` (`LibraryEntryCard.tsx`) kennt den neuen Typ.
-- [ ] Seed nutzt `upsert`.
-- [ ] `isSeed: true` gesetzt.
-- [ ] Editor lädt über `useLibrary({ type, category })`.
+## 6. UI
+- [ ] Every `<button>` has `type`; no nested `<form>`.
+- [ ] German UI texts, existing color classes, dark theme.
+- [ ] Modals follow the pattern; `key={item.id}`.
 
-## 4. Library-Reference (neu!)
+## 7. Prisma
+- [ ] New fields have `@default`. Migration created with `migrate dev --name`, not `db push`.
+- [ ] No new tables or JSON columns unless the task asked for it.
 
-- [ ] Wenn FK nötig: `libraryEntryId String?` im Schema.
-- [ ] FK hat `onDelete: SetNull`.
-- [ ] Beim Erstellen wird `libraryEntryId` aus Library-Template gesetzt.
-- [ ] Beim Umbenennen mit FK: Rückfrage-Dialog erscheint.
-- [ ] Bei `isSeed: true`: "Global"-Option deaktiviert.
-- [ ] `createWithMode` wird in `useLibrary` bereitgestellt.
-- [ ] `POST /api/library` akzeptiert `mode`-Parameter.
-- [ ] Response enthält `status`-Feld.
-- [ ] Snapshot-Felder werden mit-gefüllt.
+## 8. Anti-regression
+- [ ] No export, type or endpoint renamed or removed.
+- [ ] No unrelated file touched. No new npm packages.
 
-## 5. „Neuer Charakter"-Flow
+## 9. Manual smoke test (list what you could NOT run)
+1. Create a character, save, reload: data intact.
+2. Edit it, save again: skills, notes and HP unchanged.
+3. Click a dice button inside a tab: no network request to `PUT /api/characters`.
+4. Add an action without a description to a new character, save: it persists.
+5. Short rest / long rest: HP and resources update, nothing else changes.
 
-- [ ] Kein `fetch` an `/api/characters/new/...`.
-- [ ] Kind-Daten bleiben lokal im State.
-- [ ] `libraryEntryId` in jedem Kind-Eintrag gesetzt (falls Template).
-- [ ] Ein `POST /api/characters` mit komplettem Payload.
-
-## 6. „Bestehender Charakter"-Flow
-
-- [ ] `PUT /api/characters/[id]` mit nur geänderten Feldern.
-- [ ] Health-Bar-Aktion löscht keine Attribute/Skills.
-- [ ] Rest-Aktion aktualisiert HP, Ressourcen, Slots, HitDice.
-
-## 7. Auto-Sync-Effekte
-
-- [ ] Rasse-Fertigkeit → Skill `isProficient: true`.
-- [ ] Entfernen der Quelle → Sync setzt zurück.
-- [ ] Rassen-Bonus-AC → `combatValueSources`.
-- [ ] Kein Sync-Loop in der Console.
-
-## 8. Library-Page (`/library`)
-
-- [ ] Alle Tabs funktionieren.
-- [ ] Suche filtert nach Name + Beschreibung.
-- [ ] `isSeed: true`: kein Edit/Delete.
-- [ ] `isSeed: false`: Edit/Delete funktioniert.
-
-## 9. UI-Patterns
-
-- [ ] Bestehende Farbklassen.
-- [ ] Deutsche UI-Texte.
-- [ ] Dark-Theme.
-- [ ] Modals: `fixed inset-0 bg-black/70 flex items-center justify-center z-50`.
-- [ ] `key={item.id}`, nicht `key={index}`.
-
-## 10. State-Hooks
-
-- [ ] Neuer State in `useCharacterState`.
-- [ ] Neuer Effekt in `useCharacterSyncs` / `useCharacterDataLoader`.
-- [ ] Dependency-Listen mit stabilen Werten.
-- [ ] Kein `useEffect` zum Ableiten von State.
-
-## 11. Prisma-Schema
-
-- [ ] Neue Felder mit `@default(...)`.
-- [ ] Neue FK zu Character: `onDelete: Cascade`.
-- [ ] FK zu Library: `onDelete: SetNull` (nicht Cascade).
-- [ ] Keine neuen Tabellen ohne Not.
-
-## 12. Seeds
-
-- [ ] `prisma/seed.ts` idempotent.
-- [ ] Neue Quellen in `src/lib/defaults/*.ts`.
-- [ ] Nur 🌱/✅-Logs.
-
-## 13. Anti-Regression
-
-- [ ] Kein Type umbenannt.
-- [ ] Kein Export entfernt.
-- [ ] Kein Endpunkt gelöscht.
-- [ ] Keine unrelated Datei aufgeräumt.
-- [ ] Keine neuen npm-Pakete.
-- [ ] Kein `prisma migrate reset`.
-
-## 14. Selbst-Reflexion
-
-1. Was genau habe ich geändert? (Dateien auflisten)
-2. Was könnte kaputtgehen?
-3. Alle zutreffenden Punkte oben geprüft?
-4. Unsicher → gefragt oder geraten?
-
-## 15. Melde-Format
-
+## 10. Report format
 ```
-## Zusammenfassung
+## Summary
+Changed:
+- <file>: <what>
 
-Geändert:
-- <Datei>: <was>
+Checked:
+- ✅ tsc / eslint / build (counts vs. baseline)
+- ✅ <flow tested>
+- ⚠️ <not tested and why>
 
-Geprüft:
-- ✅ TypeScript-Build
-- ✅ Neuer-Charakter-Flow
-- ⚠️ <was nicht getestet>
+Risks:
+- <what could break>
+
+Out-of-scope findings:
+- <file:line>: <one sentence>
+```

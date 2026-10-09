@@ -1,106 +1,50 @@
-# Rezept: Neuen Library-Typ hinzufügen
+# 05-new-feature-recipe.md: add a new library type
 
-Wenn du einen neuen Bibliothek-Typ einführst (z. B. `race`), mach exakt das:
+Example: `race`. Follow the steps in order. Skip a step only if it clearly doesn't apply.
 
-## 1. Prüfen ob Reference-Pattern nötig ist
+## 1. Decide: FK or pure template?
+Do character instances of this type need to point back to the library?
+- Yes: add `libraryEntryId` to the character table and follow `10-library-reference.md` (FK, snapshot, rename dialog).
+- No: pure template without FK (like `weapon_property`).
 
-**Frage:** Haben Char-Instanzen dieses Typs ein `libraryEntryId`?
-- Ja → siehe `10-library-reference.md` (FK + Snapshot + Rückfrage-UI)
-- Nein → reines Template, keine FK (z. B. `weapon_property`)
-
-## 2. Seed (prisma/seed.ts)
-
-```ts
-async function seedRaces() {
-  for (const race of DND_RACES) {
-    await prisma.libraryEntry.upsert({
-      where: {
-        type_category_name: { type: 'race', category: '', name: race.name },
-      },
-      update: {
-        description: race.description,
-        data: JSON.stringify(race.data),
-        isSeed: true,
-      },
-      create: {
-        type: 'race',
-        category: '',
-        name: race.name,
-        description: race.description,
-        icon: race.icon,
-        data: JSON.stringify(race.data),
-        isSeed: true,
-        isPublic: true,
-      },
-    });
-  }
-}
-```
-
-## 3. Library-Page
-
-In `src/components/library/LibraryPage.tsx`:
-- `TYPE_TABS` ergänzen um `{ value: 'race', label: 'Rassen', icon: '🧝' }`.
-- In `src/components/library/LibraryEntryCard.tsx`:
-  `TYPE_LABELS` ergänzen.
-
-## 4. Editor-Anbindung mit FK
-
-Im zugehörigen Editor (`RaceEditor.tsx`):
-
-```ts
-const { entries: libraryRaces, create, createWithMode } = useLibrary({ type: 'race' });
-
-// Auswahl-UI: datalist oder Buttons
-<input list="race-suggestions" ... />
-<datalist id="race-suggestions">
-  {libraryRaces.map((r) => <option key={r.id} value={r.name} />)}
-</datalist>
-
-// Beim Übernehmen: libraryEntryId mitschreiben
-const applyRace = (lib: LibraryEntry) => {
-  setRaceData({
-    libraryEntryId: lib.id,
-    name: lib.name,
-    ...snapshotFields(lib.data),
-  });
-};
-
-// Beim Anlegen ohne bestehenden Eintrag:
-const persistIfNew = async (name: string) => {
-  if (!name.trim()) return;
-  const result = await create({ type: 'race', name, icon: '🧝', data: {...} });
-  // result.status ∈ 'created' | 'reused'
-  // → libraryEntryId in Char-Daten setzen
-  setRaceData(prev => ({ ...prev, libraryEntryId: result.id }));
-};
-```
-
-## 5. Bulk-Fetch im Loader
-
-In `useCharacterDataLoader.ts` bei `isNew` das Template mitladen:
-
-```ts
-const libRaces = await fetch('/api/library?type=race').then(r => r.json());
-// libraryEntryId + Snapshot beim Erstellen setzen
-```
-
-## 6. Prisma-Schema (falls FK nötig)
-
+## 2. Schema (only if FK)
 ```prisma
-model Race {
-  // ...
-  libraryEntryId String?
-  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
-  // ...
-}
+libraryEntryId String?
+library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+@@index([libraryEntryId])
+```
+Add the opposite relation list on `LibraryEntry`. Run `npx prisma migrate dev --name add_library_entry_fk_to_<table>`. Never `db push`. FK is `SetNull`, never `Cascade`.
+
+## 3. Seed (`prisma/seed.ts` + `src/lib/defaults/<type>.ts`)
+- Always `upsert` on `type_category_name`, never `create`.
+- Set `isSeed: true` and `seedKind` (`'system'` or `'template'`).
+- Seed the minimum.
+
+```ts
+await prisma.libraryEntry.upsert({
+  where: { type_category_name: { type: 'race', category: '', name } },
+  update: { description, data: JSON.stringify(data), isSeed: true, seedKind: 'template' },
+  create: { type: 'race', category: '', name, description, icon, data: JSON.stringify(data), isSeed: true, seedKind: 'template', isPublic: true },
+});
 ```
 
-**Wichtig:** `onDelete: SetNull`, nicht `Cascade`.
+## 4. Library page
+- `LibraryPage.tsx`: add the entry to `TYPE_TABS`.
+- `LibraryEntryCard.tsx`: add the entry to `TYPE_LABELS`.
 
-## 7. NIEMALS
+## 5. Editor
+- Load suggestions with `useLibrary({ type })` (once per component). Use `<input list>` + `<datalist>` or chips. No new packages.
+- When the user picks an entry: set `libraryEntryId` and fill every snapshot field.
+- When the user creates a new name: `create({ ..., mode: 'reuse' })` and store the returned `id` as `libraryEntryId`.
+- Check `src/hooks/useLibrary.ts` for the exact signatures of `create` and `createWithMode` before using them.
 
-- Neue Prisma-Tabelle für den Library-Typ selbst.
-- Neuen API-Endpunkt für Library — `/api/library` reicht.
-- Direkten `fetch` in der Komponente — `useLibrary` nutzen.
-- FK setzen ohne die Snapshot-Felder zu füllen.
+## 6. New-character flow
+- `useCharacterDataLoader` (`isNew`): fetch `/api/library?type=<type>` and set `libraryEntryId` + snapshot on the copies.
+- `POST /api/characters`: map `libraryEntryId` into the create payload. Add a server-side library fallback only if new characters should start with those entries.
+- `PUT /api/characters/[id]`: map `libraryEntryId` too (otherwise the next save sets the FK to NULL).
+
+## 7. Never
+- A Prisma table for the library type itself.
+- A new API endpoint for the library (`/api/library` is enough).
+- `fetch` to the library in a component (use `useLibrary`).
+- Setting the FK without filling the snapshot fields.

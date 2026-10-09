@@ -1,215 +1,84 @@
-# Häufige Fallen in diesem Projekt
+# 07-common-pitfalls.md
 
-## 1. `params` in Next.js 15 ist ein Promise
-
-Alle API-Routen: `params` MUSS awaited werden.
-
+## 1. `params` is a Promise
+Always `await` it (Next.js 15+, installed 16.2.3).
 ```ts
-// ❌
-export async function GET(req, { params }: { params: { id: string } }) {
-  const { id } = params; // ERROR in Next.js 15
-}
-
-// ✅
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-}
+{ params }: { params: Promise<{ id: string }> }
+const { id } = await params;
 ```
 
-## 2. Ownership-Check vergessen
-
-Jede Query auf User-Daten MUSS `characterId` filtern.
-
+## 2. Scope child queries by `characterId`
+No auth exists, but queries must never touch another character's rows.
 ```ts
-// ❌ — jeder könnte fremde Daten ändern
-await prisma.action.update({ where: { id: actionId }, data });
-
-// ✅
-await prisma.action.updateMany({
-  where: { id: actionId, characterId: id },
-  data,
-});
-```
-
-Bei `updateMany`/`deleteMany` danach prüfen:
-
-```ts
-const updated = await prisma.action.findFirst({
-  where: { id: actionId, characterId: id },
-});
+// ❌ update({ where: { id: actionId }, data })
+await prisma.action.updateMany({ where: { id: actionId, characterId: id }, data });
+const updated = await prisma.action.findFirst({ where: { id: actionId, characterId: id } });
 if (!updated) return apiError('Nicht gefunden', 404);
 ```
 
-## 3. JSON-Felder doppelt parsen
-
-DB speichert JSON als **String**. Beim Lesen parsen, beim Schreiben
-stringifizieren.
-
+## 3. `fetch` does not throw on 4xx/5xx
+A `try/catch` around `await fetch(...)` never sees a 400 or 500. Check `res.ok` and handle the failure (`setError`). This is how actions were lost silently on create, and how a failed load can fill the form with blanks.
 ```ts
-// ❌ — doppelt geparst
-const traits = JSON.parse(JSON.parse(race.traits));
-
-// ✅ — Helper nutzen
-import { parseJsonArray, asJsonArray } from '@/lib/utils';
-const traits = parseJsonArray(race.traits);
-// Schreiben:
-traits: asJsonArray(raceData.traits);
+const res = await fetch(url, init);
+if (!res.ok) { state.setError('...'); return; }
 ```
 
-`asJsonArray`/`asJsonObject` sind idempotent — sie geben Strings
-unverändert zurück. Nutze sie **immer** an API-Grenzen.
+## 4. JSON helpers, no double parsing
+DB JSON columns are strings. Read with `parseJsonArray` / `parseJsonObject` (`@/lib/utils`), write with `asJsonArray` / `asJsonObject` (`@/lib/api/helpers`). The write helpers are idempotent (strings pass through). Never `JSON.parse(JSON.parse(x))`. Cast `Prisma.JsonValue` explicitly when mapping.
 
-## 4. `.sort()` mutiert Hook-State
+## 5. PUT rebuilds collections with new IDs
+A collection present in a PUT payload is deleted and recreated, so its rows get new IDs. Never store such IDs elsewhere (`linkedResourceId`, `spellcastingClassLevelId`). Send a collection only when it really changed. Details: `03-state-and-sync.md`.
 
+## 6. Falsy values and `undefined` vs `null`
+- Prisma ignores `undefined` on update, `null` sets NULL.
+- `notes: x || ''` wipes notes on every partial PUT. `shieldBonus: n || 2` makes 0 impossible. `currentHp || totalHp` heals a 0-HP character.
 ```ts
-// ❌ — mutiert das Array aus useLibrary
-const suggestions = libraryEntries.sort((a, b) => a.name.localeCompare(b.name));
-
-// ✅
-const suggestions = [...libraryEntries].sort((a, b) =>
-  a.name.localeCompare(b.name)
-);
+const data: Prisma.EquipmentUpdateInput = {};
+if (body.description !== undefined) data.description = body.description;
 ```
 
-## 5. Sync-Loops durch falsche Dependencies
+## 7. The PUT trap: `libraryEntryId`
+A collection built without `libraryEntryId` sets the FK to NULL on the next save. Every client payload and every PUT/POST mapping must carry it.
 
-In `useCharacterSyncs` werden Effekte über Props gesteuert. Nutze
-**stabile Werte** in der Dependency-Liste:
+## 8. Untyped buttons and nested forms
+`<button>` without `type` submits `CharacterForm`'s `<form>` and fires a silent PUT. Always `type="button"`. Don't nest `<form>` elements; dialogs with their own form must render outside the main form.
 
+## 9. `isNew`
+`characterId === 'new'` or `isNew === true`: no API calls, local state only, one POST at the end.
 ```ts
-// ❌ — neue Array-Referenz bei jedem Render
-}, [raceData.skillProficiencies]);
-
-// ✅
-}, [raceData.skillProficiencies.join('|')]);
-```
-
-Oder bei Objekten: nur die Felder, die sich wirklich ändern sollen.
-
-## 6. `isNew` vergessen
-
-Bei `characterId === 'new'` oder `isNew === true`:
-
-- **KEIN** `fetch` an `/api/characters/...`
-- State nur lokal ändern
-- Am Ende `POST /api/characters` mit komplettem Payload
-
-```ts
-// ❌
-const res = await fetch(`/api/characters/${characterId}/actions`, ...);
-// characterId === 'new' → 404
-
-// ✅
-if (isNew) {
-  setActions([...actions, localAction]);
-  return;
-}
+if (isNew) { setActions([...actions, localAction]); return; }
 await fetch(...);
 ```
 
-## 7. `useLibrary` in Schleife
+## 10. Hooks
+- `useLibrary` once per component. Not in `.map()`, loops or conditions. Load, then `filter`.
+- Modals: `if (!isOpen) return null;` after all hooks.
 
-`useLibrary` ist ein React-Hook — einmal pro Komponente, nicht in
-`.map()` oder Bedingungen.
-
+## 11. `.sort()` mutates
 ```ts
-// ❌
-{types.map(t => {
-  const { entries } = useLibrary({ type: t }); // Hook-Regel verletzt!
-})}
-
-// ✅ — ein Hook, dann filtern
-const { entries } = useLibrary({ type: 'action' });
-const filtered = entries.filter(e => e.category === 'bonus_action');
+const sorted = [...entries].sort((a, b) => a.name.localeCompare(b.name));
 ```
 
-## 8. Type-Mismatch bei `Prisma.JsonValue`
+## 12. Sync effects and stable dependencies
+Use primitive keys: `join('|')` for string arrays, `map((p) => p.skillName).join('|')` for object arrays. See `03-state-and-sync.md`.
 
-Prisma gibt JSON-Felder als `Prisma.JsonValue` zurück. Beim Mapping
-immer explizit casten:
+## 13. Attribute display names are not keys
+Existing code looks up attributes by German name (`'Konstitution'`, default `'Stärke'`) and by `attr.name` in the ASI sync. Renaming an attribute silently breaks these. Don't add new name-based lookups; if unavoidable, keep them in one helper.
 
-```ts
-// ✅
-const data = parseJsonObject(entry.data) as { attributeName?: string };
-```
+## 14. Cascade
+New relation to `Character` needs `onDelete: Cascade`, otherwise `DELETE /api/characters/[id]` fails. The DELETE handler also lists some deletes manually, but not all; the schema cascade is what protects you.
 
-## 9. Cascade-Delete vergessen
+## 15. Seeds are idempotent
+`upsert` on `type_category_name`, never `create` (a second `prisma db seed` would fail).
 
-Neue Relationen zu `Character` brauchen `onDelete: Cascade`, sonst
-schlägt `DELETE /api/characters/[id]` fehl.
+## 16. Toast vs error state
+Info ("Ritual gewirkt", "Level-Up") goes to a toast. Failures ("Speichern fehlgeschlagen") go to `setError(...)`, the form error state.
 
-```prisma
-character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-```
+## 17. No Prisma in client code
+`'use client'` files never import `@/lib/prisma`.
 
-## 10. Seed-Idempotenz
+## 18. React keys
+Stable `item.id`, not the index, in editable lists.
 
-Jeder Seed nutzt `upsert`, NIE `create`.
-
-```ts
-// ❌ — schlägt bei zweitem `prisma db seed` fehl
-await prisma.libraryEntry.create({ data: { /* ... */ } });
-
-// ✅
-await prisma.libraryEntry.upsert({
-  where: { type_category_name: { type, category, name } },
-  update: { description, data, isSeed: true },
-  create: {
-    type,
-    category,
-    name,
-    description,
-    data,
-    isSeed: true,
-    isPublic: true,
-  },
-});
-```
-
-## 11. `DELETE /api/characters/[id]` — Reihenfolge
-
-Die DELETE-Route löscht Collections **manuell** vor dem Character.
-Neue Collections MÜSSEN dort ergänzt werden.
-
-Prüfe `src/app/api/characters/[id]/route.ts` → `DELETE`-Handler.
-
-## 12. Toast vs. Error-State
-
-- **User-Info** ("Ritual gewirkt", "Level-Up") → Toast.
-- **Fehler** ("Speichern fehlgeschlagen") → `setError(...)` im State,
-  NICHT Toast. Der Error-State ist für Form-Fehler reserviert.
-
-## 13. Keine direkte DB-Query in Client-Code
-
-Client-Komponenten (`'use client'`) dürfen `@/lib/prisma` **NICHT**
-importieren. Nur API-Routen (Server-Code) nutzen Prisma.
-
-## 14. `undefined` vs `null` bei Update
-
-Prisma ignoriert `undefined` beim Update, `null` setzt das Feld auf
-NULL. Bei partiellen Updates also genau hinschauen.
-
-```ts
-// ❌ — setzt description auf NULL, wenn body.description fehlt
-await prisma.equipment.update({ data: { description: body.description } });
-
-// ✅ — behält alten Wert, wenn Feld nicht mitgeschickt
-const data: any = {};
-if (body.description !== undefined) data.description = body.description;
-await prisma.equipment.update({ data });
-```
-
-## 15. React-Key mit `index`
-
-In Listen mit editierbaren Items: **stabile ID als Key**, nicht Index.
-
-```tsx
-// ❌ — nach Löschen eines Items springt State
-{items.map((item, i) => <Row key={i} item={item} />)}
-
-// ✅
-{items.map(item => <Row key={item.id} item={item} />)}
-```
+## 19. Temp IDs
+Locally created rows have temp IDs (`temp-...`, `skill-<ts>`). Never send them to the server as real IDs. Server routes treat `temp-` IDs as "create".

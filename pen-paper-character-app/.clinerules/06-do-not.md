@@ -1,109 +1,37 @@
-# ❌ VERBOTEN
+# 06-do-not.md
 
-## Keine neuen Pakete
+## Scope
+- Do only what the current prompt authorizes. Report anything else as a one-liner (`file:line` + sentence), never fix it on the side.
+- One task = one logical change. If it's too big, propose a split and wait for confirmation.
+- Touch only the files the task needs (plus direct imports). No cleanup, reformatting or renaming in unrelated files.
+- Don't rename or remove existing exports, types or endpoints.
+- Unclear: ask. Don't guess.
 
-- **KEINE** `npm install` / `pnpm add` / `yarn add`.
-- **KEIN** `package.json` editieren ohne explizite Anweisung.
-- Wenn du eine Lib brauchst: **frag nach** oder **bau es selbst** mit
-  Bordmitteln (`fetch`, `Intl`, `Date`, `Math`, `crypto.randomUUID`).
+## Packages and tooling
+- No `npm install` / `pnpm add` / `yarn add`. Don't edit `package.json` unless told to. Available: Next.js, React, Prisma, Tailwind, TypeScript.
+- Need a library? Ask, or build it with built-ins (`fetch`, `Intl`, `Date`, `Math`, `crypto.randomUUID`).
+- Schema changes only via `npx prisma migrate dev --name <name>`.
+- Never `prisma db push`. Never `prisma migrate reset` without explicit permission.
+- No new tables unless the approved task says so. Never add JSON columns.
 
-Erlaubt sind nur bereits installierte Pakete (siehe `package.json`):
-Next.js, React, Prisma, Tailwind, TypeScript.
+## Code
+- No silent failures. `fetch` doesn't throw on 4xx/5xx: check `res.ok`. Every `catch` either calls `setError(...)` or rethrows. `console.error` alone is not handling.
+- No `window.location.reload()` after API calls. Update state instead. (Existing exception: `InventoryContainer.tsx handleMoveItem`, remove only in its own task.)
+- No `fetch('/api/characters/new/...')`. Branch on `isNew`.
+- No `any` without a comment. No `@ts-ignore`.
+- No duplicated types. Import from `src/types/`.
+- No invented APIs. Before calling a route, hook or type: confirm it exists and check its path and signature.
+- No untyped `<button>` and no nested `<form>` (see `01-code-style.md`).
+- No `x || ''` / `x || 0` where `''` or `0` is a valid value.
+- No translating UI texts. German UI, emojis stay.
 
-## Keine DB-Migration ohne Anweisung
+## Library
+- Never rename or modify a library entry from a character edit without the rename dialog and the user choosing "Global".
+- Never call `PUT /api/library/[entryId]` on `seedKind='system'` entries (backend returns 403).
+- Never `libraryEntryId` with `onDelete: Cascade`. Always `SetNull`.
+- Never delete library entries when deleting a character.
+- Never set the FK without filling the snapshot fields.
 
-- Neue Felder in `schema.prisma` erlaubt (mit `@default`).
-- **KEINE** neuen Tabellen, außer die Aufgabe verlangt es explizit.
-- **KEINE** `prisma migrate reset` — nutze `prisma db push` oder
-  `prisma migrate dev --name <beschreibung>`.
-
-## Keine Refactors "nebenbei"
-
-- Wenn du Datei X anpasst, fasse nur X an (und direkte Imports).
-- Keine "Aufräum-Aktionen" in unrelated Dateien.
-- Keine Umbenennung bestehender Exports/Typen.
-- Keine Reformatierung des gesamten Files, wenn nur 3 Zeilen geändert
-  werden sollen.
-
-## Kein Big-Bang
-
-- Eine Aufgabe = ein logischer Change. Nicht 5 Features auf einmal.
-- Bei Unklarheit: **frag**, statt zu raten.
-- Wenn eine Aufgabe zu groß ist: **schlage eine Aufteilung vor** und
-  warte auf Bestätigung.
-
-## Keine UI-Sprachwechsel
-
-- Deutsche UI-Texte. Keine Übersetzung ins Englische.
-- Emojis in Buttons/Labels beibehalten.
-
-## Kein `window.location.reload()`
-
-- Nach API-Calls State updaten, nicht die Seite neu laden.
-- Bestehende Ausnahme: `InventoryContainer.tsx handleMoveItem` — darf
-  gerne in einem separaten Task entfernt werden.
-
-## Keine doppelten Typen
-
-- Wenn ein Typ in `src/types/` existiert, importiere ihn.
-- Keine `interface Action { ... }` in Komponenten-Dateien.
-
-## Kein `any` ohne Kommentar
-
-```ts
-// ❌
-function parse(data: any) { /* ... */ }
-
-// ✅
-// data kommt als JSON-String von der DB (Prisma-Feld `components`)
-function parse(data: any) { /* ... */ }
-```
-
-## Keine erfundenen APIs
-
-- Bevor du eine Route aufrufst: **prüfe, ob sie existiert**.
-- Bevor du einen Hook nutzt: **prüfe, ob er existiert**.
-- Bevor du einen Typ importierst: **prüfe den Pfad**.
-
-## Kein Silent-Fail
-
-- API-Fehler **immer** an den User kommunizieren (State `error` setzen).
-- `try/catch` ohne `setError(...)` oder `throw` ist verboten.
-
-## Keine Änderungen an `.clinerules/`
-
-- **NIE** eine Datei in `.clinerules/` ändern, anlegen oder löschen.
-- **NIE** den Inhalt kopieren, umformulieren oder „verbessern".
-- Wenn dir eine Regel unklar erscheint: **frag**, statt sie eigenmächtig
-  zu ändern.
-- Wenn du der Meinung bist, eine Regel sollte ergänzt werden: schlage es
-  im Bericht vor, aber warte auf explizite Freigabe durch den User.
-- Ausnahme: Der User sagt explizit „ändere Regel X".
-
-## Kein Library-Eintrag ohne Rückfrage global ändern
-
-- Wenn ein Char-Eintrag mit `libraryEntryId` umbenannt wird, MUSS der
-  Rückfrage-Dialog kommen (siehe `10-library-reference.md`).
-- **NIE** direkt `PUT /api/library/[entryId]` aufrufen, ohne dass der
-  User "Global" gewählt hat.
-- **NIE** `isSeed: true`-Einträge ändern (Backend blockt das bereits mit 403).
-
-## Kein `libraryEntryId` mit `onDelete: Cascade`
-
-- FK zu `LibraryEntry` IMMER mit `onDelete: SetNull`.
-- Cascade würde Char-Daten löschen, wenn ein Library-Eintrag entfernt wird.
-
-## Keine Voll-Checks in der Planungsphase
-
-- In der Planungsphase **KEIN** `npx tsc --noEmit`, **KEIN** `npx eslint .`,
-  **KEIN** `npm run build`, **KEIN** `npm run typecheck`, **KEIN** `npm run lint`.
-- Erlaubt in der Planung: Dateisuche (`rg`, `grep`), Dateien lesen,
-  `git diff`, `git status`, `git log`, Struktur-Analyse.
-- Vollständige Checks erst **nach** Codeänderungen — und dann bevorzugt
-  nur für die geänderten Dateien.
-- Denselben Check **nie mehrfach** hintereinander für unveränderten Code
-  ausführen.
-- Wenn ein Check-Ergebnis fehlt oder unklar ist: **frag den User**, statt
-  den Check zu wiederholen.
-- „Proceed While Running" **nicht** für `tsc`/`eslint`/`build` benutzen —
-  nur für echte Langläufer wie Dev-Server oder Watcher.
+## Rules and docs
+- Never create, change or delete files in `.clinerules/`, and never rephrase or "improve" them. If a rule looks wrong or missing, say so in your report and wait for approval.
+- Exception: the user explicitly says "change rule X".
