@@ -13,6 +13,7 @@ import {
   EMPTY_ATTRIBUTE_METHOD_STATE,
 } from '@/types/character';
 import { Attribute } from './AttributesEditor';
+import { rollDice } from '@/lib/dice';
 
 interface AttributeMethodSelectorProps {
   attributeMethod: AttributeMethod;
@@ -24,8 +25,6 @@ interface AttributeMethodSelectorProps {
   raceBonuses?: Record<string, number>;
   backgroundBonuses?: Record<string, number>;
 }
-
-const rollDice = (sides: number): number => Math.floor(Math.random() * sides) + 1;
 
 const roll4d6DropLowest = (): number => {
   const rolls = [rollDice(6), rollDice(6), rollDice(6), rollDice(6)];

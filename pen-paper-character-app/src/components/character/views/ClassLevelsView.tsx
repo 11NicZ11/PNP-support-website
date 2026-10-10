@@ -2,6 +2,7 @@
 'use client';
 
 import { ClassLevel } from '../editors/ClassLevelsEditor';
+import { getModifier } from '@/lib/utils';
 import {
   ClassProgression,
   CLASS_PROGRESSION_LABELS,
@@ -47,7 +48,7 @@ export function ClassLevelsView({
   hitDice = [],
   hasHitDice = true,
 }: ClassLevelsViewProps) {
-  const getConMod = () => Math.floor((constitutionValue - 10) / 2);
+  const getConMod = () => getModifier(constitutionValue);
   const getConModTotal = () => getConMod() * (characterLevel || 1);
 
   const totalHp = hpSources.reduce((sum, s) => sum + s.value, 0);

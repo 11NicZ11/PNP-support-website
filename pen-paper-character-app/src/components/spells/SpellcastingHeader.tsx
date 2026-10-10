@@ -5,6 +5,7 @@ import { Attribute } from '@/components/character/editors/AttributesEditor';
 import { ClassLevel } from '@/components/character/editors/ClassLevelsEditor';
 import { SPELLCASTING_ABILITY_LABELS, SpellcastingAbility } from '@/types/character';
 import { SpellcastingInfo } from '@/types/spells';
+import { getModifier } from '@/lib/utils';
 
 interface SpellcastingHeaderProps {
   classLevels: ClassLevel[];
@@ -41,7 +42,7 @@ export function SpellcastingHeader({
     const attrName = abilityNameMap[ability];
     const attr = attributes.find((a) => a.name === attrName);
     const value = attr?.value ?? 10;
-    return Math.floor((value - 10) / 2);
+    return getModifier(value);
   };
 
   const infos: SpellcastingInfo[] = spellcastingClasses.map((cl) => {

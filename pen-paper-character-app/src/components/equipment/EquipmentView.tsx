@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { EquipmentItem } from '@/types/equipment';
 import { InventoryContainer } from '@/types/inventory';
 import { EQUIPMENT_TYPES } from '@/lib/enums/equipmentTypes';
+import { getModifier } from '@/lib/utils';
 import { UnitSystem } from '@/types/character';
 import { EquipmentItemCard } from './EquipmentItemCard';
 import { InventoryContainerView } from './InventoryContainerView';
@@ -55,7 +56,7 @@ export function EquipmentView({
         const data = await res.json();
         const dexAttr = data.attributes?.find((a: any) => a.name === 'Geschick');
         if (dexAttr) {
-          return Math.floor((dexAttr.value - 10) / 2);
+          return getModifier(dexAttr.value);
         }
       }
       return 0;

@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getModifier } from '@/lib/utils';
 import {
   Attribute,
   AttributesEditor,
@@ -112,8 +113,6 @@ export function StatusTab({
       }
     });
   });
-
-  const getModifier = (value: number) => Math.floor((value - 10) / 2);
 
   // ============ PASSIVE STATS ============
   const getSkillTotalBonus = (skillName: string): number => {

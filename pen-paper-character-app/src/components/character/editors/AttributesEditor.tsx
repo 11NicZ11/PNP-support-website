@@ -6,6 +6,7 @@ import { RaceData } from './RaceEditor';
 import { BackgroundData } from './BackgroundEditTab';
 import { BonusTooltip } from '@/components/ui/BonusTooltip';
 import { AttributeMethod, AttributeMethodState } from '@/types/character';
+import { getModifier } from '@/lib/utils';
 import { AttributeMethodSelector } from './AttributeMethodSelector';
 
 export interface Attribute {
@@ -171,7 +172,7 @@ export function AttributesEditor({
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {sortedAttributes.map((attr) => {
-          const mod = Math.floor((attr.value - 10) / 2);
+          const mod = getModifier(attr.value);
           const bonuses = getAttributeBonuses(attr.name);
           const hasBonuses = bonuses.race > 0 || bonuses.background > 0;
 

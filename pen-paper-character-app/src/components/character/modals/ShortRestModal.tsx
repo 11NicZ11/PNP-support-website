@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { CharacterResource, CharacterHitDice } from '@/types/resources';
 import { DiceType, rollHitDieForHealing } from '@/lib/dice';
+import { getModifier } from '@/lib/utils';
 
 
 interface ShortRestModalProps {
@@ -37,7 +38,7 @@ export function ShortRestModal({
 
   if (!isOpen) return null;
 
-  const conMod = Math.floor((constitutionValue - 10) / 2);
+  const conMod = getModifier(constitutionValue);
 
   const adjustDie = (dieType: string, delta: number) => {
     setSpentDice((prev) => {

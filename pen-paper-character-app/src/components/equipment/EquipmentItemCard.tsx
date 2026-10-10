@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { EquipmentItem } from '@/types/equipment';
-import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll } from '@/lib/dice';
+import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll, parseDamageDice, isValidDiceType } from '@/lib/dice';
 import { UnitSystem } from '@/types/character';
 import { formatDistanceString, formatWeight } from '@/lib/units';
 
@@ -17,8 +17,6 @@ interface EquipmentItemCardProps {
   typeLabel: string;
   unitSystem: UnitSystem; // 🔥 NEU
 }
-
-const VALID_DICE_TYPES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
 
 export function EquipmentItemCard({
   item,
@@ -37,24 +35,6 @@ export function EquipmentItemCard({
     ? item.weaponProperties
     : [];
 
-  const parseDamageDice = (
-    damageDice: string
-  ): { count: number; dice: string; type: string }[] => {
-    if (!damageDice) return [];
-    const parts = damageDice.split(',').map((p) => p.trim());
-    const result: { count: number; dice: string; type: string }[] = [];
-    for (const part of parts) {
-      const match = part.match(/(\d+)d(\d+)\s*(.*)/);
-      if (match) {
-        const count = parseInt(match[1]);
-        const dice = `d${match[2]}`;
-        const type = match[3] || '';
-        result.push({ count, dice, type });
-      }
-    }
-    return result;
-  };
-
   const handleWeaponDamage = () => {
     if (!item.damageDice) return;
     setIsRolling(true);
@@ -67,7 +47,7 @@ export function EquipmentItemCard({
         modifier: item.attackBonus || 0,
       }));
       const validRolls = damageRolls.filter(
-        (d) => VALID_DICE_TYPES.includes(d.diceType) && diceInfo[d.diceType as keyof typeof diceInfo]
+        (d) => isValidDiceType(d.diceType) && diceInfo[d.diceType as keyof typeof diceInfo]
       );
       if (validRolls.length === 0) {
         setIsRolling(false);

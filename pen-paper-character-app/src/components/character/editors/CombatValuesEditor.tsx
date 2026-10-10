@@ -3,6 +3,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getModifier } from '@/lib/utils';
 
 export interface CombatValueSource {
   id: string;
@@ -24,8 +25,6 @@ const sourceTypes = [
   { key: 'initiativeBonus', label: 'Initiative', icon: '⚡' },
   { key: 'proficiencyBonus', label: 'Übungsbonus', icon: '📚' },
 ];
-
-const getModifier = (value: number) => Math.floor((value - 10) / 2);
 
 export function CombatValuesEditor({ sources, onUpdate, attributes }: CombatValuesEditorProps) {
   const [activeType, setActiveType] = useState<string>('armorClass');

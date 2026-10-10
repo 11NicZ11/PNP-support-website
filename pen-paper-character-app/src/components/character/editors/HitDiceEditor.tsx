@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { CharacterHitDice } from '@/types/resources';
+import { CharacterHitDice, HIT_DIE_TYPES } from '@/types/resources';
 import { ClassLevel } from './ClassLevelsEditor';
 import { DiceType,rollHitDieForHealing } from '@/lib/dice';
 import { HitDiceMode } from '@/types/character';
@@ -21,8 +21,6 @@ interface HitDiceEditorProps {
   hitDiceMode: HitDiceMode;
   onHitDiceModeChange: (mode: HitDiceMode) => void;
 }
-
-const VALID_DICE: DiceType[] = ['d6', 'd8', 'd10', 'd12'];
 
 export function HitDiceEditor({
   hitDice,
@@ -274,7 +272,7 @@ export function HitDiceEditor({
                     disabled={!isManual}
                     className="px-2 py-1 bg-gray-700 rounded text-sm disabled:opacity-60"
                   >
-                    {VALID_DICE.map((d) => (
+                    {HIT_DIE_TYPES.map((d) => (
                       <option key={d} value={d}>
                         {d.toUpperCase()}
                       </option>

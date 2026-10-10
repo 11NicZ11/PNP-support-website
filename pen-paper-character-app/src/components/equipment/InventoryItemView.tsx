@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { InventoryItem } from '@/types/inventory';
 import { EquipmentItem } from '@/types/equipment';
 import { EQUIPMENT_TYPES } from '@/lib/enums/equipmentTypes';
-import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll } from '@/lib/dice';
+import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll, parseDamageDice, isValidDiceType } from '@/lib/dice';
 import { UnitSystem } from '@/types/character';
 import { formatDistanceString, formatWeight } from '@/lib/units';
 
@@ -16,8 +16,6 @@ interface InventoryItemViewProps {
   onEquipmentUpdate: (updated: EquipmentItem[]) => void;
   unitSystem: UnitSystem; // 🔥 NEU
 }
-
-const VALID_DICE_TYPES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
 
 export function InventoryItemView({
   item,
@@ -44,24 +42,6 @@ export function InventoryItemView({
     return EQUIPMENT_TYPES[linkedEquipment.type]?.label || item.type || 'Item';
   };
 
-  const parseDamageDice = (
-    damageDice: string
-  ): { count: number; dice: string; type: string }[] => {
-    if (!damageDice) return [];
-    const parts = damageDice.split(',').map((p) => p.trim());
-    const result: { count: number; dice: string; type: string }[] = [];
-    for (const part of parts) {
-      const match = part.match(/(\d+)d(\d+)\s*(.*)/);
-      if (match) {
-        const count = parseInt(match[1]);
-        const dice = `d${match[2]}`;
-        const type = match[3] || '';
-        result.push({ count, dice, type });
-      }
-    }
-    return result;
-  };
-
   const handleWeaponDamage = () => {
     if (!item.damageDice) return;
     setIsRolling(true);
@@ -75,7 +55,7 @@ export function InventoryItemView({
       }));
       const validRolls = damageRolls.filter(
         (d) =>
-          VALID_DICE_TYPES.includes(d.diceType) &&
+          isValidDiceType(d.diceType) &&
           diceInfo[d.diceType as keyof typeof diceInfo]
       );
       if (validRolls.length === 0) {

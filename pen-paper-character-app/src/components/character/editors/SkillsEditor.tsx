@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Skill } from '@/types/skills';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useToast } from '@/contexts/ToastContext';
+import { getModifier } from '@/lib/utils';
 import {
   RenameLibraryDialog,
   RenameChoice,
@@ -65,7 +66,6 @@ export function SkillsEditor({
       type: 'skill',
     });
 
-  const getModifier = (value: number) => Math.floor((value - 10) / 2);
   const getAttributeValue = (attributeName: string) =>
     attributes.find((a) => a.name === attributeName)?.value ?? 10;
 

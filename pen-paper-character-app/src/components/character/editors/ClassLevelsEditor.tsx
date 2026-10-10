@@ -21,6 +21,7 @@ import {
   CLASS_FEATURE_KINDS,
 } from '@/types/classFeatures';
 import { CharacterResource, CharacterHitDice } from '@/types/resources';
+import { getModifier } from '@/lib/utils';
 import { AlternateForm } from '@/types/forms';
 import { Companion } from '@/types/companions';
 import { ClassFeatureEditor } from './ClassFeatureEditor';
@@ -188,7 +189,7 @@ export function ClassLevelsEditor({
     className: string;
   }>({ isOpen: false, className: '' });
 
-  const getConModValue = () => Math.floor((constitutionValue - 10) / 2);
+  const getConModValue = () => getModifier(constitutionValue);
 
   const getTrackSum = (track: 0 | 1) =>
     classLevels

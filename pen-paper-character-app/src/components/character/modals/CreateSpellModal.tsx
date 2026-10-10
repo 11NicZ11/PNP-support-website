@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { diceInfo } from '@/lib/dice';
 import {
   Spell,
   SpellComponent,
@@ -32,14 +33,11 @@ interface CreateSpellModalProps {
   unitSystem: UnitSystem;
 }
 
-const DICE_TYPES = [
-  { value: 'd4', label: 'W4' },
-  { value: 'd6', label: 'W6' },
-  { value: 'd8', label: 'W8' },
-  { value: 'd10', label: 'W10' },
-  { value: 'd12', label: 'W12' },
-  { value: 'd20', label: 'W20' },
-];
+// 6 Wuerfel wie bisher — d100 wird bewusst NICHT angeboten (D3a);
+// Labels weiterhin aus diceInfo abgeleitet.
+const DICE_TYPES = (['d4', 'd6', 'd8', 'd10', 'd12', 'd20'] as const).map(
+  (value) => ({ value, label: diceInfo[value].name })
+);
 
 export function CreateSpellModal({
   isOpen,

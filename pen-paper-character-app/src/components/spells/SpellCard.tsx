@@ -10,7 +10,7 @@ import {
 } from '@/types/spells';
 import { UnitSystem } from '@/types/character';
 import { formatDistance } from '@/lib/units';
-import { rollWeaponDamage, WeaponDamageRoll, DiceType } from '@/lib/dice';
+import { rollWeaponDamage, parseDamageExpression, isValidDiceType } from '@/lib/dice';
 
 interface SpellCardProps {
   spell: Spell;
@@ -22,31 +22,6 @@ interface SpellCardProps {
   isLoading?: boolean;
   editable?: boolean;
   characterName?: string;
-}
-
-const VALID_DICE_TYPES: DiceType[] = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
-
-function parseDamageExpression(expr: string): WeaponDamageRoll[] {
-  if (!expr) return [];
-  const parts = expr.split(',').map((p) => p.trim());
-  const result: WeaponDamageRoll[] = [];
-  for (const part of parts) {
-    const match = part.match(/(\d+)\s*[dDwW]\s*(\d+)\s*(.*)/i);
-    if (!match) continue;
-    const count = parseInt(match[1]);
-    const sides = parseInt(match[2]);
-    const diceType = `d${sides}` as DiceType;
-    const extra = match[3]?.trim() || '';
-    if (!VALID_DICE_TYPES.includes(diceType)) continue;
-    let modifier: number | undefined;
-    let damageType: string | undefined = undefined;
-    const modMatch = extra.match(/^([+-]\d+)/);
-    if (modMatch) modifier = parseInt(modMatch[1]);
-    const textAfterMod = extra.replace(/^[+-]\d+\s*/, '').trim();
-    if (textAfterMod) damageType = textAfterMod;
-    result.push({ diceType, count, modifier, damageType });
-  }
-  return result;
 }
 
 export function SpellCard({
@@ -107,7 +82,9 @@ export function SpellCard({
   const handleDamageRoll = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!spell.damageDice) return;
-    const rolls = parseDamageExpression(spell.damageDice);
+    const rolls = parseDamageExpression(spell.damageDice).filter((r) =>
+      isValidDiceType(r.diceType)
+    );
     if (rolls.length === 0) return;
     const rollsWithType = rolls.map((r) => ({
       ...r,
@@ -137,7 +114,9 @@ export function SpellCard({
 
   const damageButtonLabel = (() => {
     if (!spell.damageDice) return '';
-    const rolls = parseDamageExpression(spell.damageDice);
+    const rolls = parseDamageExpression(spell.damageDice).filter((r) =>
+      isValidDiceType(r.diceType)
+    );
     if (rolls.length === 0) return spell.damageDice;
     if (rolls.length === 1) {
       const r = rolls[0];

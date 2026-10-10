@@ -4,7 +4,8 @@
 import { Companion } from '@/types/companions';
 import { UnitSystem } from '@/types/character';
 import { DiceButton } from '@/components/dice/DiceButton';
-import { rollWeaponDamage, WeaponDamageRoll, DiceType } from '@/lib/dice';
+import { rollWeaponDamage, parseDamageExpression } from '@/lib/dice';
+import { getModifierText } from '@/lib/utils';
 
 interface CompanionStatBlockProps {
   companion: Companion;
@@ -22,37 +23,6 @@ const SIZE_LABELS: Record<string, string> = {
   huge: 'Riesig',
   gargantuan: 'Gigantisch',
 };
-
-function getModifier(value: number): number {
-  return Math.floor((value - 10) / 2);
-}
-
-function getModifierText(value: number): string {
-  const mod = getModifier(value);
-  return mod >= 0 ? `+${mod}` : `${mod}`;
-}
-
-function parseDamageExpression(expr: string): WeaponDamageRoll[] {
-  if (!expr) return [];
-  const parts = expr.split(',').map((p) => p.trim());
-  const result: WeaponDamageRoll[] = [];
-  for (const part of parts) {
-    const match = part.match(/(\d+)\s*[dDwW]\s*(\d+)\s*(.*)/i);
-    if (!match) continue;
-    const count = parseInt(match[1]);
-    const sides = parseInt(match[2]);
-    const diceType = `d${sides}` as DiceType;
-    const extra = match[3]?.trim() || '';
-    let modifier: number | undefined;
-    let damageType: string | undefined = undefined;
-    const modMatch = extra.match(/^([+-]\d+)/);
-    if (modMatch) modifier = parseInt(modMatch[1]);
-    const textAfterMod = extra.replace(/^[+-]\d+\s*/, '').trim();
-    if (textAfterMod) damageType = textAfterMod;
-    result.push({ diceType, count, modifier, damageType });
-  }
-  return result;
-}
 
 export function CompanionStatBlock({
   companion,
