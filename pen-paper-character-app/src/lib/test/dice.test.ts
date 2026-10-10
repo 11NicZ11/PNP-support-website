@@ -12,6 +12,11 @@ import {
   rollHitDieForHealing,
   diceInfo,
   setGlobalLogCallback,
+  parseDamageExpression,
+  parseDamageDice,
+  isValidDiceType,
+  DICE_TYPES,
+  DICE_TYPE_OPTIONS,
   type DiceType,
   type RollResult,
 } from '../dice';
@@ -316,5 +321,88 @@ describe('savingThrow - branch coverage', () => {
     setGlobalLogCallback(spy);
     await savingThrow('Konstitution', 2, { silent: true });
     expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('parseDamageExpression', () => {
+  it('parses comma-separated entries with damage types', () => {
+    const rolls = parseDamageExpression('2d6 Feuer, 1d8 Hieb');
+    expect(rolls).toHaveLength(2);
+    expect(rolls[0]).toEqual({
+      diceType: 'd6',
+      count: 2,
+      modifier: undefined,
+      damageType: 'Feuer',
+    });
+    expect(rolls[1]).toEqual({
+      diceType: 'd8',
+      count: 1,
+      modifier: undefined,
+      damageType: 'Hieb',
+    });
+  });
+
+  it('returns [] for empty input', () => {
+    expect(parseDamageExpression('')).toEqual([]);
+  });
+
+  it('returns [] for unparseable input', () => {
+    expect(parseDamageExpression('garbage')).toEqual([]);
+  });
+
+  it('accepts German W notation and spaces (weapon-parser would not)', () => {
+    expect(parseDamageExpression('2W6')).toHaveLength(1);
+    expect(parseDamageExpression('2W6')[0].diceType).toBe('d6');
+    expect(parseDamageExpression('1d 8')).toHaveLength(1);
+  });
+
+  it('splits a trailing +N into modifier, rest becomes damageType', () => {
+    const [roll] = parseDamageExpression('1d8+1 Feuer');
+    expect(roll.modifier).toBe(1);
+    expect(roll.damageType).toBe('Feuer');
+  });
+});
+
+describe('parseDamageDice (weapons, strict semantics)', () => {
+  it('parses the basic lowercase-d format', () => {
+    expect(parseDamageDice('2d6 Feuer')).toEqual([
+      { count: 2, dice: 'd6', type: 'Feuer' },
+    ]);
+  });
+
+  it('keeps +N in the type text (no modifier split)', () => {
+    expect(parseDamageDice('1d8+1')).toEqual([
+      { count: 1, dice: 'd8', type: '+1' },
+    ]);
+  });
+
+  it('does not match German W notation (historical behavior)', () => {
+    expect(parseDamageDice('2W6')).toEqual([]);
+  });
+
+  it('returns [] for empty input', () => {
+    expect(parseDamageDice('')).toEqual([]);
+  });
+});
+
+describe('isValidDiceType / DICE_TYPES / DICE_TYPE_OPTIONS', () => {
+  it('accepts every declared dice type', () => {
+    expect(isValidDiceType('d20')).toBe(true);
+    for (const t of DICE_TYPES) expect(isValidDiceType(t)).toBe(true);
+  });
+
+  it('rejects undeclared dice types', () => {
+    expect(isValidDiceType('d7')).toBe(false);
+    expect(isValidDiceType('')).toBe(false);
+  });
+
+  it('DICE_TYPE_OPTIONS.length matches DICE_TYPES.length', () => {
+    expect(DICE_TYPE_OPTIONS).toHaveLength(DICE_TYPES.length);
+  });
+
+  it('DICE_TYPE_OPTIONS labels come from diceInfo', () => {
+    for (const opt of DICE_TYPE_OPTIONS) {
+      expect(opt.label).toBe(diceInfo[opt.value].name);
+    }
   });
 });

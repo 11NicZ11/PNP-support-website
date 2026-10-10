@@ -2,7 +2,12 @@
 'use client';
 
 // ==================== TYPES ====================
-export type DiceType = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20' | 'd100';
+export const DICE_TYPES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'] as const;
+export type DiceType = (typeof DICE_TYPES)[number];
+
+export function isValidDiceType(x: string): x is DiceType {
+  return (DICE_TYPES as readonly string[]).includes(x);
+}
 
 export interface DamageDetail {
   type: string;
@@ -67,15 +72,7 @@ export const rollHitDie = (
   dieType: DiceType,
   conModifier: number = 0
 ): { roll: number; total: number; conModifier: number } => {
-  const sides = {
-    d4: 4,
-    d6: 6,
-    d8: 8,
-    d10: 10,
-    d12: 12,
-    d20: 20,
-    d100: 100,
-  }[dieType];
+  const sides = diceInfo[dieType].sides;
   const roll = rollDice(sides);
   return { roll, total: Math.max(1, roll + conModifier), conModifier };
 };
@@ -92,6 +89,11 @@ export const diceInfo: Record<
   d20: { sides: 20, icon: '🎯', name: 'W20' },
   d100: { sides: 100, icon: '💯', name: 'W100' },
 };
+
+// Für UI-<select>s: [{ value, label }] aus diceInfo abgeleitet.
+export const DICE_TYPE_OPTIONS = (Object.keys(diceInfo) as DiceType[]).map(
+  (value) => ({ value, label: diceInfo[value].name })
+);
 
 // ==================== GLOBAL LOG CALLBACK ====================
 let globalLogCallback:
@@ -203,19 +205,67 @@ export function rollWeaponDamage(
   return { results, total, details, damageDetails };
 }
 
+// ==================== DAMAGE-EXPRESSION PARSING ====================
+// Zwei Parser mit absichtlich verschiedener Semantik (Sprint 1A):
+//
+// - parseDamageExpression: Begleiter, Formen, Zauber. Akzeptiert
+//   Leerzeichen und d/D/w/W ("2W6", "1d 8"), splittet angehaengtes "+N"
+//   in `modifier`, Rest (z.B. "Feuer") wird `damageType`.
+//   VALIDIERT NICHT die Wuerfel-Typen — Caller, die filtern wollen,
+//   nutzen isValidDiceType auf dem Ergebnis (z.B. SpellCard).
+//
+// - parseDamageDice: Waffen/Inventar. Nur kleines "d" ohne Leerzeichen
+//   zwischen den Zahlen, KEIN Modifier-Split: "1d8+1" bleibt als
+//   type "+1" erhalten (historisches Verhalten der Waffen-UI; der
+//   Angriffsbonus kommt weiterhin aus item.attackBonus, nicht aus
+//   dem String).
+//
+// Beide liefern [] bei leerem oder unparsebarem Input — nie ein Throw.
+export function parseDamageExpression(expr: string): WeaponDamageRoll[] {
+  if (!expr) return [];
+  const parts = expr.split(',').map((p) => p.trim());
+  const result: WeaponDamageRoll[] = [];
+  for (const part of parts) {
+    const match = part.match(/(\d+)\s*[dDwW]\s*(\d+)\s*(.*)/i);
+    if (!match) continue;
+    const count = parseInt(match[1]);
+    const sides = parseInt(match[2]);
+    const diceType = `d${sides}` as DiceType;
+    const extra = match[3]?.trim() || '';
+    let modifier: number | undefined;
+    let damageType: string | undefined = undefined;
+    const modMatch = extra.match(/^([+-]\d+)/);
+    if (modMatch) modifier = parseInt(modMatch[1]);
+    const textAfterMod = extra.replace(/^[+-]\d+\s*/, '').trim();
+    if (textAfterMod) damageType = textAfterMod;
+    result.push({ diceType, count, modifier, damageType });
+  }
+  return result;
+}
+
+export function parseDamageDice(
+  damageDice: string
+): { count: number; dice: string; type: string }[] {
+  if (!damageDice) return [];
+  const parts = damageDice.split(',').map((p) => p.trim());
+  const result: { count: number; dice: string; type: string }[] = [];
+  for (const part of parts) {
+    const match = part.match(/(\d+)d(\d+)\s*(.*)/);
+    if (match) {
+      const count = parseInt(match[1]);
+      const dice = `d${match[2]}`;
+      const type = match[3] || '';
+      result.push({ count, dice, type });
+    }
+  }
+  return result;
+}
+
 export function roll(
   diceType: DiceType,
   options: RollOptions = {}
 ): { roll: number; total: number } {
-  const sides = {
-    d4: 4,
-    d6: 6,
-    d8: 8,
-    d10: 10,
-    d12: 12,
-    d20: 20,
-    d100: 100,
-  }[diceType];
+  const sides = diceInfo[diceType].sides;
   const rollResult = rollDice(sides);
   const total = rollResult + (options.modifier || 0);
 
@@ -373,52 +423,34 @@ export function savingThrow(
     characterName?: string;
     silent?: boolean;
   } = {}
-): Promise<{ rolls: number[]; total: number; usedRoll: number }> {
-  return new Promise((resolve) => {
-    let rolls: number[];
-    let usedRoll: number;
+): { rolls: number[]; total: number; usedRoll: number } {
+  // Wuerfel-Logik kommt aus rollAbilityCheck (identische Vorteil/-
+  // Nachteil-Regeln); nur Log-Eintrag und Grundtext sind eigen.
+  const result = rollAbilityCheck(modifier, options.advantage || 'normal');
+  const { rolls, total, usedRoll } = result;
 
-    if (options.advantage === 'advantage') {
-      const roll1 = rollDice(20);
-      const roll2 = rollDice(20);
-      rolls = [roll1, roll2];
-      usedRoll = Math.max(roll1, roll2);
-    } else if (options.advantage === 'disadvantage') {
-      const roll1 = rollDice(20);
-      const roll2 = rollDice(20);
-      rolls = [roll1, roll2];
-      usedRoll = Math.min(roll1, roll2);
-    } else {
-      const roll = rollDice(20);
-      rolls = [roll];
-      usedRoll = roll;
-    }
+  if (!options.silent && globalLogCallback) {
+    const advantageText =
+      options.advantage === 'advantage'
+        ? ' (mit Vorteil)'
+        : options.advantage === 'disadvantage'
+        ? ' (mit Nachteil)'
+        : '';
 
-    const total = usedRoll + modifier;
+    addToLog({
+      dice: 'd20',
+      result: usedRoll,
+      modifier: modifier,
+      total: total,
+      reason: `${abilityName} Rettungswurf${advantageText}`,
+      sourceType: 'savingThrow',
+      characterId: options.characterId,
+      characterName: options.characterName,
+      isCrit: usedRoll === 20,
+      advantageType: options.advantage || 'normal',
+      allRolls: rolls,
+    });
+  }
 
-    if (!options.silent && globalLogCallback) {
-      const advantageText =
-        options.advantage === 'advantage'
-          ? ' (mit Vorteil)'
-          : options.advantage === 'disadvantage'
-          ? ' (mit Nachteil)'
-          : '';
-
-      addToLog({
-        dice: 'd20',
-        result: usedRoll,
-        modifier: modifier,
-        total: total,
-        reason: `${abilityName} Rettungswurf${advantageText}`,
-        sourceType: 'savingThrow',
-        characterId: options.characterId,
-        characterName: options.characterName,
-        isCrit: usedRoll === 20,
-        advantageType: options.advantage || 'normal',
-        allRolls: rolls,
-      });
-    }
-
-    resolve({ rolls, total, usedRoll });
-  });
+  return { rolls, total, usedRoll };
 }
