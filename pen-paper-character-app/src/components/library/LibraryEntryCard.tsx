@@ -3,36 +3,16 @@
 
 import { useState } from 'react';
 import { LibraryEntryFull } from '@/hooks/useLibraryAdmin';
+import {
+  LIBRARY_TYPE_LABELS,
+  LIBRARY_CATEGORY_LABELS,
+} from './libraryLabels';
 
 interface LibraryEntryCardProps {
   entry: LibraryEntryFull;
   onUpdate: (id: string, patch: Partial<LibraryEntryFull>) => Promise<any>;
   onDelete: (id: string) => Promise<any>;
 }
-
-const TYPE_LABELS: Record<string, { label: string; icon: string }> = {
-  skill: { label: 'Fertigkeit', icon: '🎯' },
-  saving_throw: { label: 'Rettungswurf', icon: '🎲' },
-  proficiency: { label: 'Übung', icon: '📖' },
-  defense: { label: 'Verteidigung', icon: '🛡️' },
-  status_effect: { label: 'Status-Effekt', icon: '✨' },
-  attribute: { label: 'Attribut', icon: '💪' },
-  action: { label: 'Aktion', icon: '⚡' },
-  weapon_property: { label: 'Waffen-Eigenschaft', icon: '⚔️' },
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  language: 'Sprache',
-  armor: 'Rüstung',
-  weapon: 'Waffe',
-  tool: 'Werkzeug',
-  damage_immunity: 'Schadensimmunität',
-  damage_resistance: 'Schadensresistenz',
-  condition_immunity: 'Zustandsimmunität',
-  action: 'Aktionen',
-  bonus_action: 'Bonusaktionen',
-  reaction: 'Reaktionen',
-};
 
 export function LibraryEntryCard({
   entry,
@@ -45,12 +25,12 @@ export function LibraryEntryCard({
   const [editIcon, setEditIcon] = useState(entry.icon);
   const [isSaving, setIsSaving] = useState(false);
 
-  const typeInfo = TYPE_LABELS[entry.type] || {
+  const typeInfo = LIBRARY_TYPE_LABELS[entry.type] || {
     label: entry.type,
     icon: '📚',
   };
   const categoryLabel = entry.category
-    ? CATEGORY_LABELS[entry.category] || entry.category
+    ? LIBRARY_CATEGORY_LABELS[entry.category] || entry.category
     : '';
 
   // Effektive Kategorie: System (unantastbar), Vorlage (editierbar, nicht

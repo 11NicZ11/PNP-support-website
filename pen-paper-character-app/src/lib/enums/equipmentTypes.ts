@@ -22,19 +22,7 @@ export const EQUIPMENT_TYPES: Record<string, { label: string; icon: string; cate
 
 export const ARMOR_TYPES = ['light', 'medium', 'heavy'];
 
-// WICHTIG: Nicht mit `SPELL_SCHOOLS` aus `src/types/spells.ts` verwechseln.
-// Diese Version ist eine reine String-Liste für die Formular-Auswahl;
-// die dortige Version ist `{ value, label, color }` mit deutschen Labels.
-export const SPELL_SCHOOLS = [
-  'abjuration',
-  'conjuration',
-  'divination',
-  'enchantment',
-  'evocation',
-  'illusion',
-  'necromancy',
-  'transmutation',
-];
+export { SPELL_SCHOOLS } from '@/lib/enums/spellSchools';
 
 export const SPELL_COMPONENTS = ['V', 'S', 'M'];
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useLibraryAdmin } from '@/hooks/useLibraryAdmin';
 import { LibraryEntryCard } from './LibraryEntryCard';
+import { LIBRARY_CATEGORY_LABELS } from './libraryLabels';
 
 const TYPE_TABS: { value: string; label: string; icon: string }[] = [
   { value: 'all', label: 'Alle', icon: '📚' },
@@ -18,19 +19,6 @@ const TYPE_TABS: { value: string; label: string; icon: string }[] = [
   { value: 'action', label: 'Aktionen', icon: '⚡' },
   { value: 'weapon_property', label: 'Waffen-Eigenschaften', icon: '⚔️' },
 ];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  language: 'Sprachen',
-  armor: 'Rüstungen',
-  weapon: 'Waffen',
-  tool: 'Werkzeuge',
-  damage_immunity: 'Schadensimmunitäten',
-  damage_resistance: 'Schadensresistenzen',
-  condition_immunity: 'Zustandsimmunitäten',
-  action: 'Aktionen',
-  bonus_action: 'Bonusaktionen',
-  reaction: 'Reaktionen',
-};
 
 function LibraryPageInner() {
   const searchParams = useSearchParams();
@@ -159,7 +147,7 @@ function LibraryPageInner() {
                   : 'bg-gray-800/50 hover:bg-gray-800 text-gray-300'
               }`}
             >
-              {CATEGORY_LABELS[cat.category] || cat.category}
+              {LIBRARY_CATEGORY_LABELS[cat.category] || cat.category}
               <span className="ml-1.5 text-xs opacity-70">({cat.count})</span>
             </button>
           ))}
@@ -171,7 +159,7 @@ function LibraryPageInner() {
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xs text-gray-400">Gefiltert nach:</span>
           <span className="px-2 py-1 bg-purple-600/30 border border-purple-500/40 rounded-full text-xs flex items-center gap-1">
-            {CATEGORY_LABELS[activeCategory] || activeCategory}
+            {LIBRARY_CATEGORY_LABELS[activeCategory] || activeCategory}
             <button type="button"
               onClick={clearCategoryFilter}
               className="text-red-400 hover:text-red-300"

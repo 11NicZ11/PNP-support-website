@@ -1,14 +1,7 @@
 // src/types/spells.ts
 
-export type SpellSchool =
-  | 'abjuration'
-  | 'conjuration'
-  | 'divination'
-  | 'enchantment'
-  | 'evocation'
-  | 'illusion'
-  | 'necromancy'
-  | 'transmutation';
+import { SPELL_SCHOOLS, type SpellSchool } from '@/lib/enums/spellSchools';
+export { SPELL_SCHOOLS, type SpellSchool };
 
 export type SpellComponent = 'V' | 'S' | 'M';
 
@@ -82,16 +75,6 @@ export interface SpellcastingInfo {
   abilityModifier: number;
 }
 
-export const SPELL_SCHOOLS: { value: SpellSchool; label: string; color: string }[] = [
-  { value: 'abjuration', label: 'Bannmagie', color: 'text-blue-400' },
-  { value: 'conjuration', label: 'Beschwörung', color: 'text-green-400' },
-  { value: 'divination', label: 'Erkenntnismagie', color: 'text-purple-400' },
-  { value: 'enchantment', label: 'Verzauberung', color: 'text-pink-400' },
-  { value: 'evocation', label: 'Hervorrufung', color: 'text-orange-400' },
-  { value: 'illusion', label: 'Illusion', color: 'text-indigo-400' },
-  { value: 'necromancy', label: 'Nekromantie', color: 'text-red-400' },
-  { value: 'transmutation', label: 'Verwandlung', color: 'text-yellow-400' },
-];
 
 export const AOE_SHAPES: { value: AoeShape; label: string; icon: string }[] = [
   { value: 'Single', label: 'Einzelziel', icon: '🎯' },

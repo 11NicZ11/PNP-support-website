@@ -56,13 +56,19 @@ describe('ACTION_TYPES', () => {
   });
 });
 
-describe('SPELL_SCHOOLS (string variant)', () => {
+describe('SPELL_SCHOOLS', () => {
   it('has 8 canonical schools', () => {
     expect(SPELL_SCHOOLS).toHaveLength(8);
   });
 
-  it('has no duplicates', () => {
-    expect(new Set(SPELL_SCHOOLS).size).toBe(SPELL_SCHOOLS.length);
+  it('has valid {value, label, color} shape with no duplicates', () => {
+    const values = SPELL_SCHOOLS.map((s) => s.value);
+    expect(new Set(values).size).toBe(8);
+    for (const school of SPELL_SCHOOLS) {
+      expect(school).toHaveProperty('value');
+      expect(school).toHaveProperty('label');
+      expect(school).toHaveProperty('color');
+    }
   });
 });
 

@@ -798,9 +798,9 @@ export function CreateItemModal({
           className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
         >
           <option value="">Auswählen...</option>
-          {SPELL_SCHOOLS.map((school) => (
-            <option key={school} value={school}>
-              {school.charAt(0).toUpperCase() + school.slice(1)}
+          {SPELL_SCHOOLS.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
             </option>
           ))}
         </select>
