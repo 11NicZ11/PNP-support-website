@@ -1,4 +1,9 @@
 // src/types/actions.ts
+import { RECHARGE_TYPES, type RechargeType } from '@/lib/enums/rechargeTypes';
+
+// Bestehende Export-Namen bleiben erhalten (06-do-not: exports nicht umbenennen).
+export { RECHARGE_TYPES as ACTION_RECHARGE_TYPES };
+export type ActionRechargeType = RechargeType;
 
 export type ActionType =
   | 'action'
@@ -9,8 +14,6 @@ export type ActionType =
   | 'free_action';
 
 export type ActionSourceType = 'equipment' | 'spell' | 'feature' | 'custom';
-
-export type ActionRechargeType = 'short' | 'long' | 'never' | 'manual';
 
 export interface Action {
   id: string;
@@ -45,10 +48,3 @@ export interface Action {
   createdAt: string;
   updatedAt: string;
 }
-
-export const ACTION_RECHARGE_TYPES: { value: ActionRechargeType; label: string; icon: string }[] = [
-  { value: 'short', label: 'Kurze Rast', icon: '☕' },
-  { value: 'long', label: 'Lange Rast', icon: '🛌' },
-  { value: 'never', label: 'Nie / Permanent', icon: '♾️' },
-  { value: 'manual', label: 'Manuell', icon: '✋' },
-];

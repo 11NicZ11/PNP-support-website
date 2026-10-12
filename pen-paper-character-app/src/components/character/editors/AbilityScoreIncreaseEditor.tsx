@@ -2,10 +2,7 @@
 
 'use client';
 
-interface AbilityScoreIncrease {
-  type: 'standard' | 'three_plus_one';
-  bonuses: Record<string, number>;
-}
+import { AbilityScoreIncrease } from '@/types/abilityScoreIncrease';
 
 interface AbilityScoreIncreaseEditorProps {
   value: AbilityScoreIncrease;

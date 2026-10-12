@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { AbilityScoreIncreaseEditor } from './AbilityScoreIncreaseEditor';
 import { AbilityScoreIncrease } from '@/types/abilityScoreIncrease';
+import { ALIGNMENT_OPTIONS } from '@/lib/enums/alignments';
 import {
   DefensesModal,
   DefenseItem,
@@ -53,18 +54,6 @@ const sizeCategoryOptions = [
   'Groß',
   'Riesig',
   'Gigantisch',
-];
-
-const alignmentOptions = [
-  { value: 'Rechtschaffen Gut', label: 'Rechtschaffen Gut' },
-  { value: 'Rechtschaffen Neutral', label: 'Rechtschaffen Neutral' },
-  { value: 'Rechtschaffen Böse', label: 'Rechtschaffen Böse' },
-  { value: 'Neutral Gut', label: 'Neutral Gut' },
-  { value: 'Neutral', label: 'Neutral' },
-  { value: 'Neutral Böse', label: 'Neutral Böse' },
-  { value: 'Chaotisch Gut', label: 'Chaotisch Gut' },
-  { value: 'Chaotisch Neutral', label: 'Chaotisch Neutral' },
-  { value: 'Chaotisch Böse', label: 'Chaotisch Böse' },
 ];
 
 export function RaceEditor({
@@ -277,7 +266,7 @@ export function RaceEditor({
           className="w-full px-3 py-2 bg-gray-800 rounded-lg"
         >
           <option value="">Keine Angabe</option>
-          {alignmentOptions.map((a) => (
+          {ALIGNMENT_OPTIONS.map((a) => (
             <option key={a.value} value={a.value}>
               {a.label}
             </option>

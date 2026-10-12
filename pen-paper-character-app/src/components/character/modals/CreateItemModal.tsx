@@ -7,6 +7,7 @@ import { EQUIPMENT_TYPES, ARMOR_TYPES } from '@/lib/enums/equipmentTypes';
 import { SPELL_SCHOOLS, SPELL_COMPONENTS, ACTION_TYPES } from '@/lib/enums/equipmentTypes';
 import { DAMAGE_TYPES } from '@/lib/enums/damageTypes';
 import { diceInfo } from '@/lib/dice';
+import { RECHARGE_TYPES } from '@/lib/enums/rechargeTypes';
 import { InventoryItem } from '@/types/inventory';
 import { UnitSystem } from '@/types/character';
 import {
@@ -38,13 +39,6 @@ const MAGIC_BONUS_OPTIONS = [
   { value: 1, label: '+1' },
   { value: 2, label: '+2' },
   { value: 3, label: '+3' },
-];
-
-const RECHARGE_TYPES = [
-  { value: 'short', label: 'Kurze Rast' },
-  { value: 'long', label: 'Lange Rast' },
-  { value: 'never', label: 'Nie / Permanent' },
-  { value: 'manual', label: 'Manuell' },
 ];
 
 export function CreateItemModal({

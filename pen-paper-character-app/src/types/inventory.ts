@@ -1,4 +1,5 @@
 // pen-paper-character-app\src\types\inventory.ts
+import type { EquipmentType } from './equipment';
 
 export type ContainerType = 'container';
 export type WeightUnit = 'kg' | 'lb';
@@ -24,7 +25,7 @@ export interface InventoryContainer {
 export interface InventoryItem {
   id: string;
   name: string;
-  type?: 'weapon' | 'armor' | 'shield' | 'accessory' | 'scroll' | 'potion' | 'focus' | 'wondrous' | 'tool' | 'instrument' | 'mount' | 'mount_gear' | 'trade_goods' | 'clothing' | 'other';
+  type?: EquipmentType;
   subtype?: string;
   description?: string;
   quantity: number;

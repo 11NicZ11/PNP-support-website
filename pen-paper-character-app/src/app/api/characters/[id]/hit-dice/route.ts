@@ -1,9 +1,7 @@
-// src/app/api/characters/[id]/hit-dice/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
-
-const VALID_DICE = ['d6', 'd8', 'd10', 'd12'];
+import { HIT_DIE_TYPES } from '@/types/resources';
 
 export async function GET(
   request: NextRequest,
@@ -29,7 +27,7 @@ export async function POST(
     const { id } = await params;
     const body = await request.json();
 
-    if (!body.dieType || !VALID_DICE.includes(body.dieType)) {
+    if (!body.dieType || !(HIT_DIE_TYPES as readonly string[]).includes(body.dieType)) {
       return apiError('Ungültiger Würfeltyp. Erlaubt: d6, d8, d10, d12', 400);
     }
 

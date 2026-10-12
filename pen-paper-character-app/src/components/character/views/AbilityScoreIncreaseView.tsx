@@ -2,10 +2,7 @@
 
 'use client';
 
-interface AbilityScoreIncrease {
-  type: 'standard' | 'three_plus_one' | 'flexible';
-  bonuses: Record<string, number>;
-}
+import { AbilityScoreIncrease } from '@/types/abilityScoreIncrease';
 
 interface AbilityScoreIncreaseViewProps {
   value: AbilityScoreIncrease;

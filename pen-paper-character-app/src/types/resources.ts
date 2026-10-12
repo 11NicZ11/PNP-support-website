@@ -1,10 +1,9 @@
 // src/types/resources.ts
+import { RECHARGE_TYPES, type RechargeType } from '@/lib/enums/rechargeTypes';
 
-export type ResourceRechargeType =
-  | 'short'
-  | 'long'
-  | 'never'
-  | 'manual';
+// Bestehende Export-Namen bleiben erhalten (06-do-not: exports nicht umbenennen).
+export { RECHARGE_TYPES as RESOURCE_RECHARGE_TYPES };
+export type ResourceRechargeType = RechargeType;
 
 export type ResourceSource =
   | 'class'
@@ -28,13 +27,6 @@ export interface CharacterResource {
   createdAt?: string;
   updatedAt?: string;
 }
-
-export const RESOURCE_RECHARGE_TYPES: { value: ResourceRechargeType; label: string; icon: string }[] = [
-  { value: 'short', label: 'Kurze Rast', icon: '☕' },
-  { value: 'long', label: 'Lange Rast', icon: '🛌' },
-  { value: 'never', label: 'Nie / Permanent', icon: '♾️' },
-  { value: 'manual', label: 'Manuell', icon: '✋' },
-];
 
 export const RESOURCE_SOURCES: { value: ResourceSource; label: string }[] = [
   { value: 'class', label: 'Klasse' },

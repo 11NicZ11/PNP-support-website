@@ -3,26 +3,16 @@
 
 import { useState } from 'react';
 import { AbilityScoreIncreaseEditor } from './AbilityScoreIncreaseEditor';
-import { AbilityScoreIncrease } from '@/types/abilityScoreIncrease';
+import { ALIGNMENT_OPTIONS } from '@/lib/enums/alignments';
 import { SkillPicker } from '@/components/ui/SkillPicker';
 import { NotesEditor } from '@/components/character/editors/NotesEditor';
 import { NotesCategory } from '@/types/character';
 import { useLibrary } from '@/hooks/useLibrary';
 
-export interface BackgroundData {
-  name: string;
-  traits: string;
-  ideals: string;
-  bonds: string;
-  flaws: string;
-  features: string;
-  bonusSkills: string[];
-  bonusLanguages: string[];
-  allies: string;
-  organizations: string;
-  abilityScoreIncrease: AbilityScoreIncrease;
-  toolProficiencies: string[];
-}
+import type { BackgroundData } from '@/types/background';
+
+// Re-export to preserve public API surface
+export type { BackgroundData };
 
 interface BackgroundEditTabProps {
   characterId: string;
@@ -38,18 +28,6 @@ interface BackgroundEditTabProps {
   notesCategories: NotesCategory[];
   onNotesCategoriesUpdate: (categories: NotesCategory[]) => void;
 }
-
-const alignmentOptions = [
-  { value: 'Rechtschaffen Gut', label: 'Rechtschaffen Gut' },
-  { value: 'Rechtschaffen Neutral', label: 'Rechtschaffen Neutral' },
-  { value: 'Rechtschaffen Böse', label: 'Rechtschaffen Böse' },
-  { value: 'Neutral Gut', label: 'Neutral Gut' },
-  { value: 'Neutral', label: 'Neutral' },
-  { value: 'Neutral Böse', label: 'Neutral Böse' },
-  { value: 'Chaotisch Gut', label: 'Chaotisch Gut' },
-  { value: 'Chaotisch Neutral', label: 'Chaotisch Neutral' },
-  { value: 'Chaotisch Böse', label: 'Chaotisch Böse' },
-];
 
 export function BackgroundEditTab({
   characterId,
@@ -231,7 +209,7 @@ export function BackgroundEditTab({
           className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
         >
           <option value="">Keine Angabe</option>
-          {alignmentOptions.map((a) => (
+          {ALIGNMENT_OPTIONS.map((a) => (
             <option key={a.value} value={a.value}>
               {a.label}
             </option>

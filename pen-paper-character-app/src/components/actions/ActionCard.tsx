@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { Action } from '@/types/actions';
+import { RECHARGE_TYPES } from '@/lib/enums/rechargeTypes';
 import { DiceButton } from '@/components/dice/DiceButton';
 
 interface ActionCardProps {
@@ -15,12 +16,11 @@ interface ActionCardProps {
   characterName?: string;
 }
 
-const RECHARGE_LABELS: Record<string, string> = {
-  short: 'Kurze Rast',
-  long: 'Lange Rast',
-  never: 'Nie',
-  manual: 'Manuell',
-};
+// Aus der kanonischen Recharge-Liste abgeleitet (Sprint 1B) — 'Nie' wird
+// dabei zu 'Nie / Permanent' vereinheitlicht (User-Entscheidung).
+const RECHARGE_LABELS: Record<string, string> = Object.fromEntries(
+  RECHARGE_TYPES.map((r) => [r.value, r.label])
+);
 
 export function ActionCard({
   action,

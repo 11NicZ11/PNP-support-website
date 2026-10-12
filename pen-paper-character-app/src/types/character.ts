@@ -1,6 +1,6 @@
 // src/types/character.ts
 import { Attribute } from '@/components/character/editors/AttributesEditor';
-import { BackgroundData } from '@/components/character/editors/BackgroundEditTab';
+import { BackgroundData } from './background';
 import { RaceData } from '@/components/character/editors/RaceEditor';
 import { ClassLevel } from '@/components/character/editors/ClassLevelsEditor';
 import { CombatValueSource } from '@/components/character/editors/CombatValuesEditor';

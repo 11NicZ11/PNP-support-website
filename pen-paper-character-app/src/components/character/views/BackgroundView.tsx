@@ -3,24 +3,10 @@
 'use client';
 
 import { AbilityScoreIncreaseView } from './AbilityScoreIncreaseView';
+import { BackgroundData } from '@/types/background';
 
-export interface BackgroundData {
-  name: string;
-  traits: string;
-  ideals: string;
-  bonds: string;
-  flaws: string;
-  features: string;
-  bonusSkills: string[];
-  bonusLanguages: string[];
-  allies: string;
-  organizations: string;
-  abilityScoreIncrease: {
-    type: 'standard' | 'three_plus_one' | 'flexible';
-    bonuses: Record<string, number>;
-  };
-  toolProficiencies: string[];
-}
+// Export bleibt erhalten (06-do-not: exports nicht umbenennen).
+export type { BackgroundData };
 
 interface BackgroundViewProps {
   background: BackgroundData;

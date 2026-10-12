@@ -20,7 +20,7 @@ import {
   CLASS_FEATURE_RECHARGE,
   CLASS_FEATURE_KINDS,
 } from '@/types/classFeatures';
-import { CharacterResource, CharacterHitDice } from '@/types/resources';
+import { CharacterResource, CharacterHitDice, HIT_DIE_TYPES } from '@/types/resources';
 import { getModifier } from '@/lib/utils';
 import { AlternateForm } from '@/types/forms';
 import { Companion } from '@/types/companions';
@@ -90,7 +90,6 @@ interface ClassLevelsEditorProps {
   ) => void;
 }
 
-const HIT_DIE_OPTIONS = ['d6', 'd8', 'd10', 'd12'];
 
 const HP_SOURCE_TYPES: { value: HpSourceType; label: string; icon: string }[] = [
   { value: 'class', label: 'Klasse', icon: '⚔️' },
@@ -433,7 +432,7 @@ export function ClassLevelsEditor({
               onChange={(e) => updateClass(realIndex, 'hitDie', e.target.value)}
               className="w-full px-3 py-2 bg-gray-800 rounded-lg text-center"
             >
-              {HIT_DIE_OPTIONS.map((d) => (
+              {HIT_DIE_TYPES.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>

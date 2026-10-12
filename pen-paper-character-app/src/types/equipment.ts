@@ -1,4 +1,5 @@
 // src/types/equipment.ts
+import { DAMAGE_TYPES } from '@/lib/enums/damageTypes';
 
 export type EquipmentType =
   | 'weapon'
@@ -19,21 +20,7 @@ export type EquipmentType =
 
 export type ArmorType = 'light' | 'medium' | 'heavy';
 
-export type DamageType =
-  | 'slashing'
-  | 'piercing'
-  | 'bludgeoning'
-  | 'fire'
-  | 'cold'
-  | 'lightning'
-  | 'thunder'
-  | 'acid'
-  | 'poison'
-  | 'psychic'
-  | 'necrotic'
-  | 'radiant'
-  | 'force'
-  | 'healing';
+export type DamageType = (typeof DAMAGE_TYPES)[number];
 
 export interface EquipmentItem {
   id: string;

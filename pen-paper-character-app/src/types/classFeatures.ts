@@ -1,4 +1,9 @@
 // src/types/classFeatures.ts
+import { RECHARGE_TYPES, type RechargeType } from '@/lib/enums/rechargeTypes';
+
+// Bestehende Export-Namen bleiben erhalten (06-do-not: exports nicht umbenennen).
+export { RECHARGE_TYPES as CLASS_FEATURE_RECHARGE };
+export type ClassFeatureRecharge = RechargeType;
 
 export type ClassFeatureSource =
   | 'class'
@@ -14,8 +19,6 @@ export type ClassFeatureType =
   | 'bonus_action'
   | 'reaction'
   | 'free_action';
-
-export type ClassFeatureRecharge = 'short' | 'long' | 'never' | 'manual';
 
 // 🔥 NEU: Feature-Kategorie für Level-Spalten
 export type ClassFeatureKind =
@@ -91,13 +94,6 @@ export const CLASS_FEATURE_TYPES: { value: ClassFeatureType; label: string; icon
   { value: 'bonus_action', label: 'Bonusaktion', icon: '✨' },
   { value: 'reaction', label: 'Reaktion', icon: '🔄' },
   { value: 'free_action', label: 'Freie Aktion', icon: '🆓' },
-];
-
-export const CLASS_FEATURE_RECHARGE: { value: ClassFeatureRecharge; label: string }[] = [
-  { value: 'short', label: 'Kurze Rast' },
-  { value: 'long', label: 'Lange Rast' },
-  { value: 'never', label: 'Nie / Permanent' },
-  { value: 'manual', label: 'Manuell' },
 ];
 
 // 🔥 NEU: Kind-Labels
