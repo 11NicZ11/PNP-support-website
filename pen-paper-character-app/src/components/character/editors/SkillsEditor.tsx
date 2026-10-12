@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Skill } from '@/types/skills';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useToast } from '@/contexts/ToastContext';
-import { getModifier } from '@/lib/utils';
+import { getModifier, getAttributeValue } from '@/lib/utils';
 import {
   RenameLibraryDialog,
   RenameChoice,
@@ -65,9 +65,6 @@ export function SkillsEditor({
     useLibrary({
       type: 'skill',
     });
-
-  const getAttributeValue = (attributeName: string) =>
-    attributes.find((a) => a.name === attributeName)?.value ?? 10;
 
   const cycleProficiency = (skillId: string) => {
     if (readOnly) return;
@@ -441,6 +438,7 @@ export function SkillsEditor({
               <div className="flex flex-wrap gap-2">
                 {attrSkills.map((skill) => {
                   const attrValue = getAttributeValue(
+                    attributes,
                     skill.attributeName || attr.name
                   );
                   const bonus =

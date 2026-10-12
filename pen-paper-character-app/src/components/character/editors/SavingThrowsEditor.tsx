@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useLibrary } from '@/hooks/useLibrary';
+import { getModifier } from '@/lib/utils';
 
 export interface SavingThrow {
   id: string;
@@ -243,7 +244,7 @@ export function SavingThrowsEditor({
         {savingThrows.map((st) => {
           const attr = attributes.find((a) => a.name === st.attributeName);
           const attrValue = attr ? attr.value : 10;
-          const attrMod = Math.floor((attrValue - 10) / 2);
+          const attrMod = getModifier(attrValue);
           const totalBonus = attrMod + (st.isProficient ? proficiencyBonus : 0);
 
           let circleClass =

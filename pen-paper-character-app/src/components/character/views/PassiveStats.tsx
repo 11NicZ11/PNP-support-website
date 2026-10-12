@@ -2,6 +2,8 @@
 
 'use client';
 
+import { getModifier } from '@/lib/utils';
+
 interface PassiveStatsProps {
   skills: any[];
   attributes: any[];
@@ -17,8 +19,6 @@ export function PassiveStats({ skills, attributes, proficiencyBonus }: PassiveSt
     const attr = attributes.find(a => a.name === attributeName);
     return attr ? attr.value : 10;
   };
-
-  const getModifier = (value: number) => Math.floor((value - 10) / 2);
 
   const getSkillBonus = (skill: any) => {
     const attrValue = getAttributeValue(skill.attributeName);
