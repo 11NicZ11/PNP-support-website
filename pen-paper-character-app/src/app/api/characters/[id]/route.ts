@@ -564,6 +564,7 @@ export async function PUT(
             linkedFeatureId: form.linkedFeatureId || null,
             isActive: form.isActive === true,
             concentration: form.concentration === true,
+            libraryEntryId: form.libraryEntryId ?? null,
           };
 
           if (form.id && !form.id.startsWith('temp-')) {
@@ -635,6 +636,7 @@ export async function PUT(
             linkedResourceId: comp.linkedResourceId || null,
             linkedFeatureId: comp.linkedFeatureId || null,
             notes: comp.notes || '',
+            libraryEntryId: comp.libraryEntryId ?? null,
           };
 
           if (comp.id && !comp.id.startsWith('temp-')) {

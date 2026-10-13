@@ -320,6 +320,7 @@ export async function POST(request: NextRequest) {
       linkedFeatureId: f.linkedFeatureId || null,
       isActive: f.isActive === true,
       concentration: f.concentration === true,
+      libraryEntryId: f.libraryEntryId ?? null,
     }));
 
     const cleanCompanions = companions.map((c: any) => ({
@@ -357,6 +358,7 @@ export async function POST(request: NextRequest) {
       linkedResourceId: c.linkedResourceId || null,
       linkedFeatureId: c.linkedFeatureId || null,
       notes: c.notes || '',
+      libraryEntryId: c.libraryEntryId ?? null,
     }));
 
     const createdCharacter = await prisma.$transaction(
