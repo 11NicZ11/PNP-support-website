@@ -6,6 +6,7 @@ import { UnitSystem } from '@/types/character';
 import { DiceButton } from '@/components/dice/DiceButton';
 import { rollWeaponDamage, parseDamageExpression } from '@/lib/dice';
 import { getModifierText } from '@/lib/utils';
+import { formatDistance, ftToM } from '@/lib/units';
 
 interface FormStatBlockProps {
   form: AlternateForm;
@@ -111,9 +112,7 @@ export function FormStatBlock({
               <span>{s.icon}</span>
               <span className="text-gray-400">{s.label}:</span>
               <span className="font-mono text-cyan-300">
-                {unitSystem === 'imperial'
-                  ? `${Math.round(s.value * 3.28084)} ft`
-                  : `${Math.round(s.value * 0.3048 * 10) / 10} m`}
+                {formatDistance(ftToM(s.value), unitSystem)}
               </span>
             </span>
           ))}

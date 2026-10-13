@@ -4,6 +4,7 @@
 import { RaceData } from '../editors/RaceEditor';
 import { AbilityScoreIncreaseView } from './AbilityScoreIncreaseView';
 import { UnitSystem } from '@/types/character';
+import { formatDistance, ftToM } from '@/lib/units';
 
 interface RaceViewProps {
   raceData: RaceData | null;
@@ -24,10 +25,7 @@ export function RaceView({
     );
   }
 
-  const speedDisplay =
-    unitSystem === 'imperial'
-      ? `${raceData.speed} ft`
-      : `${Math.round(raceData.speed * 0.3048 * 10) / 10} m`;
+  const speedDisplay = formatDistance(ftToM(raceData.speed), unitSystem);
 
   const hasRaceBonuses =
     (raceData.bonusArmorClass ?? 0) !== 0 || (raceData.bonusHp ?? 0) !== 0;

@@ -14,9 +14,15 @@ export const kgToLb = (kg: number): number => kg * KG_TO_LB;
 export const lbToKg = (lb: number): number => lb * LB_TO_KG;
 
 // ==================== DISTANZ ====================
-// 1.5 m = 5 ft  =>  1 m = 10/3 ft  =>  1 ft = 0.3 m
-export const FT_TO_M = 0.3;
-export const M_TO_FT = 1 / FT_TO_M;
+// Basis-Beziehung (D&D-5e-Gitter-Konvention): 1.5 m = 5 ft
+// Das ist die einzige Quelle der Wahrheit für Distanz-Umrechnung.
+// Nirgendwo sonst Umrechnungsfaktoren hartkodieren.
+export const BASE_METERS = 1.5;
+export const BASE_FEET = 5;
+
+// Abgeleitete Faktoren — nicht direkt in Komponenten verwenden.
+export const FT_TO_M = BASE_METERS / BASE_FEET; // = 0.3
+export const M_TO_FT = BASE_FEET / BASE_METERS; // = 10/3
 
 export const mToFt = (m: number): number => m * M_TO_FT;
 export const ftToM = (ft: number): number => ft * FT_TO_M;

@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { getModifier } from '@/lib/utils';
+import { formatDistance, ftToM } from '@/lib/units';
 import {
   Attribute,
   AttributesEditor,
@@ -98,10 +99,7 @@ export function StatusTab({
   const isCreating = mode === 'create';
 
   const raceSpeedFt = raceData?.speed ?? 30;
-  const raceSpeedDisplay =
-    unitSystem === 'imperial'
-      ? `${raceSpeedFt} ft`
-      : `${Math.round(raceSpeedFt * 0.3048 * 10) / 10} m`;
+  const raceSpeedDisplay = formatDistance(ftToM(raceSpeedFt), unitSystem);
 
   // ============ RETTUNGSWÜRFE mit Herkunft + Dedupe ============
   const savingThrowSources: Record<string, string[]> = {};

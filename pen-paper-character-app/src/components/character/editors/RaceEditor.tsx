@@ -9,6 +9,12 @@ import {
   DefensesModal,
   DefenseItem,
 } from '@/components/character/modals/DefensesModal';
+import {
+  displayDistanceValue,
+  ftToM,
+  mToFt,
+  parseDistanceInput,
+} from '@/lib/units';
 
 // Re-export so existing importers don't break.
 export type { RaceData } from '@/types/race';
@@ -129,14 +135,11 @@ export function RaceEditor({
   };
 
   const speedLabel = unitSystem === 'imperial' ? 'ft' : 'm';
-  const speedDisplay =
-    unitSystem === 'imperial'
-      ? raceData.speed
-      : Math.round(raceData.speed * 0.3048 * 10) / 10;
+  const speedDisplay = displayDistanceValue(ftToM(raceData.speed), unitSystem);
 
   const handleSpeedChange = (value: number) => {
-    const ftValue = unitSystem === 'imperial' ? value : value / 0.3048;
-    updateField('speed', Math.round(ftValue));
+    const meters = parseDistanceInput(value, unitSystem) ?? 0;
+    updateField('speed', Math.round(mToFt(meters)));
   };
 
   const heightLabel = unitSystem === 'imperial' ? 'ft/in' : 'm';
