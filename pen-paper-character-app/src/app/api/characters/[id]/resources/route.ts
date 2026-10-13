@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -37,7 +38,7 @@ export async function POST(
         max: Math.max(0, parseInt(body.max) || 0),
         current:
           body.current !== undefined && body.current !== null
-            ? Math.max(0, parseInt(body.current))
+            ? Math.max(0, toInt(body.current, 0))
             : Math.max(0, parseInt(body.max) || 0),
         rechargeType: body.rechargeType || 'long',
         source: body.source || 'class',
