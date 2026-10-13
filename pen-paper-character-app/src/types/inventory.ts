@@ -66,18 +66,3 @@ export interface InventoryItem {
 }
 
 export const CONTAINER_ICON = '📦';
-
-// 🔥 NEU: Umrechnungsfunktionen
-export const KG_TO_LB = 2.20462;
-export const LB_TO_KG = 0.453592;
-
-export function convertWeight(value: number, fromUnit: WeightUnit, toUnit: WeightUnit): number {
-  if (fromUnit === toUnit) return value;
-  if (fromUnit === 'kg' && toUnit === 'lb') return value * KG_TO_LB;
-  if (fromUnit === 'lb' && toUnit === 'kg') return value * LB_TO_KG;
-  return value;
-}
-
-export function formatWeight(value: number, unit: WeightUnit): string {
-  return `${value.toFixed(1)} ${unit}`;
-}
