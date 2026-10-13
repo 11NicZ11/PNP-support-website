@@ -13,6 +13,9 @@ export const LIBRARY_TYPE_LABELS: Record<string, { label: string; icon: string }
   attribute: { label: 'Attribut', icon: '💪' },
   action: { label: 'Aktion', icon: '⚡' },
   weapon_property: { label: 'Waffen-Eigenschaft', icon: '⚔️' },
+  spell: { label: 'Zauber', icon: '✨' },
+  equipment: { label: 'Ausrüstung', icon: '⚔️' },
+  background: { label: 'Hintergrund', icon: '📜' },
 };
 
 export const LIBRARY_CATEGORY_LABELS: Record<string, string> = {

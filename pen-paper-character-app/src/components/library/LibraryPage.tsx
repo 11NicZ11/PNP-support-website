@@ -18,6 +18,9 @@ const TYPE_TABS: { value: string; label: string; icon: string }[] = [
   { value: 'attribute', label: 'Attribute', icon: '💪' },
   { value: 'action', label: 'Aktionen', icon: '⚡' },
   { value: 'weapon_property', label: 'Waffen-Eigenschaften', icon: '⚔️' },
+  { value: 'spell', label: 'Zauber', icon: '✨' },
+  { value: 'equipment', label: 'Ausrüstung', icon: '⚔️' },
+  { value: 'background', label: 'Hintergrund', icon: '📜' },
 ];
 
 function LibraryPageInner() {
