@@ -13,6 +13,7 @@ import { UnitSystem } from '@/types/character';
 import {
   getWeightUnitLabel,
   getDistanceUnitLabel,
+  parseWeightInput,
 } from '@/lib/units';
 import { useLibrary, type LibraryEntry } from '@/hooks/useLibrary';
 import type { Action } from '@/types/actions';
@@ -241,7 +242,7 @@ export function CreateItemModal({
       attunement: formData.attunement || false,
       notes: formData.notes || '',
       sourceReference: formData.sourceReference || '',
-      weight: formData.weight ? parseFloat(formData.weight) : null,
+      weight: parseWeightInput(formData.weight, unitSystem),
       costAmount: formData.costAmount ? parseInt(formData.costAmount) : null,
       costUnit: 'gp',
     };
@@ -310,7 +311,7 @@ export function CreateItemModal({
       name: formData.name,
       description: formData.description || '',
       quantity: parseInt(formData.quantity) || 1,
-      weight: formData.weight ? parseFloat(formData.weight) : null,
+      weight: parseWeightInput(formData.weight, unitSystem),
       value: formData.costAmount ? parseInt(formData.costAmount) : null,
       equipped: false,
       notes: formData.notes || '',
@@ -430,7 +431,7 @@ export function CreateItemModal({
           description: formData.description || '',
           type: selectedType,
           subtype: formData.subtype || null,
-          weight: formData.weight ? parseFloat(formData.weight) : null,
+          weight: parseWeightInput(formData.weight, unitSystem),
           costAmount: formData.costAmount ? parseInt(formData.costAmount) : null,
           quantity: parseInt(formData.quantity) || 1,
           magicBonus: parseInt(formData.magicBonus) || 0,
