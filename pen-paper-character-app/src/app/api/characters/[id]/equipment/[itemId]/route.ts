@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -42,29 +43,29 @@ export async function PUT(
         description: body.description,
         equipped: body.equipped,
         quantity: body.quantity,
-        weight: body.weight ? parseFloat(body.weight) : null,
-        costAmount: body.costAmount ? parseInt(body.costAmount) : null,
+        weight: body.weight != null ? parseFloat(body.weight) : null,
+        costAmount: body.costAmount ? toInt(body.costAmount, 0) : null,
         costUnit: body.costUnit,
         attackBonus:
-          body.attackBonus !== undefined ? parseInt(body.attackBonus) : undefined,
+          body.attackBonus !== undefined ? toInt(body.attackBonus, 0) : undefined,
         damageDice: body.damageDice,
         damageType: body.damageType,
         range: body.range,
         weaponProperties,
         armorClassBonus:
           body.armorClassBonus !== undefined
-            ? parseInt(body.armorClassBonus)
+            ? toInt(body.armorClassBonus, 0)
             : undefined,
         armorType: body.armorType,
         maxDexBonus:
-          body.maxDexBonus !== undefined ? parseInt(body.maxDexBonus) : undefined,
+          body.maxDexBonus !== undefined ? toInt(body.maxDexBonus, 0) : undefined,
         stealthDisadvantage: body.stealthDisadvantage,
         strengthRequirement:
           body.strengthRequirement !== undefined
-            ? parseInt(body.strengthRequirement)
+            ? toInt(body.strengthRequirement, 0)
             : undefined,
         shieldBonus:
-          body.shieldBonus !== undefined ? parseInt(body.shieldBonus) : undefined,
+          body.shieldBonus !== undefined ? toInt(body.shieldBonus, 0) : undefined,
         attunement: body.attunement,
         attuned: body.attuned,
         notes: body.notes,

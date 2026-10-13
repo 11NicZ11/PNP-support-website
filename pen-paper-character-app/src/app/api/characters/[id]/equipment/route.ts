@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -39,21 +40,21 @@ export async function POST(
         description: body.description || '',
         equipped: body.equipped || false,
         quantity: body.quantity || 1,
-        weight: body.weight ? parseFloat(body.weight) : null,
-        costAmount: body.costAmount ? parseInt(body.costAmount) : null,
+        weight: body.weight != null ? parseFloat(body.weight) : null,
+        costAmount: body.costAmount ? toInt(body.costAmount, 0) : null,
         costUnit: body.costUnit || 'gp',
-        magicBonus: body.magicBonus ? parseInt(body.magicBonus) : 0,
-        attackBonus: body.attackBonus ? parseInt(body.attackBonus) : 0,
+        magicBonus: body.magicBonus ? toInt(body.magicBonus, 0) : 0,
+        attackBonus: body.attackBonus ? toInt(body.attackBonus, 0) : 0,
         damageDice: body.damageDice || null,
         damageType: body.damageType || null,
         range: body.range || null,
         weaponProperties: body.weaponProperties ? asJsonArray(body.weaponProperties) : null,
-        armorClassBonus: body.armorClassBonus ? parseInt(body.armorClassBonus) : null,
+        armorClassBonus: body.armorClassBonus ? toInt(body.armorClassBonus, 0) : null,
         armorType: body.armorType || null,
-        maxDexBonus: body.maxDexBonus ? parseInt(body.maxDexBonus) : null,
+        maxDexBonus: body.maxDexBonus ? toInt(body.maxDexBonus, 0) : null,
         stealthDisadvantage: body.stealthDisadvantage || false,
-        strengthRequirement: body.strengthRequirement ? parseInt(body.strengthRequirement) : null,
-        shieldBonus: body.shieldBonus ? parseInt(body.shieldBonus) : null,
+        strengthRequirement: body.strengthRequirement ? toInt(body.strengthRequirement, 0) : null,
+        shieldBonus: body.shieldBonus ? toInt(body.shieldBonus, 0) : null,
         attunement: body.attunement || false,
         attuned: body.attuned || false,
         notes: body.notes || null,

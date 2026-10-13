@@ -50,7 +50,7 @@ export async function POST(
         type: 'container',
         description: body.description || '',
         capacity: body.capacity || null,
-        weightLimit: body.weightLimit ? parseFloat(body.weightLimit) : null,
+        weightLimit: body.weightLimit != null ? parseFloat(body.weightLimit) : null,
         weightUnit: body.weightUnit || 'kg',
         sourceReference: body.sourceReference ?? '',
         libraryEntryId: body.libraryEntryId ?? null,

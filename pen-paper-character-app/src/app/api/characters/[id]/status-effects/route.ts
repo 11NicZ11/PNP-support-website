@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -34,7 +35,7 @@ export async function POST(
         name: body.name,
         description: body.description,
         icon: body.icon || '⚠️',
-        duration: body.duration ? parseInt(body.duration) : null,
+        duration: body.duration ? toInt(body.duration, 0) : null,
         durationUnit: body.durationUnit,
         source: body.source,
         sourceName: body.sourceName,
