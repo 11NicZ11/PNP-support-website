@@ -2,11 +2,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { InventoryContainer, CONTAINER_ICON } from '@/types/inventory';
+import { InventoryContainer, CONTAINER_ICON, WeightUnit } from '@/types/inventory';
 import { EquipmentItem } from '@/types/equipment';
 import { UnitSystem } from '@/types/character';
 import { formatWeight } from '@/lib/units';
 import { InventoryItemView } from './InventoryItemView';
+
+// Container weight limit is stored raw in the container's own unit
+// (weightUnit), not the character unitSystem. Show it as-is, no conversion.
+const displayWeightLimit = (limit: number, unit: WeightUnit): string =>
+  `${limit} ${unit}`;
 
 interface InventoryContainerViewProps {
   container: InventoryContainer;
@@ -72,7 +77,7 @@ export function InventoryContainerView({
             {hasWeightLimit && (
               <span>
                 ⚖️ {formatWeight(totalWeight, unitSystem)} /{' '}
-                {formatWeight(container.weightLimit, unitSystem)}
+                {displayWeightLimit(container.weightLimit!, container.weightUnit)}
               </span>
             )}
           </div>
