@@ -598,7 +598,7 @@ export async function PUT(
             durationValue: parseInt(form.durationValue) || 1,
             usesPerRest:
               form.usesPerRest !== null && form.usesPerRest !== undefined
-                ? parseInt(form.usesPerRest)
+                ? toInt(form.usesPerRest, 0)
                 : null,
             rechargeType: form.rechargeType || 'short',
             linkedResourceId: form.linkedResourceId || null,

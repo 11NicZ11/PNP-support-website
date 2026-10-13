@@ -72,7 +72,7 @@ export async function POST(
         durationValue: parseInt(body.durationValue) || 1,
         usesPerRest:
           body.usesPerRest !== null && body.usesPerRest !== undefined
-            ? parseInt(body.usesPerRest)
+            ? toInt(body.usesPerRest, 0)
             : null,
         rechargeType: body.rechargeType || 'short',
         linkedResourceId: body.linkedResourceId || null,

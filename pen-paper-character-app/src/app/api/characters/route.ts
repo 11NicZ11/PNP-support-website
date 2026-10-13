@@ -318,7 +318,7 @@ export async function POST(request: NextRequest) {
       durationValue: parseInt(f.durationValue) || 1,
       usesPerRest:
         f.usesPerRest !== null && f.usesPerRest !== undefined
-          ? parseInt(f.usesPerRest)
+          ? toInt(f.usesPerRest, 0)
           : null,
       rechargeType: f.rechargeType || 'short',
       linkedResourceId: f.linkedResourceId || null,

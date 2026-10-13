@@ -2,7 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
-import { parseJsonArray } from '@/lib/utils';
+import { parseJsonArray, toInt } from '@/lib/utils';
 
 function parseForm(form: any) {
   return {
@@ -69,7 +69,7 @@ export async function PUT(
     if (body.durationValue !== undefined) updateData.durationValue = parseInt(body.durationValue) || 1;
     if (body.usesPerRest !== undefined)
       updateData.usesPerRest =
-        body.usesPerRest !== null ? parseInt(body.usesPerRest) : null;
+        body.usesPerRest !== null ? toInt(body.usesPerRest, 0) : null;
     if (body.rechargeType !== undefined) updateData.rechargeType = body.rechargeType;
     if (body.linkedResourceId !== undefined) updateData.linkedResourceId = body.linkedResourceId;
     if (body.linkedFeatureId !== undefined) updateData.linkedFeatureId = body.linkedFeatureId;
