@@ -4,7 +4,7 @@ import { BackgroundData } from '../editors/BackgroundEditTab';
 import { RaceData } from '../editors/RaceEditor';
 import { ClassLevel } from '../editors/ClassLevelsEditor';
 import { CombatValueSource } from '../editors/CombatValuesEditor';
-import { SavingThrow } from '../editors/SavingThrowsEditor';
+import { SavingThrow } from '@/types/savingThrows';
 import { DefenseItem } from '../modals/DefensesModal';
 import { Skill } from '@/types/skills';
 import {
