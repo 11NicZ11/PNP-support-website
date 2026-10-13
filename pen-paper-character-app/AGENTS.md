@@ -9,6 +9,8 @@ folder is missing, ask the user — do not proceed blind.
 - **Stack:** Next.js 16 / React 19 / TypeScript / Prisma (SQLite) / Tailwind
 - **Purpose:** Pen & Paper RPG character manager. German UI, English code identifiers.
 - **Branch:** work on `dev`. `main` is protected; only stable merges.
+- **Current status:** Tags `sprint-0-complete`, `sprint-1b-complete`,
+  `sprint-1c-complete` are set. Sprint 1D (Type-Inversion) pending.
 - **Commands:**
   - `npm run dev` — dev server (port 3000)
   - `npm run test` — Vitest
@@ -32,6 +34,8 @@ folder is missing, ask the user — do not proceed blind.
    unless the current task explicitly authorizes it.
 6. **No commits while `typecheck` or `test` is red.** Never leave a red
    baseline for the next agent.
+7. **Do not edit `AGENTS.md` or any file in `.clinerules/`.** These are
+   user-owned. If a rule looks wrong, report it — do not change it.
 
 ## Per-edit verification (mandatory)
 
