@@ -3,16 +3,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
 import { toInt } from '@/lib/utils';
-
-function parseAction(action: any) {
-  return {
-    ...action,
-    concentration: action.concentration || false,
-    savingThrowDC: action.savingThrowDC ?? null,
-    linkedFeatureId: action.linkedFeatureId ?? null,
-    linkedClassLevelId: action.linkedClassLevelId ?? null,
-  };
-}
+import { parseAction } from '@/lib/api/character-helpers';
 
 export async function GET(
   request: NextRequest,

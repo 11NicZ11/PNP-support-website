@@ -57,6 +57,16 @@ export const parseCompanions = (companions: any[]) => {
   }));
 };
 
+export const parseAction = (action: any) => {
+  return {
+    ...action,
+    concentration: action.concentration || false,
+    savingThrowDC: action.savingThrowDC ?? null,
+    linkedFeatureId: action.linkedFeatureId ?? null,
+    linkedClassLevelId: action.linkedClassLevelId ?? null,
+  };
+};
+
 export const parseRaceData = (raceData: any) => {
   if (!raceData) return null;
   return {
@@ -109,5 +119,50 @@ export const parseCompanion = (companion: any) => {
     ...companion,
     attacks: parseJsonArray(companion.attacks || '[]'),
     abilities: parseJsonArray(companion.abilities || '[]'),
+  };
+};
+
+// Shared include block for character responses.
+// Single source — a new relation only needs one edit.
+export const getCharacterInclude = () => ({
+  attributes: true,
+  skills: true,
+  savingThrows: true,
+  proficiencies: true,
+  statusEffects: true,
+  defenses: true,
+  hpSources: true,
+  classLevels: true,
+  combatValueSources: true,
+  background: true,
+  raceData: true,
+  spells: { include: { components: { orderBy: { order: 'asc' as const } } } },
+  spellSlots: true,
+  resources: true,
+  hitDice: true,
+  alternateForms: true,
+  companions: true,
+});
+
+// Shape the character response. Same output for the same DB state.
+export const buildCharacterResponse = (character: any) => {
+  return {
+    ...character,
+    classProgression: migrateClassProgression(character.classProgression),
+    expMode: character.expMode || 'next_only',
+    expThresholds: parseJsonObject(character.expThresholds || '{}'),
+    hasHitDice: character.hasHitDice !== false,
+    hitDiceMode: character.hitDiceMode || 'scaled',
+    attributeMethod: character.attributeMethod || 'free',
+    attributeMethodState: parseJsonObject(character.attributeMethodState || '{}'),
+    notesCategories: parseJsonArray(character.notesCategories || '[]'),
+    spells: parseSpells(character.spells),
+    spellSlots: character.spellSlots,
+    classLevels: parseClassLevels(character.classLevels),
+    alternateForms: parseAlternateForms(character.alternateForms),
+    companions: parseCompanions(character.companions),
+    background: parseBackgroundData(character.background),
+    raceData: parseRaceData(character.raceData),
+    defenses: parseDefenses(character.defenses),
   };
 };
