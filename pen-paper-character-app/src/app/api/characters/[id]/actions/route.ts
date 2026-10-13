@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 function parseAction(action: any) {
   return {
@@ -52,17 +53,17 @@ export async function POST(
         sourceType: body.sourceType || 'custom',
         sourceId: body.sourceId || null,
         isCustom: body.isCustom ?? true,
-        attackBonus: body.attackBonus ? parseInt(body.attackBonus) : null,
+        attackBonus: body.attackBonus ? toInt(body.attackBonus, 0) : null,
         damageDice: body.damageDice || null,
         damageType: body.damageType || null,
         range: body.range || null,
         areaOfEffect: body.areaOfEffect || null,
-        usesPerDay: body.usesPerDay ? parseInt(body.usesPerDay) : null,
+        usesPerDay: body.usesPerDay ? toInt(body.usesPerDay, 0) : null,
         usesRemaining:
           body.usesRemaining !== undefined && body.usesRemaining !== null
-            ? parseInt(body.usesRemaining)
+            ? toInt(body.usesRemaining, 0)
             : body.usesPerDay
-            ? parseInt(body.usesPerDay)
+            ? toInt(body.usesPerDay, 0)
             : null,
         rechargeType: body.rechargeType || 'long',
         rechargeOnShortRest: body.rechargeOnShortRest || false,
@@ -71,7 +72,7 @@ export async function POST(
         savingThrow: body.savingThrow || null,
         savingThrowDC:
           body.savingThrowDC !== undefined && body.savingThrowDC !== null
-            ? parseInt(body.savingThrowDC)
+            ? toInt(body.savingThrowDC, 0)
             : null,
         linkedFeatureId: body.linkedFeatureId || null,
         linkedClassLevelId: body.linkedClassLevelId || null,

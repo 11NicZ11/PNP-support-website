@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { toInt } from '@/lib/utils';
 
 function parseAction(action: any) {
   return {
@@ -50,7 +51,7 @@ export async function PUT(
         isCustom: body.isCustom,
         attackBonus:
           body.attackBonus !== undefined && body.attackBonus !== null
-            ? parseInt(body.attackBonus)
+            ? toInt(body.attackBonus, 0)
             : null,
         damageDice: body.damageDice,
         damageType: body.damageType,
@@ -58,11 +59,11 @@ export async function PUT(
         areaOfEffect: body.areaOfEffect,
         usesPerDay:
           body.usesPerDay !== undefined && body.usesPerDay !== null
-            ? parseInt(body.usesPerDay)
+            ? toInt(body.usesPerDay, 0)
             : null,
         usesRemaining:
           body.usesRemaining !== undefined && body.usesRemaining !== null
-            ? parseInt(body.usesRemaining)
+            ? toInt(body.usesRemaining, 0)
             : null,
         rechargeType: body.rechargeType,
         rechargeOnShortRest: body.rechargeOnShortRest,
@@ -71,7 +72,7 @@ export async function PUT(
         savingThrow: body.savingThrow,
         savingThrowDC:
           body.savingThrowDC !== undefined && body.savingThrowDC !== null
-            ? parseInt(body.savingThrowDC)
+            ? toInt(body.savingThrowDC, 0)
             : null,
         linkedFeatureId: body.linkedFeatureId,
         linkedClassLevelId: body.linkedClassLevelId,
