@@ -44,7 +44,7 @@ export function useCharacterSyncs(state: CharacterState) {
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [raceData.skillProficiencies]);
+  }, [raceData.skillProficiencies.map((p) => p.skillName).join('|')]);
 
   // Sync: Hintergrund-Fertigkeiten → Skills
   useEffect(() => {
@@ -127,8 +127,8 @@ export function useCharacterSyncs(state: CharacterState) {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    raceData.abilityScoreIncrease,
-    background.abilityScoreIncrease,
+    JSON.stringify(raceData.abilityScoreIncrease?.bonuses),
+    JSON.stringify(background.abilityScoreIncrease?.bonuses),
     loading,
   ]);
 
