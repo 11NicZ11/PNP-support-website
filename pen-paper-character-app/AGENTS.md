@@ -87,6 +87,7 @@ See `PROJECT_MAP.md` for:
 - Canonical sources (dice, units, JSON helpers, enums, types)
 - API route grouping
 - `codescope` MCP tools for symbol lookups
+- Task-scoped rules: see `agent-rules/README.md`.
 
 ## If you are Cline
 
