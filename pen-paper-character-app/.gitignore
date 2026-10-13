@@ -101,3 +101,5 @@ scripts/smoke-*.log
 *.swp               # vim swap
 *.swo
 .history/           # VS Code Local History
+# codescope MCP index
+.codescope/

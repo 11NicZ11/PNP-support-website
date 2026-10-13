@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "codescope": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "codescope-mcp",
+        "mcp",
+        "."
+      ]
+    }
+  }
+}
