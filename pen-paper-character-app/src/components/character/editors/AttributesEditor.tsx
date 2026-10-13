@@ -6,17 +6,12 @@ import { RaceData } from './RaceEditor';
 import { BackgroundData } from './BackgroundEditTab';
 import { BonusTooltip } from '@/components/ui/BonusTooltip';
 import { AttributeMethod, AttributeMethodState } from '@/types/character';
+import type { Attribute } from '@/types/character';
 import { getModifier } from '@/lib/utils';
 import { AttributeMethodSelector } from './AttributeMethodSelector';
 
-export interface Attribute {
-  id: string;
-  name: string;
-  value: number;
-  baseValue?: number;
-  isDefault: boolean;
-  order: number;
-}
+// Re-export so existing importers don't break.
+export type { Attribute } from '@/types/character';
 
 interface AttributesEditorProps {
   attributes: Attribute[];

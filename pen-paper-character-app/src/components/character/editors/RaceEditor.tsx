@@ -3,36 +3,15 @@
 
 import { useState } from 'react';
 import { AbilityScoreIncreaseEditor } from './AbilityScoreIncreaseEditor';
-import { AbilityScoreIncrease } from '@/types/abilityScoreIncrease';
+import type { RaceData } from '@/types/race';
 import { ALIGNMENT_OPTIONS } from '@/lib/enums/alignments';
 import {
   DefensesModal,
   DefenseItem,
 } from '@/components/character/modals/DefensesModal';
 
-export interface RaceData {
-  name: string;
-  size: string;
-  sizeCategory: string;
-  height: string;
-  weight: string;
-  age: string;
-  speed: number;
-  description: string;
-  languages: string[];
-  traits: { name: string; description: string }[];
-  abilityScoreIncrease: AbilityScoreIncrease;
-  hasSubrace: boolean;
-  subraces: { name: string; description: string }[];
-  skillProficiencies: { skillName: string; source: string }[];
-  faith: string;
-  personality: string;
-  bonds: string;
-  ideals: string;
-  flaws: string;
-  bonusArmorClass: number;
-  bonusHp: number;
-}
+// Re-export so existing importers don't break.
+export type { RaceData } from '@/types/race';
 
 interface RaceEditorProps {
   raceData: RaceData;

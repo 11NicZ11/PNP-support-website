@@ -4,19 +4,10 @@
 import { useState } from 'react';
 import { useLibrary } from '@/hooks/useLibrary';
 import { getModifier } from '@/lib/utils';
+import type { SavingThrow } from '@/types/savingThrows';
 
-export interface SavingThrow {
-  id: string;
-  name: string;
-  attributeName: string;
-  isProficient: boolean;
-  expertise: boolean;
-  proficiencySource?: string;
-  sourceDetail?: string;
-  modifier?: number;
-  // Library-Reference: FK auf LibraryEntry (nullable, SetNull).
-  libraryEntryId?: string | null;
-}
+// Re-export so existing importers don't break.
+export type { SavingThrow };
 
 interface SavingThrowsEditorProps {
   attributes: { id: string; name: string; value: number }[];

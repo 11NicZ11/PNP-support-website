@@ -4,14 +4,10 @@
 
 import { useState } from 'react';
 import { getModifier } from '@/lib/utils';
+import type { CombatValueSource } from '@/types/combat';
 
-export interface CombatValueSource {
-  id: string;
-  type: string;
-  name: string;
-  value: number;
-  dependsOn?: string;
-}
+// Re-export so existing importers don't break.
+export type { CombatValueSource };
 
 interface CombatValuesEditorProps {
   sources: CombatValueSource[];

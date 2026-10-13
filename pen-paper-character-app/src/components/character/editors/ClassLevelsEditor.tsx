@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import {
+  ClassLevel,
   ClassProgression,
   CLASS_PROGRESSION_LABELS,
   ExpMode,
@@ -32,22 +33,8 @@ import {
   DefenseItem,
 } from '@/components/character/modals/DefensesModal';
 
-export interface ClassLevel {
-  id?: string;
-  className: string;
-  subclass?: string;
-  subclassLevel?: number;
-  level: number;
-  hitDie: string;
-  features: ClassFeature[];
-  spellcastingAbility: SpellcastingAbility;
-  isActive: boolean;
-  leftAtLevel?: number;
-  notes: string;
-  sourceReference: string;
-  track: 0 | 1;
-  savingThrowProficiencies: string[];
-}
+// Re-export so existing importers don't break.
+export type { ClassLevel } from '@/types/character';
 
 interface ClassLevelsEditorProps {
   classLevels: ClassLevel[];

@@ -1,16 +1,41 @@
 // src/types/character.ts
-import { Attribute } from '@/components/character/editors/AttributesEditor';
 import { BackgroundData } from './background';
-import { RaceData } from '@/components/character/editors/RaceEditor';
-import { ClassLevel } from '@/components/character/editors/ClassLevelsEditor';
-import { CombatValueSource } from '@/components/character/editors/CombatValuesEditor';
-import { SavingThrow } from '@/components/character/editors/SavingThrowsEditor';
+import { RaceData } from '@/types/race';
+import { CombatValueSource } from '@/types/combat';
+import { SavingThrow } from '@/types/savingThrows';
 import { Skill } from './skills';
 import { StatusEffect } from './statusEffects';
 import { DefenseItem } from '@/types/defense';
 import { CharacterResource, CharacterHitDice } from './resources';
 import { AlternateForm } from './forms';
 import { Companion } from './companions';
+import { ClassFeature } from './classFeatures';
+
+export interface Attribute {
+  id: string;
+  name: string;
+  value: number;
+  baseValue?: number;
+  isDefault: boolean;
+  order: number;
+}
+
+export interface ClassLevel {
+  id?: string;
+  className: string;
+  subclass?: string;
+  subclassLevel?: number;
+  level: number;
+  hitDie: string;
+  features: ClassFeature[];
+  spellcastingAbility: SpellcastingAbility;
+  isActive: boolean;
+  leftAtLevel?: number;
+  notes: string;
+  sourceReference: string;
+  track: 0 | 1;
+  savingThrowProficiencies: string[];
+}
 
 export type LevelingMode = 'milestone' | 'exp';
 export type UnitSystem = 'metric' | 'imperial';
