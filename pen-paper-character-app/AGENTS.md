@@ -1,16 +1,14 @@
 # AGENTS.md
 
-Entry point for AI coding agents working on this repository.
-Detailed rules live in `.clinerules/` (local-only; not in git). If that
-folder is missing, ask the user — do not proceed blind.
+Universal rules for any AI agent working on this repository.
+Cline has its own additional rules (see bottom). Detailed orientation
+is in `PROJECT_MAP.md`.
 
 ## Project
 
 - **Stack:** Next.js 16 / React 19 / TypeScript / Prisma (SQLite) / Tailwind
 - **Purpose:** Pen & Paper RPG character manager. German UI, English code identifiers.
 - **Branch:** work on `dev`. `main` is protected; only stable merges.
-- **Current status:** Tags `sprint-0-complete`, `sprint-1b-complete`,
-  `sprint-1c-complete` are set. Sprint 1D (Type-Inversion) pending.
 - **Commands:**
   - `npm run dev` — dev server (port 3000)
   - `npm run test` — Vitest
@@ -28,14 +26,13 @@ folder is missing, ask the user — do not proceed blind.
    `npx prisma migrate dev --name <name>` when the task names it.
 3. **No silent failures.** `fetch` does not throw on 4xx/5xx — always
    check `res.ok`. Every `catch` either calls `setError` or rethrows.
-   `console.error` alone is not handling.
 4. **No `any` without a comment explaining why. No `@ts-ignore`.**
 5. **No renames or deletions of existing exports, types, or endpoints**
    unless the current task explicitly authorizes it.
 6. **No commits while `typecheck` or `test` is red.** Never leave a red
    baseline for the next agent.
-7. **Do not edit `AGENTS.md` or any file in `.clinerules/`.** These are
-   user-owned. If a rule looks wrong, report it — do not change it.
+7. **Do not edit `AGENTS.md` itself.** It is user-owned. If a rule
+   looks wrong, report it — do not change it.
 
 ## Per-edit verification (mandatory)
 
@@ -49,25 +46,13 @@ well. If a test breaks, fix immediately — do not continue.
 
 ## Stop and ask when
 
-- You cannot find a rule file that this doc references.
 - A task would touch more files than the task says it should.
-- A task would contradict a rule in `.clinerules/`.
+- A task would contradict a rule in this file.
 - You discover a bug outside the current task's scope.
 - You are unsure about behavior preservation in a refactor.
 - You find a file in a broken intermediate state (e.g., two versions of
   the same line, unbalanced braces, a duplicate import).
-
-## Rule index — read the relevant file before starting
-
-| Task type | Read from `.clinerules/` |
-|---|---|
-| Any task | `01-code-style.md`, `06-do-not.md` |
-| New feature using the Library | `02-library-of-babylon.md`, `05-new-feature-recipe.md`, `09-library-reference-pattern.md` |
-| Refactor of existing code | `04-file-refactor-targets.md` |
-| API route change | `01-code-style.md`, `07-common-pitfalls.md` |
-| State / sync / hooks | `03-state-and-sync.md`, `07-common-pitfalls.md` |
-| Schema / Prisma change | `01-code-style.md`, `05-new-feature-recipe.md` |
-| Before reporting done | `08-test-checklist.md` |
+- You cannot find a file this doc references.
 
 ## Working style
 
@@ -82,7 +67,8 @@ well. If a test breaks, fix immediately — do not continue.
   editor or PowerShell here-strings. Use `-LiteralPath` when paths
   contain `[` or `]` (Next.js dynamic routes) — PowerShell treats those
   as wildcards otherwise.
-- Report format follows `.clinerules/08-test-checklist.md` #10.
+- Report format: brief summary, list of files changed, verification
+  results (tsc / tests / browser smoke), and any out-of-scope findings.
 
 ## Git workflow
 
@@ -92,6 +78,25 @@ well. If a test breaks, fix immediately — do not continue.
 - After every push to `dev`, the working tree must be clean before the
   next task starts.
 - Tags mark completed sprints: `sprint-N-complete`.
+
+## Orientation — where to find what
+
+See `PROJECT_MAP.md` for:
+- Top-level folder purpose
+- The character editor hook chain
+- Canonical sources (dice, units, JSON helpers, enums, types)
+- API route grouping
+- `codescope` MCP tools for symbol lookups
+
+## If you are Cline
+
+You have additional detailed rules in `.clinerules/`. Before starting a
+task, read `.clinerules/00-index.md` — it points to the specific rule
+file(s) for the task type.
+
+**No other agent needs to read `.clinerules/`.** It is Cline-specific,
+local-only (not in git), and irrelevant to Antigravity, Claude Code,
+Cursor, or Claude.ai.
 
 ## When in doubt
 

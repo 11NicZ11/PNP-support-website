@@ -204,7 +204,8 @@ rohes `parseFloat`.
 - Modale inline rendern (kein Portal), `if (!isOpen) return null;` nach
   allen Hooks.
 
-Die vollständigen Regeln stehen in `AGENTS.md` und `.clinerules/`.
+Die vollständigen Regeln für Agents stehen in `AGENTS.md`.
+Orientierung: `PROJECT_MAP.md`.
 
 ## Entwicklung
 
@@ -228,7 +229,7 @@ Freigabe.
 | Thema | Ort |
 |---|---|
 | Cross-Agent-Regeln | `AGENTS.md` |
-| Detailregeln | `.clinerules/` (lokal, gitignored) |
+| Cline-spezifische Regeln | `.clinerules/` (lokal, gitignored, nur für Cline) |
 | Datenmodell | `prisma/schema.prisma` |
 | API-Routen | `src/app/api/` |
 | Wiederverwendbare Logik | `src/lib/` |

@@ -4,7 +4,7 @@ Einstiegspunkt für Agents vor jeder Analyse oder jedem Refactor.
 Erklärt **Zweck und Struktur**, nicht **mechanische Details** — die
 kommen aus `codescope` (`stats`, `context`, `search_symbols`).
 
-Regeln und Tabus: siehe `AGENTS.md` und `.clinerules/`.
+Regeln und Tabus: siehe `AGENTS.md`.
 Diese Karte dupliziert sie nicht.
 
 ---
