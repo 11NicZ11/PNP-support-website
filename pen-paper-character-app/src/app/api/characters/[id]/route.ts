@@ -8,16 +8,11 @@ import {
   asJsonArray,
   asJsonObject,
 } from '@/lib/api/helpers';
-import { parseJsonArray, parseJsonObject, toInt } from '@/lib/utils';
+import { toInt } from '@/lib/utils';
 import {
   migrateClassProgression,
-  parseClassLevels,
-  parseAlternateForms,
-  parseCompanions,
-  parseRaceData,
-  parseBackgroundData,
-  parseSpells,
-  parseDefenses,
+  getCharacterInclude,
+  buildCharacterResponse,
 } from '@/lib/api/character-helpers';
 
 // ==================== GET ====================
@@ -29,50 +24,14 @@ export async function GET(
     const { id } = await params;
     const character = await prisma.character.findUnique({
       where: { id },
-      include: {
-        attributes: true,
-        skills: true,
-        savingThrows: true,
-        proficiencies: true,
-        statusEffects: true,
-        defenses: true,
-        hpSources: true,
-        classLevels: true,
-        combatValueSources: true,
-        background: true,
-        raceData: true,
-        spells: { include: { components: { orderBy: { order: 'asc' } } } },
-        spellSlots: true,
-        resources: true,
-        hitDice: true,
-        alternateForms: true,
-        companions: true,
-      },
+      include: getCharacterInclude(),
     });
 
     if (!character) {
       return apiError('Charakter nicht gefunden', 404);
     }
 
-    const result = {
-      ...character,
-      classProgression: migrateClassProgression(character.classProgression),
-      expMode: character.expMode || 'next_only',
-      expThresholds: parseJsonObject(character.expThresholds || '{}'),
-      hasHitDice: character.hasHitDice !== false,
-      hitDiceMode: character.hitDiceMode || 'scaled',
-      attributeMethod: character.attributeMethod || 'free',
-      attributeMethodState: parseJsonObject(character.attributeMethodState || '{}'),
-      notesCategories: parseJsonArray(character.notesCategories || '[]'),
-      spells: parseSpells(character.spells),
-      spellSlots: character.spellSlots,
-      classLevels: parseClassLevels(character.classLevels),
-      alternateForms: parseAlternateForms(character.alternateForms),
-      companions: parseCompanions(character.companions),
-      background: parseBackgroundData(character.background),
-      raceData: parseRaceData(character.raceData),
-      defenses: parseDefenses(character.defenses),
-    };
+    const result = buildCharacterResponse(character);
 
     return apiSuccess(result);
   } catch (error) {
@@ -694,50 +653,14 @@ export async function PUT(
 
     const updated = await prisma.character.findUnique({
       where: { id },
-      include: {
-        attributes: true,
-        skills: true,
-        savingThrows: true,
-        proficiencies: true,
-        statusEffects: true,
-        defenses: true,
-        hpSources: true,
-        classLevels: true,
-        combatValueSources: true,
-        background: true,
-        raceData: true,
-        spells: { include: { components: { orderBy: { order: 'asc' } } } },
-        spellSlots: true,
-        resources: true,
-        hitDice: true,
-        alternateForms: true,
-        companions: true,
-      },
+      include: getCharacterInclude(),
     });
 
     if (!updated) {
       return apiError('Charakter nicht gefunden', 404);
     }
 
-    const result = {
-      ...updated,
-      classProgression: migrateClassProgression(updated.classProgression),
-      expMode: updated.expMode || 'next_only',
-      expThresholds: parseJsonObject(updated.expThresholds || '{}'),
-      hasHitDice: updated.hasHitDice !== false,
-      hitDiceMode: updated.hitDiceMode || 'scaled',
-      attributeMethod: updated.attributeMethod || 'free',
-      attributeMethodState: parseJsonObject(updated.attributeMethodState || '{}'),
-      notesCategories: parseJsonArray(updated.notesCategories || '[]'),
-      spells: parseSpells(updated.spells),
-      spellSlots: updated.spellSlots,
-      classLevels: parseClassLevels(updated.classLevels),
-      alternateForms: parseAlternateForms(updated.alternateForms),
-      companions: parseCompanions(updated.companions),
-      background: parseBackgroundData(updated.background),
-      raceData: parseRaceData(updated.raceData),
-      defenses: parseDefenses(updated.defenses),
-    };
+    const result = buildCharacterResponse(updated);
 
     return apiSuccess(result);
   } catch (error) {

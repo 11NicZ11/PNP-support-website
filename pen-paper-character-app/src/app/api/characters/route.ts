@@ -10,13 +10,8 @@ import {
 } from '@/lib/api/helpers';
 import {
   migrateClassProgression,
-  parseClassLevels,
-  parseAlternateForms,
-  parseCompanions,
-  parseRaceData,
-  parseBackgroundData,
-  parseSpells,
-  parseDefenses,
+  getCharacterInclude,
+  buildCharacterResponse,
 } from '@/lib/api/character-helpers';
 import { toInt } from '@/lib/utils';
 
@@ -560,48 +555,14 @@ export async function POST(request: NextRequest) {
 
     const fullCharacter = await prisma.character.findUnique({
       where: { id: createdCharacter.id },
-      include: {
-        attributes: true,
-        skills: true,
-        savingThrows: true,
-        proficiencies: true,
-        defenses: true,
-        hpSources: true,
-        classLevels: true,
-        combatValueSources: true,
-        background: true,
-        raceData: true,
-        spells: { include: { components: { orderBy: { order: 'asc' } } } },
-        spellSlots: true,
-        resources: true,
-        hitDice: true,
-        alternateForms: true,
-        companions: true,
-        inventoryContainers: { include: { items: true } },
-      },
+      include: getCharacterInclude(),
     });
 
     if (!fullCharacter) {
       return apiError('Charakter konnte nicht geladen werden', 500);
     }
 
-    const result = {
-      ...fullCharacter,
-      classProgression: migrateClassProgression(fullCharacter.classProgression),
-      expMode: fullCharacter.expMode || 'next_only',
-      expThresholds: JSON.parse(fullCharacter.expThresholds || '{}'),
-      hasHitDice: fullCharacter.hasHitDice !== false,
-      hitDiceMode: fullCharacter.hitDiceMode || 'scaled',
-      attributeMethodState: JSON.parse(fullCharacter.attributeMethodState || '{}'),
-      notesCategories: JSON.parse(fullCharacter.notesCategories || '[]'),
-      spells: parseSpells(fullCharacter.spells),
-      classLevels: parseClassLevels(fullCharacter.classLevels),
-      alternateForms: parseAlternateForms(fullCharacter.alternateForms),
-      companions: parseCompanions(fullCharacter.companions),
-      background: parseBackgroundData(fullCharacter.background),
-      raceData: parseRaceData(fullCharacter.raceData),
-      defenses: parseDefenses(fullCharacter.defenses),
-    };
+    const result = buildCharacterResponse(fullCharacter);
 
     return apiSuccess(result, 201);
   } catch (error) {
