@@ -26,6 +26,27 @@ export const stringifyJsonObject = (val: any): string => {
   try { return JSON.stringify(val); } catch { return '{}'; }
 };
 
+// ==================== INT COERCION ====================
+/**
+ * Coerce a value to an integer with an explicit fallback and optional minimum.
+ * Returns `fallback` when the input cannot be parsed to a finite number.
+ * Never returns NaN.
+ */
+export function toInt(
+  value: unknown,
+  fallback: number,
+  min?: number
+): number {
+  const n =
+    typeof value === 'number'
+      ? value
+      : typeof value === 'string'
+        ? parseInt(value, 10)
+        : Number.NaN;
+  const result = Number.isFinite(n) ? Math.trunc(n) : fallback;
+  return typeof min === 'number' ? Math.max(min, result) : result;
+}
+
 // ==================== ATTRIBUT-MODIFIER ====================
 export const getModifier = (value: number): number => Math.floor((value - 10) / 2);
 

@@ -2,7 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
-import { parseJsonArray } from '@/lib/utils';
+import { parseJsonArray, toInt } from '@/lib/utils';
 
 function parseCompanion(companion: any) {
   return {
@@ -52,7 +52,7 @@ export async function POST(
         challengeRating: body.challengeRating || '0',
         armorClass: Math.max(0, parseInt(body.armorClass) || 10),
         hpMax: Math.max(0, parseInt(body.hpMax) || 1),
-        hpCurrent: Math.max(0, parseInt(body.hpCurrent) ?? parseInt(body.hpMax) ?? 1),
+        hpCurrent: toInt(body.hpCurrent, toInt(body.hpMax, 1, 0), 0),
         tempHp: Math.max(0, parseInt(body.tempHp) || 0),
         strength: parseInt(body.strength) || 10,
         dexterity: parseInt(body.dexterity) || 10,

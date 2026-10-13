@@ -8,7 +8,7 @@ import {
   asJsonArray,
   asJsonObject,
 } from '@/lib/api/helpers';
-import { parseJsonArray, parseJsonObject } from '@/lib/utils';
+import { parseJsonArray, parseJsonObject, toInt } from '@/lib/utils';
 import {
   migrateClassProgression,
   parseClassLevels,
@@ -578,10 +578,7 @@ export async function PUT(
             creatureType: form.creatureType || '',
             armorClass: Math.max(0, parseInt(form.armorClass) || 10),
             hpMax: Math.max(0, parseInt(form.hpMax) || 1),
-            hpCurrent: Math.max(
-              0,
-              parseInt(form.hpCurrent) ?? parseInt(form.hpMax) ?? 1
-            ),
+            hpCurrent: toInt(form.hpCurrent, toInt(form.hpMax, 1, 0), 0),
             hpFormula: form.hpFormula || '',
             strength: parseInt(form.strength) || 10,
             dexterity: parseInt(form.dexterity) || 10,
@@ -655,10 +652,7 @@ export async function PUT(
             challengeRating: comp.challengeRating || '0',
             armorClass: Math.max(0, parseInt(comp.armorClass) || 10),
             hpMax: Math.max(0, parseInt(comp.hpMax) || 1),
-            hpCurrent: Math.max(
-              0,
-              parseInt(comp.hpCurrent) ?? parseInt(comp.hpMax) ?? 1
-            ),
+            hpCurrent: toInt(comp.hpCurrent, toInt(comp.hpMax, 1, 0), 0),
             tempHp: Math.max(0, parseInt(comp.tempHp) || 0),
             strength: parseInt(comp.strength) || 10,
             dexterity: parseInt(comp.dexterity) || 10,

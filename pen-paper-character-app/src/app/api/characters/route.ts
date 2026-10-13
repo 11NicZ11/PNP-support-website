@@ -18,6 +18,7 @@ import {
   parseSpells,
   parseDefenses,
 } from '@/lib/api/character-helpers';
+import { toInt } from '@/lib/utils';
 
 // ==================== POST ====================
 export async function POST(request: NextRequest) {
@@ -297,7 +298,7 @@ export async function POST(request: NextRequest) {
       creatureType: f.creatureType || '',
       armorClass: Math.max(0, parseInt(f.armorClass) || 10),
       hpMax: Math.max(0, parseInt(f.hpMax) || 1),
-      hpCurrent: Math.max(0, parseInt(f.hpCurrent) ?? parseInt(f.hpMax) ?? 1),
+      hpCurrent: toInt(f.hpCurrent, toInt(f.hpMax, 1, 0), 0),
       hpFormula: f.hpFormula || '',
       strength: parseInt(f.strength) || 10,
       dexterity: parseInt(f.dexterity) || 10,
@@ -337,7 +338,7 @@ export async function POST(request: NextRequest) {
       challengeRating: c.challengeRating || '0',
       armorClass: Math.max(0, parseInt(c.armorClass) || 10),
       hpMax: Math.max(0, parseInt(c.hpMax) || 1),
-      hpCurrent: Math.max(0, parseInt(c.hpCurrent) ?? parseInt(c.hpMax) ?? 1),
+      hpCurrent: toInt(c.hpCurrent, toInt(c.hpMax, 1, 0), 0),
       tempHp: Math.max(0, parseInt(c.tempHp) || 0),
       strength: parseInt(c.strength) || 10,
       dexterity: parseInt(c.dexterity) || 10,

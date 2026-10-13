@@ -15,6 +15,7 @@ import {
   isImmune,
   isResistant,
   calculateDamage,
+  toInt,
 } from '../utils';
 
 describe('JSON helpers', () => {
@@ -99,6 +100,32 @@ describe('storage helpers', () => {
   it('loadFromStorage returns fallback on corrupt data', () => {
     localStorage.setItem('bad', 'not json');
     expect(loadFromStorage('bad', [])).toEqual([]);
+  });
+});
+
+describe('toInt', () => {
+  it('parses valid numeric strings', () => {
+    expect(toInt('5', 1, 0)).toBe(5);
+  });
+
+  it('falls back on unparseable strings', () => {
+    expect(toInt('abc', 1, 0)).toBe(1);
+  });
+
+  it('falls back on undefined', () => {
+    expect(toInt(undefined, 1, 0)).toBe(1);
+  });
+
+  it('enforces the minimum', () => {
+    expect(toInt('5', 1, 10)).toBe(10);
+  });
+
+  it('truncates floats', () => {
+    expect(toInt(3.7, 0)).toBe(3);
+  });
+
+  it('falls back on null', () => {
+    expect(toInt(null, 5)).toBe(5);
   });
 });
 
