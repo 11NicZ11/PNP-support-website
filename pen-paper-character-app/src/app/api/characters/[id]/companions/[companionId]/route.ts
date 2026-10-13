@@ -2,15 +2,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
-import { parseJsonArray } from '@/lib/utils';
-
-function parseCompanion(companion: any) {
-  return {
-    ...companion,
-    attacks: parseJsonArray(companion.attacks || '[]'),
-    abilities: parseJsonArray(companion.abilities || '[]'),
-  };
-}
+import { parseCompanion } from '@/lib/api/character-helpers';
 
 export async function GET(
   request: NextRequest,
