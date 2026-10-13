@@ -3,24 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import { useLibrary } from '@/hooks/useLibrary';
+import type { DefenseType, DefenseSource, DefenseItem } from '@/types/defense';
 
-export type DefenseType =
-  | 'damage_immunity'
-  | 'damage_resistance'
-  | 'condition_immunity';
-
-export type DefenseSource = 'class' | 'race' | 'equipment' | 'manual';
-
-export interface DefenseItem {
-  id: string;
-  type: DefenseType;
-  name: string;
-  description: string | null;
-  source: DefenseSource;
-  sourceName: string | null;
-  isCustom: boolean;
-  libraryEntryId?: string | null;
-}
+// Re-export so existing importers don't break.
+export type { DefenseType, DefenseSource, DefenseItem };
 
 interface DefensesModalProps {
   isOpen: boolean;

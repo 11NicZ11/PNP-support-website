@@ -7,7 +7,7 @@ import { CombatValueSource } from '@/components/character/editors/CombatValuesEd
 import { SavingThrow } from '@/components/character/editors/SavingThrowsEditor';
 import { Skill } from './skills';
 import { StatusEffect } from './statusEffects';
-import { DefenseItem } from '@/components/character/modals/DefensesModal';
+import { DefenseItem } from '@/types/defense';
 import { CharacterResource, CharacterHitDice } from './resources';
 import { AlternateForm } from './forms';
 import { Companion } from './companions';
