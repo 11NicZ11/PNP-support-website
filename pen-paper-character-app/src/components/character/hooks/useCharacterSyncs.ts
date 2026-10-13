@@ -76,9 +76,16 @@ export function useCharacterSyncs(state: CharacterState) {
 
   // Sync: Rassen-Sprachen → Proficiencies
   useEffect(() => {
-    if (!raceData.languages || raceData.languages.length === 0) return;
     setProficiencies((prev: any[]) => {
-      const existing = prev.filter((p) => p.category !== 'language');
+      // Remove only rows this effect owns.
+      const withoutRace = prev.filter(
+        (p) => !(p.category === 'language' && p.proficiencySource === 'Rasse')
+      );
+
+      if (!raceData.languages || raceData.languages.length === 0) {
+        return withoutRace;
+      }
+
       const raceLanguages = raceData.languages.map((lang) => ({
         id: `race-lang-${lang}`,
         name: lang,
@@ -88,10 +95,11 @@ export function useCharacterSyncs(state: CharacterState) {
         proficiencySource: 'Rasse',
         sourceDetail: 'Rasse',
       }));
-      return [...existing, ...raceLanguages];
+
+      return [...withoutRace, ...raceLanguages];
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [raceData.languages]);
+  }, [raceData.languages.join('|')]);
 
   // Sync: Attributs-Boni (Rasse + Background)
   useEffect(() => {
