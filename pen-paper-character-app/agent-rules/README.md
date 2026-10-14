@@ -25,6 +25,7 @@ That is 3 files max, ~150 lines, per task.
 | State / hooks / sync effects | `state.md` |
 | Library / FK / rename dialog | `library.md` |
 | Prisma schema change | `prisma.md` |
+| Running shell commands on Windows | `terminal.md` |
 | Before reporting done | `verification.md` |
 
 ## What this folder is not

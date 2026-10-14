@@ -93,6 +93,13 @@ _smoke.js
 _smoke*.js
 scripts/smoke-*.log
 
+# Debug temp files (agent-created, never committed)
+_debug*.mjs
+_debug*.js
+_body*.json
+_get*.json
+_put*.json
+
 # ============================================================
 # IDE files (optional — add only if you use these)
 # ============================================================

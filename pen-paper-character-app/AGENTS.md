@@ -63,10 +63,9 @@ well. If a test breaks, fix immediately — do not continue.
 - After editing: run `npm run typecheck`, `npm run test`, and a manual
   browser smoke test (create character → all tabs render → no red
   console errors).
-- Windows environment. Do not use bash-only syntax (`echo >>`). Use the
-  editor or PowerShell here-strings. Use `-LiteralPath` when paths
-  contain `[` or `]` (Next.js dynamic routes) — PowerShell treats those
-  as wildcards otherwise.
+- Windows environment. See `agent-rules/terminal.md` for PowerShell
+  gotchas: `$` interpolation, quote nesting, `[id]` wildcards, and when
+  to use a temp file instead of a one-liner.
 - Report format: brief summary, list of files changed, verification
   results (tsc / tests / browser smoke), and any out-of-scope findings.
 
