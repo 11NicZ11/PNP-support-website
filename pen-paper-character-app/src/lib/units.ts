@@ -59,38 +59,6 @@ export const formatDistance = (mFromDb: number | null | undefined, unitSystem: U
 };
 
 /**
- * Formatiert eine Distanz, die als String in der DB steht (z.B. aus range-Feld).
- * Erkennt automatisch die Einheit im String und konvertiert sie.
- * Beispiele: "30/120" (ft), "9/36" (m), "1.5 m", "5 ft"
- */
-export const formatDistanceString = (
-  rangeFromDb: string | null | undefined,
-  unitSystem: UnitSystem
-): string => {
-  if (!rangeFromDb) return '';
-  // Wenn "30/120" ohne Einheit → als ft interpretieren (D&D-Standard)
-  const trimmed = rangeFromDb.trim();
-  if (/^\d+\s*\/\s*\d+$/.test(trimmed)) {
-    const [a, b] = trimmed.split('/').map((s) => parseFloat(s.trim()));
-    if (unitSystem === 'metric') {
-      return `${roundForDisplay(ftToM(a))}/${roundForDisplay(ftToM(b))} m`;
-    }
-    return `${a}/${b} ft`;
-  }
-  if (/ft$/i.test(trimmed)) {
-    const ft = parseFloat(trimmed);
-    if (unitSystem === 'metric') return `${roundForDisplay(ftToM(ft))} m`;
-    return `${ft} ft`;
-  }
-  if (/m$/i.test(trimmed)) {
-    const m = parseFloat(trimmed);
-    if (unitSystem === 'imperial') return `${roundForDisplay(mToFt(m))} ft`;
-    return `${m} m`;
-  }
-  return trimmed;
-};
-
-/**
  * Parst eine Nutzereingabe (in der aktuellen Einheit) und gibt den Wert
  * in der Basiseinheit (kg) zurück.
  */

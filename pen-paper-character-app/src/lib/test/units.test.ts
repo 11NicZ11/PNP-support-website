@@ -11,7 +11,6 @@ import {
   ftToM,
   formatWeight,
   formatDistance,
-  formatDistanceString,
   parseWeightInput,
   parseDistanceInput,
   displayWeightValue,
@@ -62,33 +61,6 @@ describe('formatDistance', () => {
 
   it('formats imperial as ft', () => {
     expect(formatDistance(30, 'imperial')).toBe('100 ft'); // 30 / 0.3 = 100
-  });
-});
-
-describe('formatDistanceString', () => {
-  it('handles range pattern "30/120" as ft → metric', () => {
-    expect(formatDistanceString('30/120', 'metric')).toBe('9/36 m');
-  });
-
-  it('handles range pattern "30/120" as ft → imperial', () => {
-    expect(formatDistanceString('30/120', 'imperial')).toBe('30/120 ft');
-  });
-
-  it('handles explicit ft → metric', () => {
-    expect(formatDistanceString('30 ft', 'metric')).toBe('9 m');
-  });
-
-  it('handles explicit m → imperial', () => {
-    expect(formatDistanceString('9 m', 'imperial')).toBe('30 ft');
-  });
-
-  it('returns input unchanged when no unit can be inferred', () => {
-    expect(formatDistanceString('egal', 'metric')).toBe('egal');
-  });
-
-  it('returns empty for null/empty', () => {
-    expect(formatDistanceString('', 'metric')).toBe('');
-    expect(formatDistanceString(null, 'metric')).toBe('');
   });
 });
 
@@ -150,20 +122,6 @@ describe('units - null + imperial combos', () => {
 
   it('displayDistanceValue(null) returns empty', () => {
     expect(displayDistanceValue(null, 'metric')).toBe('');
-  });
-});
-
-describe('units - formatDistanceString branch coverage', () => {
-  it('m-suffix + metric passes through unchanged', () => {
-    expect(formatDistanceString('9 m', 'metric')).toBe('9 m');
-  });
-
-  it('ft-suffix + imperial passes through unchanged', () => {
-    expect(formatDistanceString('30 ft', 'imperial')).toBe('30 ft');
-  });
-
-  it('range pattern scales with the metric conversion for both parts', () => {
-    expect(formatDistanceString('15/60', 'metric')).toBe('4.5/18 m');
   });
 });
 
