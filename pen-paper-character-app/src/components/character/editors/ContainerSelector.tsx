@@ -3,17 +3,19 @@
 'use client';
 
 import { useState } from 'react';
-import { WeightUnit } from '@/types/inventory';
 import { useEffect, useRef } from 'react';
+import { UnitSystem } from '@/types/character';
+import { parseWeightInput, getWeightUnitLabel } from '@/lib/units';
 
 interface ContainerSelectorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (name: string, weightLimit?: number | null, weightUnit?: WeightUnit, sourceReference?: string) => void;
+  onSelect: (name: string, weightLimit?: number | null, containerWeight?: number | null, sourceReference?: string) => void;
   initialName?: string;
   initialWeightLimit?: number | null;
-  initialWeightUnit?: WeightUnit;
+  initialContainerWeight?: number | null;
   initialSourceReference?: string;
+  unitSystem: UnitSystem;
   mode?: 'create' | 'edit';
 }
 
@@ -23,14 +25,15 @@ export function ContainerSelector({
   onSelect,
   initialName = '',
   initialWeightLimit = null,
-  initialWeightUnit = 'kg',
+  initialContainerWeight = null,
   initialSourceReference = '',
+  unitSystem,
   mode = 'create'
 }: ContainerSelectorProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [containerName, setContainerName] = useState(initialName);
   const [weightLimit, setWeightLimit] = useState<number | null>(initialWeightLimit);
-  const [weightUnit, setWeightUnit] = useState<WeightUnit>(initialWeightUnit);
+  const [containerWeight, setContainerWeight] = useState<string>(initialContainerWeight != null ? String(initialContainerWeight) : '');
   const [sourceReference, setSourceReference] = useState(initialSourceReference);
   const [hasWeightLimit, setHasWeightLimit] = useState(mode === 'create' ? true : (initialWeightLimit !== null && initialWeightLimit > 0));
 
@@ -54,13 +57,13 @@ export function ContainerSelector({
       if (mode === 'create') {
         setContainerName('');
         setWeightLimit(null);
-        setWeightUnit('kg');
+        setContainerWeight('');
         setSourceReference('');
         setHasWeightLimit(true);
       } else {
         setContainerName(initialName);
         setWeightLimit(initialWeightLimit);
-        setWeightUnit(initialWeightUnit);
+        setContainerWeight(initialContainerWeight != null ? String(initialContainerWeight) : '');
         setSourceReference(initialSourceReference);
         setHasWeightLimit(initialWeightLimit !== null && initialWeightLimit > 0);
       }
@@ -71,7 +74,7 @@ export function ContainerSelector({
       document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose, mode, initialName, initialWeightLimit, initialWeightUnit, initialSourceReference]);
+  }, [isOpen, onClose, mode, initialName, initialWeightLimit, initialContainerWeight, initialSourceReference]);
 
   if (!isOpen) return null;
 
@@ -95,11 +98,12 @@ export function ContainerSelector({
     }
     
     const finalWeightLimit = hasWeightLimit ? weightLimit : null;
-    
+    const finalContainerWeight = containerWeight.trim() ? parseWeightInput(containerWeight, unitSystem) : null;
+
     onSelect(
       containerName.trim(),
       finalWeightLimit,
-      weightUnit,
+      finalContainerWeight,
       sourceReference.trim()
     );
   };
@@ -168,14 +172,9 @@ export function ContainerSelector({
                   min="0.1"
                   className="flex-1 px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
                 />
-                <select
-                  value={weightUnit}
-                  onChange={(e) => setWeightUnit(e.target.value as WeightUnit)}
-                  className="px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-                >
-                  <option value="kg">kg</option>
-                  <option value="lb">lb</option>
-                </select>
+                <span className="px-2 py-2 text-gray-400 text-sm self-center">
+                  {getWeightUnitLabel(unitSystem)}
+                </span>
               </div>
             )}
             {!hasWeightLimit && (
@@ -183,6 +182,21 @@ export function ContainerSelector({
                 💡 Der Container kann unendlich viele Items aufnehmen.
               </div>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Eigengewicht des Containers ({getWeightUnitLabel(unitSystem)})
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={containerWeight}
+              onChange={(e) => setContainerWeight(e.target.value)}
+              placeholder="z.B. 2"
+              min="0"
+              className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
+            />
           </div>
 
           <div>

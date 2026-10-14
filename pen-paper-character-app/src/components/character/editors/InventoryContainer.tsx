@@ -2,16 +2,11 @@
 'use client';
 
 import { useState } from 'react';
-import { InventoryContainer, CONTAINER_ICON, WeightUnit } from '@/types/inventory';
+import { InventoryContainer, CONTAINER_ICON } from '@/types/inventory';
 import { EquipmentItem } from '@/types/equipment';
 import { UnitSystem } from '@/types/character';
 import { formatWeight } from '@/lib/units';
 import { InventoryItemComponent } from './InventoryItem';
-
-// Container weight limit is stored raw in the container's own unit
-// (weightUnit), not the character unitSystem. Show it as-is, no conversion.
-const displayWeightLimit = (limit: number, unit: WeightUnit): string =>
-  `${limit} ${unit}`;
 
 interface InventoryContainerProps {
   container: InventoryContainer;
@@ -154,6 +149,11 @@ export function InventoryContainerComponent({
           <div className="flex items-center gap-2">
             <span className="text-lg">{CONTAINER_ICON}</span>
             <h3 className="font-semibold text-lg">{container.name}</h3>
+            {container.containerWeight != null && (
+              <span className="text-sm text-gray-400">
+                ({formatWeight(container.containerWeight, unitSystem)})
+              </span>
+            )}
           </div>
           {container.description && (
             <div className="text-xs text-gray-400 mt-1">{container.description}</div>
@@ -165,7 +165,7 @@ export function InventoryContainerComponent({
             <span>📦 {totalItems} Items</span>
             {hasWeightLimit ? (
               <span>
-                ⚖️ {formatWeight(totalWeight, unitSystem)} / {displayWeightLimit(container.weightLimit!, container.weightUnit)}
+                ⚖️ {formatWeight(totalWeight, unitSystem)} / {formatWeight(container.weightLimit!, unitSystem)}
               </span>
             ) : (
               <span>♾️ Unendlich Platz</span>

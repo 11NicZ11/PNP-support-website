@@ -541,7 +541,7 @@ export async function POST(request: NextRequest) {
               description: container.description || '',
               capacity: container.capacity ?? null,
               weightLimit: container.weightLimit ?? null,
-              weightUnit: container.weightUnit || 'kg',
+              containerWeight: container.containerWeight != null ? parseInt(container.containerWeight) : null,
               sourceReference: container.sourceReference ?? '',
               libraryEntryId: container.libraryEntryId ?? null,
               characterId: character.id,

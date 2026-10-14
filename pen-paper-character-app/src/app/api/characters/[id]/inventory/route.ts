@@ -51,7 +51,7 @@ export async function POST(
         description: body.description || '',
         capacity: body.capacity || null,
         weightLimit: body.weightLimit != null ? parseFloat(body.weightLimit) : null,
-        weightUnit: body.weightUnit || 'kg',
+        containerWeight: body.containerWeight != null ? parseInt(body.containerWeight) : null,
         sourceReference: body.sourceReference ?? '',
         libraryEntryId: body.libraryEntryId ?? null,
         characterId: id,

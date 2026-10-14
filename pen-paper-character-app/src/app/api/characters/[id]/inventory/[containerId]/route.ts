@@ -55,6 +55,8 @@ export async function PUT(
         description: body.description,
         capacity: body.capacity,
         weightLimit: body.weightLimit,
+        containerWeight:
+          body.containerWeight !== undefined ? body.containerWeight : undefined,
         sourceReference:
           body.sourceReference !== undefined ? body.sourceReference : undefined,
         libraryEntryId:

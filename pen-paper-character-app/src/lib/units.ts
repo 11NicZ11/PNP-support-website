@@ -6,8 +6,11 @@
 import { UnitSystem } from '@/types/character';
 
 // ==================== GEWICHT ====================
-// 1 kg = 2.2 lb (D&D-vereinfacht)
-export const KG_TO_LB = 2.2;
+// Base relationship (D&D 5e convention):
+//   1 kg = 2 lb
+// This is the single source of truth for weight conversion.
+// Do not hardcode conversion factors elsewhere.
+export const KG_TO_LB = 2.0;
 export const LB_TO_KG = 1 / KG_TO_LB;
 
 export const kgToLb = (kg: number): number => kg * KG_TO_LB;

@@ -7,7 +7,7 @@ import { EquipmentItem } from '@/types/equipment';
 import { EQUIPMENT_TYPES } from '@/lib/enums/equipmentTypes';
 import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll, parseDamageDice, isValidDiceType } from '@/lib/dice';
 import { UnitSystem } from '@/types/character';
-import { formatWeight, getWeightUnitLabel } from '@/lib/units';
+import { formatWeight, getWeightUnitLabel, parseWeightInput, displayWeightValue } from '@/lib/units';
 
 interface InventoryItemComponentProps {
   item: InventoryItem;
@@ -17,7 +17,6 @@ interface InventoryItemComponentProps {
   onEquipmentUpdate: (updated: EquipmentItem[]) => void;
   onDelete: (id: string) => void;
   onMove: (itemId: string, targetContainerId: string) => void;
-  weightUnit?: string;
   unitSystem: UnitSystem;
 }
 
@@ -29,7 +28,6 @@ export function InventoryItemComponent({
   onEquipmentUpdate,
   onDelete,
   onMove,
-  weightUnit = 'kg',
   unitSystem,
 }: InventoryItemComponentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,7 +36,9 @@ export function InventoryItemComponent({
   const [editMode, setEditMode] = useState(false);
   const [editName, setEditName] = useState(item.name);
   const [editQuantity, setEditQuantity] = useState(item.quantity);
-  const [editWeight, setEditWeight] = useState(item.weight?.toString() || '');
+  const [editWeight, setEditWeight] = useState(
+    displayWeightValue(item.weight, unitSystem)
+  );
 
   const linkedEquipment = item.equipmentId
     ? equipment.find((e) => e.id === item.equipmentId)
@@ -160,7 +160,7 @@ export function InventoryItemComponent({
           body: JSON.stringify({
             name: editName,
             quantity: editQuantity,
-            weight: editWeight ? parseFloat(editWeight) : null,
+            weight: parseWeightInput(editWeight, unitSystem),
           }),
         }
       );

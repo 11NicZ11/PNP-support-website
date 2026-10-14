@@ -568,7 +568,7 @@ model InventoryContainer {
   description String?
   capacity    Int?
   weightLimit Float?
-  weightUnit  String   @default("kg")
+  containerWeight Int?  // Eigengewicht des Containers in kg
   sourceReference String @default("")
   parentId    String?
   characterId String

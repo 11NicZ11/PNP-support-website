@@ -2,7 +2,6 @@
 import type { EquipmentType } from './equipment';
 
 export type ContainerType = 'container';
-export type WeightUnit = 'kg' | 'lb';
 
 export interface InventoryContainer {
   id: string;
@@ -11,7 +10,7 @@ export interface InventoryContainer {
   description?: string;
   capacity?: number | null;
   weightLimit?: number | null;
-  weightUnit: WeightUnit; // for now just Kg und lb
+  containerWeight?: number | null;
   sourceReference?: string;
   libraryEntryId?: string | null;
   parentId?: string;

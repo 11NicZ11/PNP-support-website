@@ -27,6 +27,13 @@ describe('constants and inverses', () => {
     expect(LB_TO_KG).toBeCloseTo(1 / KG_TO_LB, 6);
   });
 
+  it('uses D&D 5e convention: 1 kg = 2 lb', () => {
+    expect(kgToLb(1)).toBe(2);
+    expect(lbToKg(2)).toBe(1);
+    expect(kgToLb(10)).toBe(20);
+    expect(lbToKg(20)).toBe(10);
+  });
+
   it('ftToM is the inverse of mToFt', () => {
     expect(ftToM(mToFt(1))).toBeCloseTo(1, 6);
     expect(M_TO_FT).toBeCloseTo(1 / FT_TO_M, 6);
@@ -39,7 +46,7 @@ describe('formatWeight', () => {
   });
 
   it('formats imperial as lb', () => {
-    expect(formatWeight(70, 'imperial')).toBe('154 lb'); // 70 * 2.2 = 154
+    expect(formatWeight(70, 'imperial')).toBe('140 lb'); // 70 * 2 = 140
   });
 
   it('returns empty string for null/undefined', () => {
@@ -87,7 +94,7 @@ describe('formatDistanceString', () => {
 
 describe('parseWeightInput / parseDistanceInput', () => {
   it('parseWeightInput converts imperial lb → kg', () => {
-    expect(parseWeightInput('154', 'imperial')).toBeCloseTo(70, 0);
+    expect(parseWeightInput('140', 'imperial')).toBeCloseTo(70, 0);
   });
 
   it('parseWeightInput passes through metric', () => {
@@ -106,7 +113,7 @@ describe('parseWeightInput / parseDistanceInput', () => {
 
 describe('display values', () => {
   it('metric kg stored → imperial displays lb', () => {
-    expect(displayWeightValue(70, 'imperial')).toBe('154');
+    expect(displayWeightValue(70, 'imperial')).toBe('140');
   });
 
   it('metric m stored → imperial displays ft', () => {

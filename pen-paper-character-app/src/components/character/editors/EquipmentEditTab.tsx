@@ -3,7 +3,7 @@
 
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { EquipmentItem } from '@/types/equipment';
-import { InventoryContainer, WeightUnit } from '@/types/inventory';
+import { InventoryContainer } from '@/types/inventory';
 import { UnitSystem } from '@/types/character';
 import { InventoryContainerComponent } from './InventoryContainer';
 import { ContainerSelector } from './ContainerSelector';
@@ -109,7 +109,7 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
     const handleAddContainer = async (
       name: string,
       weightLimit?: number | null,
-      weightUnit: WeightUnit = 'kg',
+      containerWeight?: number | null,
       sourceReference: string = ''
     ) => {
       setError(null);
@@ -119,7 +119,7 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
           ...editingContainer,
           name: name,
           weightLimit: weightLimit || null,
-          weightUnit: weightUnit,
+          containerWeight: containerWeight ?? null,
           sourceReference: sourceReference,
           updatedAt: new Date().toISOString(),
         };
@@ -141,7 +141,7 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
         description: '',
         capacity: null,
         weightLimit: weightLimit || null,
-        weightUnit: weightUnit,
+        containerWeight: containerWeight ?? null,
         sourceReference: sourceReference,
         parentId: undefined,
         characterId: characterId,
@@ -168,7 +168,7 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
             description: '',
             capacity: null,
             weightLimit: weightLimit || null,
-            weightUnit: weightUnit,
+            containerWeight: containerWeight ?? null,
             sourceReference: sourceReference,
           }),
         });
@@ -291,8 +291,9 @@ export const EquipmentEditTab = forwardRef<EquipmentEditTabRef, EquipmentEditTab
           onSelect={handleAddContainer}
           initialName={editingContainer?.name || ''}
           initialWeightLimit={editingContainer?.weightLimit || null}
-          initialWeightUnit={editingContainer?.weightUnit || 'kg'}
+          initialContainerWeight={editingContainer?.containerWeight ?? null}
           initialSourceReference={editingContainer?.sourceReference || ''}
+          unitSystem={unitSystem}
           mode={editingContainer ? 'edit' : 'create'}
         />
       </div>
