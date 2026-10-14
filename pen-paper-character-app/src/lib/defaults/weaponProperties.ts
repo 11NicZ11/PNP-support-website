@@ -3,6 +3,7 @@
 export interface DefaultWeaponProperty {
   name: string;
   description: string;
+  data?: Record<string, any>;
 }
 
 // ==================== D&D 5e WAFFEN-EIGENSCHAFTEN (SRD) ====================
@@ -38,6 +39,7 @@ export const DND_WEAPON_PROPERTIES: DefaultWeaponProperty[] = [
   {
     name: 'Reach',
     description: 'Diese Waffe erhöht deine Reichweite um 1,5 Meter (5 Fuß).',
+    data: { hasValue: true, defaultValue: 1.5 },
   },
   {
     name: 'Special',

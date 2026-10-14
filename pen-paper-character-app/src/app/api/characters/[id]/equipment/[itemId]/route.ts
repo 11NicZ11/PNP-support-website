@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/[itemId]/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
 import { toInt } from '@/lib/utils';
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
     if (!equipment) {
       return apiError('Gegenstand nicht gefunden', 404);
     }
-    return apiSuccess(equipment);
+    return apiSuccess(withParsedWeaponProperties(equipment));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Laden des Gegenstands');
   }
@@ -50,7 +50,9 @@ export async function PUT(
           body.attackBonus !== undefined ? toInt(body.attackBonus, 0) : undefined,
         damageDice: body.damageDice,
         damageType: body.damageType,
-        range: body.range,
+        rangeType: body.rangeType !== undefined ? body.rangeType : undefined,
+        rangeValue: body.rangeValue !== undefined ? (body.rangeValue != null ? parseFloat(body.rangeValue) : null) : undefined,
+        rangeMaxValue: body.rangeMaxValue !== undefined ? (body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null) : undefined,
         weaponProperties,
         armorClassBonus:
           body.armorClassBonus !== undefined
@@ -76,11 +78,29 @@ export async function PUT(
       },
     });
 
+    // weaponPropertyRows komplett ersetzen (wie andere Collections).
+    if (body.weaponPropertyRows !== undefined) {
+      await prisma.equipmentWeaponProperty.deleteMany({ where: { equipmentId: itemId } });
+      const rows = Array.isArray(body.weaponPropertyRows) ? body.weaponPropertyRows : [];
+      if (rows.length > 0) {
+        await prisma.equipmentWeaponProperty.createMany({
+          data: rows.map((p: any, i: number) => ({
+            equipmentId: itemId,
+            name: p.name,
+            valueNumber: p.valueNumber != null ? parseFloat(p.valueNumber) : null,
+            libraryEntryId: p.libraryEntryId ?? null,
+            order: i,
+          })),
+        });
+      }
+    }
+
     const updated = await prisma.equipment.findFirst({
       where: { id: itemId, characterId: id },
+      include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
     if (!updated) return apiError('Gegenstand nicht gefunden', 404);
-    return apiSuccess(updated);
+    return apiSuccess(withParsedWeaponProperties(updated));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Aktualisieren des Gegenstands');
   }

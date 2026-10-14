@@ -328,6 +328,7 @@ async function seedWeaponProperties() {
       },
       update: {
         description: prop.description,
+        data: JSON.stringify(prop.data ?? '{}'),
         isSeed: true,
       },
       create: {
@@ -336,7 +337,7 @@ async function seedWeaponProperties() {
         name: prop.name,
         description: prop.description,
         icon: '⚔️',
-        data: '{}',
+        data: JSON.stringify(prop.data ?? '{}'),
         isSeed: true,
         isPublic: true,
       },

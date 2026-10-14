@@ -389,7 +389,9 @@ model Equipment {
   attackBonus Int?     @default(0)
   damageDice  String?
   damageType  String?
-  range       String?
+  rangeType   String?   // 'melee' | 'ranged'
+  rangeValue  Float?    // Basis-Reichweite in Meter
+  rangeMaxValue Float?  // Long-Range in Meter (nur ranged)
   weaponProperties String?
 
   armorClassBonus Int? @default(0)
@@ -418,11 +420,45 @@ model Equipment {
   updatedAt   DateTime @updatedAt
 
   inventoryItems InventoryItem[]
+  weaponPropertyRows EquipmentWeaponProperty[]
 
   @@index([characterId])
   @@index([type])
   @@index([equipped])
   @@index([attuned])
+  @@index([libraryEntryId])
+}
+
+// ==================== WEAPON PROPERTIES (strukturiert) ====================
+model EquipmentWeaponProperty {
+  id             String   @id @default(cuid())
+  equipmentId    String
+  equipment      Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  libraryEntryId String?
+  library        LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  name           String
+  valueNumber    Float?
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@unique([equipmentId, name])
+  @@index([equipmentId])
+  @@index([libraryEntryId])
+}
+
+model InventoryItemWeaponProperty {
+  id              String   @id @default(cuid())
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  libraryEntryId  String?
+  library         LibraryEntry? @relation(fields: [libraryEntryId], references: [id], onDelete: SetNull)
+  name            String
+  valueNumber     Float?
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@unique([inventoryItemId, name])
+  @@index([inventoryItemId])
   @@index([libraryEntryId])
 }
 
@@ -613,7 +649,9 @@ model InventoryItem {
   attackBonus Int?     @default(0)
   damageDice  String?
   damageType  String?
-  range       String?
+  rangeType   String?   // 'melee' | 'ranged'
+  rangeValue  Float?    // Basis-Reichweite in Meter
+  rangeMaxValue Float?  // Long-Range in Meter (nur ranged)
   weaponProperties String?
   armorClassBonus Int? @default(0)
   armorType   String?
@@ -623,6 +661,8 @@ model InventoryItem {
   shieldBonus Int?     @default(0)
   attunement  Boolean  @default(false)
   attuned     Boolean  @default(false)
+
+  weaponPropertyRows InventoryItemWeaponProperty[]
 
   createdAt   DateTime @default(now())
   libraryEntryId String?
@@ -793,6 +833,8 @@ model LibraryEntry {
   inventoryItems InventoryItem[]
   alternateForms AlternateForm[]
   companions     Companion[]
+  equipmentWeaponProperties   EquipmentWeaponProperty[]
+  inventoryItemWeaponProperties InventoryItemWeaponProperty[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

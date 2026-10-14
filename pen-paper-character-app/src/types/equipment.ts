@@ -22,6 +22,13 @@ export type ArmorType = 'light' | 'medium' | 'heavy';
 
 export type DamageType = (typeof DAMAGE_TYPES)[number];
 
+export interface WeaponPropertyRow {
+  id: string;
+  name: string;
+  valueNumber: number | null;
+  libraryEntryId?: string | null;
+}
+
 export interface EquipmentItem {
   id: string;
   name: string;
@@ -39,8 +46,11 @@ export interface EquipmentItem {
   attackBonus?: number;
   damageDice?: string;
   damageType?: DamageType;
-  range?: string;
+  rangeType?: 'melee' | 'ranged' | null;
+  rangeValue?: number | null;
+  rangeMaxValue?: number | null;
   weaponProperties?: string[];
+  weaponPropertyRows?: WeaponPropertyRow[];
 
   armorClassBonus?: number;
   armorType?: ArmorType;

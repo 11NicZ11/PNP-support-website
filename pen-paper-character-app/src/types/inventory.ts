@@ -1,5 +1,6 @@
 // pen-paper-character-app\src\types\inventory.ts
 import type { EquipmentType } from './equipment';
+import type { WeaponPropertyRow } from './equipment';
 
 export type ContainerType = 'container';
 
@@ -40,8 +41,11 @@ export interface InventoryItem {
   attackBonus?: number | null;
   damageDice?: string;
   damageType?: string;
-  range?: string;
+  rangeType?: 'melee' | 'ranged' | null;
+  rangeValue?: number | null;
+  rangeMaxValue?: number | null;
   weaponProperties?: string[];
+  weaponPropertyRows?: WeaponPropertyRow[];
   
   // Rüstungs-spezifisch
   armorClassBonus?: number | null;

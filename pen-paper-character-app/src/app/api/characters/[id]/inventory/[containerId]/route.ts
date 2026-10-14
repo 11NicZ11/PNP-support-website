@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/inventory/[containerId]/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedInventoryItems } from '@/lib/api/helpers';
 
 export async function GET(
   request: NextRequest,
@@ -19,7 +19,7 @@ export async function GET(
     });
 
     if (!container) return apiError('Container nicht gefunden', 404);
-    return apiSuccess(container);
+    return apiSuccess(withParsedInventoryItems(container));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Laden des Containers');
   }
@@ -72,7 +72,7 @@ export async function PUT(
       },
     });
     if (!updated) return apiError('Container nicht gefunden', 404);
-    return apiSuccess(updated);
+    return apiSuccess(withParsedInventoryItems(updated));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Aktualisieren des Containers');
   }

@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, asJsonArray } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, asJsonArray, withParsedWeaponProperties } from '@/lib/api/helpers';
 import { toInt } from '@/lib/utils';
 
 export async function GET(
@@ -13,8 +13,9 @@ export async function GET(
     const equipment = await prisma.equipment.findMany({
       where: { characterId: id },
       orderBy: [{ equipped: 'desc' }, { type: 'asc' }, { name: 'asc' }],
+      include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
-    return apiSuccess(equipment);
+    return apiSuccess(equipment.map(withParsedWeaponProperties));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Laden der Ausrüstung');
   }
@@ -47,8 +48,20 @@ export async function POST(
         attackBonus: body.attackBonus ? toInt(body.attackBonus, 0) : 0,
         damageDice: body.damageDice || null,
         damageType: body.damageType || null,
-        range: body.range || null,
+        rangeType: body.rangeType ?? null,
+        rangeValue: body.rangeValue != null ? parseFloat(body.rangeValue) : null,
+        rangeMaxValue: body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null,
         weaponProperties: body.weaponProperties ? asJsonArray(body.weaponProperties) : null,
+        weaponPropertyRows: {
+          create: (Array.isArray(body.weaponPropertyRows) ? body.weaponPropertyRows : []).map(
+            (p: any, i: number) => ({
+              name: p.name,
+              valueNumber: p.valueNumber != null ? parseFloat(p.valueNumber) : null,
+              libraryEntryId: p.libraryEntryId ?? null,
+              order: i,
+            })
+          ),
+        },
         armorClassBonus: body.armorClassBonus ? toInt(body.armorClassBonus, 0) : null,
         armorType: body.armorType || null,
         maxDexBonus: body.maxDexBonus ? toInt(body.maxDexBonus, 0) : null,
@@ -62,9 +75,10 @@ export async function POST(
         libraryEntryId: body.libraryEntryId ?? null,
         characterId: id,
       },
+      include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
 
-    return apiSuccess(equipment, 201);
+    return apiSuccess(withParsedWeaponProperties(equipment), 201);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Erstellen der Ausrüstung');
   }

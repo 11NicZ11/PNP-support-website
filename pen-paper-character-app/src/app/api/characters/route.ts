@@ -519,10 +519,22 @@ export async function POST(request: NextRequest) {
             attackBonus: item.attackBonus || 0,
             damageDice: item.damageDice || null,
             damageType: item.damageType || null,
-            range: item.range || null,
+            rangeType: item.rangeType ?? null,
+            rangeValue: item.rangeValue != null ? parseFloat(item.rangeValue) : null,
+            rangeMaxValue: item.rangeMaxValue != null ? parseFloat(item.rangeMaxValue) : null,
             weaponProperties: item.weaponProperties
               ? asJsonArray(item.weaponProperties)
               : null,
+            weaponPropertyRows: {
+              create: (Array.isArray(item.weaponPropertyRows) ? item.weaponPropertyRows : []).map(
+                (p: any, i: number) => ({
+                  name: p.name,
+                  valueNumber: p.valueNumber != null ? parseFloat(p.valueNumber) : null,
+                  libraryEntryId: p.libraryEntryId ?? null,
+                  order: i,
+                })
+              ),
+            },
             armorClassBonus: item.armorClassBonus || 0,
             armorType: item.armorType || null,
             maxDexBonus: item.maxDexBonus || 0,

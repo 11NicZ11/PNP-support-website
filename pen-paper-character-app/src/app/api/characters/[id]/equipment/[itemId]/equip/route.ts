@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/[itemId]/equip/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
 
 export async function POST(
   request: NextRequest,
@@ -37,7 +37,7 @@ export async function POST(
       where: { id: itemId },
       data: { equipped },
     });
-    return apiSuccess(updated);
+    return apiSuccess(withParsedWeaponProperties(updated));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Ausrüsten');
   }

@@ -10,6 +10,7 @@ import { diceInfo } from '@/lib/dice';
 import { RECHARGE_TYPES } from '@/lib/enums/rechargeTypes';
 import { InventoryItem } from '@/types/inventory';
 import { UnitSystem } from '@/types/character';
+import { parseDistanceInput } from '@/lib/units';
 import {
   getWeightUnitLabel,
   getDistanceUnitLabel,
@@ -75,6 +76,10 @@ export function CreateItemModal({
         attackBonus: 0,
         range: '',
         weaponProperties: [],
+        rangeType: 'melee' as const,
+        rangeValue: '',
+        rangeMaxValue: '',
+        weaponPropertyValues: {} as Record<string, number | null>,
         armorClassBonus: 0,
         armorType: '',
         maxDexBonus: 0,
@@ -124,6 +129,10 @@ export function CreateItemModal({
     attackBonus: 0,
     range: '',
     weaponProperties: [],
+    rangeType: 'melee' as const,
+    rangeValue: '',
+    rangeMaxValue: '',
+    weaponPropertyValues: {} as Record<string, number | null>,
     armorClassBonus: 0,
     armorType: '',
     maxDexBonus: 0,
@@ -229,10 +238,24 @@ export function CreateItemModal({
       magicBonus: parseInt(formData.magicBonus) || 0,
       attackBonus: parseInt(formData.attackBonus) || 0,
       damageDice: damageDice || null,
-      range: formData.range || null,
+      rangeType: formData.rangeType || null,
+      rangeValue: formData.rangeValue
+        ? parseDistanceInput(formData.rangeValue, unitSystem)
+        : null,
+      rangeMaxValue: formData.rangeMaxValue
+        ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
+        : null,
       weaponProperties: Array.isArray(formData.weaponProperties)
         ? formData.weaponProperties
         : [],
+      weaponPropertyRows: (formData.weaponProperties || [])
+        .map((name: string) => ({
+          name,
+          valueNumber: formData.weaponPropertyValues?.[name] != null
+            ? parseDistanceInput(String(formData.weaponPropertyValues[name]), unitSystem)
+            : null,
+          libraryEntryId: libraryWeaponProperties.find((p) => p.name === name)?.id ?? null,
+        })),
       armorClassBonus: parseInt(formData.armorClassBonus) || 0,
       armorType: formData.armorType || null,
       maxDexBonus: parseInt(formData.maxDexBonus) || 0,
@@ -325,10 +348,24 @@ export function CreateItemModal({
       attackBonus: parseInt(formData.attackBonus) || 0,
       damageDice: damageDice || undefined,
       damageType: undefined,
-      range: formData.range || undefined,
+      rangeType: selectedType === 'weapon' ? formData.rangeType : undefined,
+      rangeValue: formData.rangeValue
+        ? parseDistanceInput(formData.rangeValue, unitSystem)
+        : undefined,
+      rangeMaxValue: formData.rangeMaxValue
+        ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
+        : undefined,
       weaponProperties: Array.isArray(formData.weaponProperties)
         ? formData.weaponProperties
         : [],
+      weaponPropertyRows: (formData.weaponProperties || [])
+        .map((name: string) => ({
+          name,
+          valueNumber: formData.weaponPropertyValues?.[name] != null
+            ? parseDistanceInput(String(formData.weaponPropertyValues[name]), unitSystem)
+            : null,
+          libraryEntryId: libraryWeaponProperties.find((p) => p.name === name)?.id ?? null,
+        })),
       armorClassBonus: parseInt(formData.armorClassBonus) || 0,
       armorType: formData.armorType || undefined,
       maxDexBonus: parseInt(formData.maxDexBonus) || 0,
@@ -438,10 +475,24 @@ export function CreateItemModal({
           attackBonus: parseInt(formData.attackBonus) || 0,
           damageDice: damageDice || null,
           damageType: null,
-          range: formData.range || null,
+          rangeType: formData.rangeType || null,
+          rangeValue: formData.rangeValue
+            ? parseDistanceInput(formData.rangeValue, unitSystem)
+            : null,
+          rangeMaxValue: formData.rangeMaxValue
+            ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
+            : null,
           weaponProperties: Array.isArray(formData.weaponProperties)
             ? formData.weaponProperties
             : [],
+          weaponPropertyRows: (formData.weaponProperties || [])
+            .map((name: string) => ({
+              name,
+              valueNumber: formData.weaponPropertyValues?.[name] != null
+                ? parseDistanceInput(String(formData.weaponPropertyValues[name]), unitSystem)
+                : null,
+              libraryEntryId: libraryWeaponProperties.find((p) => p.name === name)?.id ?? null,
+            })),
           armorClassBonus: parseInt(formData.armorClassBonus) || 0,
           armorType: formData.armorType || null,
           maxDexBonus: parseInt(formData.maxDexBonus) || 0,
@@ -458,10 +509,17 @@ export function CreateItemModal({
         };
       } else if (itemType === 'spell') {
         endpoint = `/api/characters/${characterId}/spells`;
+        // Waffen-Felder gehören zum Item-Type equipment/inventory, nicht zum
+        // Zauber-POST: sie kÃÂ¶nnen sonst als unbekannte Eigenschaften an den
+        // Spell-Endpunkt geraten.
+        const { rangeType, rangeValue, rangeMaxValue, weaponPropertyValues, ...spellFormData } =
+          formData;
         payload = {
-          ...formData,
-          level: parseInt(formData.level) || 0,
-          components: Array.isArray(formData.components) ? formData.components : [],
+          ...spellFormData,
+          level: parseInt(spellFormData.level) || 0,
+          components: Array.isArray(spellFormData.components)
+            ? spellFormData.components
+            : [],
         };
       } else if (itemType === 'action') {
         endpoint = `/api/characters/${characterId}/actions`;
@@ -559,17 +617,94 @@ export function CreateItemModal({
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Reichweite ({getDistanceUnitLabel(unitSystem)})
+            Reichweite-Typ
           </label>
-          <input
-            type="text"
-            value={formData.range}
-            onChange={(e) => handleInputChange('range', e.target.value)}
-            placeholder={unitSystem === 'imperial' ? 'z. B. 5 ft' : 'z. B. 1.5 m'}
-            className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleInputChange('rangeType', 'melee')}
+              className={`px-3 py-1 rounded border ${
+                formData.rangeType === 'melee'
+                  ? 'bg-purple-600 text-white border-purple-500'
+                  : 'bg-gray-700 text-gray-200 border-gray-600'
+              }`}
+            >
+              &#127910; Nahkampf
+            </button>
+            <button
+              type="button"
+              onClick={() => handleInputChange('rangeType', 'ranged')}
+              className={`px-3 py-1 rounded border ${
+                formData.rangeType === 'ranged'
+                  ? 'bg-purple-600 text-white border-purple-500'
+                  : 'bg-gray-700 text-gray-200 border-gray-600'
+              }`}
+            >
+              &#127916; Fernkampf
+            </button>
+          </div>
         </div>
       </div>
+      {formData.rangeType === 'melee' && (
+        <div>
+          <div className="text-xs text-gray-500 mb-1">
+            Nahkampf-Waffen: Basis-Reichweite 1,5 m (5 ft)
+          </div>
+          {formData.weaponProperties?.includes('Reach') && (
+            <div className="ml-5">
+              <label className="block text-xs text-gray-400 mb-1">
+                Reach (Zusatz-Reichweite)
+              </label>
+              <input
+                type="number"
+                value={formData.weaponPropertyValues?.Reach ?? ''}
+                onChange={(e) => {
+                  const v =
+                    e.target.value === ''
+                      ? null
+                      : Number(e.target.value);
+                  handleInputChange('weaponPropertyValues', {
+                    ...formData.weaponPropertyValues,
+                    Reach: v,
+                  });
+                }}
+                placeholder={unitSystem === 'imperial' ? '5' : '1,5'}
+                className="w-24 px-2 py-1 bg-gray-800 rounded border border-gray-600 text-sm"
+              />
+            </div>
+          )}
+        </div>
+      )}
+      {formData.rangeType === 'ranged' && (
+        <div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Normale Reichweite ({getDistanceUnitLabel(unitSystem)})
+              </label>
+              <input
+                type="text"
+                value={formData.rangeValue}
+                onChange={(e) => handleInputChange('rangeValue', e.target.value)}
+                placeholder="z. B. 30 ft"
+                className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Maximale Reichweite ({getDistanceUnitLabel(unitSystem)})
+              </label>
+              <input
+                type="text"
+                value={formData.rangeMaxValue}
+                onChange={(e) => handleInputChange('rangeMaxValue', e.target.value)}
+                placeholder="z. B. 120 ft"
+                className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div>
         <div className="flex justify-between items-center mb-2">
@@ -657,6 +792,12 @@ export function CreateItemModal({
                       'weaponProperties',
                       current.filter((p: string) => p !== prop.name)
                     );
+                    if (prop.name === 'Reach') {
+                      handleInputChange(
+                        'weaponPropertyValues',
+                        { ...formData.weaponPropertyValues, Reach: null }
+                      );
+                    }
                   }
                 }}
                 className="rounded"
@@ -664,6 +805,25 @@ export function CreateItemModal({
               {prop.name}
             </label>
           ))}
+          {formData.weaponProperties?.includes('Reach') && (
+            <label key="ReachValue" className="flex items-center gap-1 text-sm mt-1">
+              <input
+                type="number"
+                value={formData.weaponPropertyValues?.Reach ?? ''}
+                onChange={(e) => {
+                  const v =
+                    e.target.value === '' ? null : Number(e.target.value);
+                  handleInputChange('weaponPropertyValues', {
+                    ...formData.weaponPropertyValues,
+                    Reach: v,
+                  });
+                }}
+                placeholder={unitSystem === 'imperial' ? '5' : '1,5'}
+                className="w-20 rounded border border-gray-600"
+              />
+              <span className="text-xs text-gray-400">Zusatz-Reichweite</span>
+            </label>
+          )}
         </div>
       </div>
     </div>

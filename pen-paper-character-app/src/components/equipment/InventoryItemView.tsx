@@ -7,7 +7,7 @@ import { EquipmentItem } from '@/types/equipment';
 import { EQUIPMENT_TYPES } from '@/lib/enums/equipmentTypes';
 import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll, parseDamageDice, isValidDiceType } from '@/lib/dice';
 import { UnitSystem } from '@/types/character';
-import { formatDistanceString, formatWeight } from '@/lib/units';
+import { formatDistance, formatWeight, getDistanceUnitLabel, ftToM } from '@/lib/units';
 
 interface InventoryItemViewProps {
   item: InventoryItem;
@@ -115,11 +115,24 @@ export function InventoryItemView({
       ? formatWeight(item.weight, unitSystem)
       : null;
 
-  // Reichweite aus der DB (Roh-String) — Konvertierung nur bei der Anzeige (Regel 03)
-  const rangeDisplay =
-    item.range && item.range.trim()
-      ? formatDistanceString(item.range, unitSystem)
-      : null;
+  // Strukturierte Reichweite: melee = Basis (implizit 5 ft wenn null),
+  // ranged = normal/long (nur wenn normal gesetzt). Leer wenn nichts gesetzt.
+  const rangeDisplay = (() => {
+    if (item.rangeType === 'melee') {
+      const base = item.rangeValue ?? ftToM(5);
+      return `⚔️ ${formatDistance(base, unitSystem)}`;
+    }
+    if (item.rangeType === 'ranged') {
+      if (item.rangeValue == null) return null;
+      const unitLabel = getDistanceUnitLabel(unitSystem);
+      const base = formatDistance(item.rangeValue, unitSystem).replace(` ${unitLabel}`, '');
+      const max = item.rangeMaxValue != null
+        ? `/${formatDistance(item.rangeMaxValue, unitSystem).replace(` ${unitLabel}`, '')}`
+        : '';
+      return `🏹 ${base}${max} ${unitLabel}`;
+    }
+    return null;
+  })();
 
   return (
     <div className="bg-gray-800/30 rounded p-2 hover:bg-gray-700/30 transition group">
@@ -151,6 +164,17 @@ export function InventoryItemView({
             )}
             {rangeDisplay && (
               <span className="text-xs text-gray-400 ml-1">📏 {rangeDisplay}</span>
+            )}
+            {item.weaponPropertyRows && item.weaponPropertyRows.length > 0 && (
+              item.weaponPropertyRows.map((p) => (
+                <span
+                  key={p.id}
+                  className="text-xs px-1.5 py-0.5 ml-1 rounded bg-gray-700/50 text-gray-300"
+                >
+                  {p.name}
+                  {p.valueNumber != null && ` +${formatDistance(p.valueNumber, unitSystem)}`}
+                </span>
+              ))
             )}
           </div>
           <div className="text-xs text-gray-400">{getTypeLabel()}</div>

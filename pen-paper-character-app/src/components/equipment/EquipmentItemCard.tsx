@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { EquipmentItem } from '@/types/equipment';
 import { diceInfo, DiceType, rollWeaponDamage, WeaponDamageRoll, parseDamageDice, isValidDiceType } from '@/lib/dice';
 import { UnitSystem } from '@/types/character';
-import { formatDistanceString, formatWeight } from '@/lib/units';
+import { formatDistance, formatWeight, getDistanceUnitLabel, ftToM } from '@/lib/units';
 
 interface EquipmentItemCardProps {
   item: EquipmentItem;
@@ -30,10 +30,6 @@ export function EquipmentItemCard({
 }: EquipmentItemCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
-
-  const weaponProperties = Array.isArray(item.weaponProperties)
-    ? item.weaponProperties
-    : [];
 
   const handleWeaponDamage = () => {
     if (!item.damageDice) return;
@@ -74,11 +70,24 @@ export function EquipmentItemCard({
       ? `AC ${item.armorClassBonus}`
       : null;
   const isWeaponWithDamage = item.type === 'weapon' && item.damageDice;
-  // Reichweite aus der DB (Roh-String) — Konvertierung nur bei der Anzeige (Regel 03)
-  const rangeDisplay =
-    item.range && item.range.trim()
-      ? formatDistanceString(item.range, unitSystem)
-      : null;
+  // Strukturierte Reichweite: melee = Basis (implizit 5 ft wenn null),
+  // ranged = normal/long (nur wenn normal gesetzt). Leer wenn nichts gesetzt.
+  const rangeDisplay = (() => {
+    if (item.rangeType === 'melee') {
+      const base = item.rangeValue ?? ftToM(5);
+      return `⚔️ ${formatDistance(base, unitSystem)}`;
+    }
+    if (item.rangeType === 'ranged') {
+      if (item.rangeValue == null) return null;
+      const unitLabel = getDistanceUnitLabel(unitSystem);
+      const base = formatDistance(item.rangeValue, unitSystem).replace(` ${unitLabel}`, '');
+      const max = item.rangeMaxValue != null
+        ? `/${formatDistance(item.rangeMaxValue, unitSystem).replace(` ${unitLabel}`, '')}`
+        : '';
+      return `🏹 ${base}${max} ${unitLabel}`;
+    }
+    return null;
+  })();
 
   return (
     <div
@@ -119,9 +128,17 @@ export function EquipmentItemCard({
           {rangeDisplay && (
             <div className="text-xs text-gray-400 mt-0.5">📏 Reichweite: {rangeDisplay}</div>
           )}
-          {weaponProperties.length > 0 && (
-            <div className="text-xs text-gray-400 mt-0.5">
-              {weaponProperties.join(', ')}
+          {item.weaponPropertyRows && item.weaponPropertyRows.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-0.5">
+              {item.weaponPropertyRows.map((p) => (
+                <span
+                  key={p.id}
+                  className="text-xs px-1.5 py-0.5 rounded bg-gray-700/50 text-gray-300"
+                >
+                  {p.name}
+                  {p.valueNumber != null && ` +${formatDistance(p.valueNumber, unitSystem)}`}
+                </span>
+              ))}
             </div>
           )}
           {isExpanded && item.description && (

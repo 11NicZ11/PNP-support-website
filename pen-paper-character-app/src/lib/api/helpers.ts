@@ -3,6 +3,7 @@
 
 import { NextResponse } from 'next/server';
 import { ApiError } from './errors';
+import { parseJsonArray } from '@/lib/utils';
 
 export const apiError = (message: string, status: number = 400): NextResponse =>
   NextResponse.json({ error: message }, { status });
@@ -83,6 +84,28 @@ export const asJsonArray = (value: any): string => {
   if (typeof value === 'string') return value;
   try { return JSON.stringify(value); } catch { return '[]'; }
 };
+
+/**
+ * JSON boundary: `weaponProperties` liegt als JSON-String in der DB.
+ * An jeder API-Grenze zu einem Array parsen (idempotent für Arrays).
+ */
+export const withParsedWeaponProperties = <T extends { weaponProperties?: unknown }>(
+  row: T
+): T & { weaponProperties: unknown[] } => ({
+  ...row,
+  weaponProperties: parseJsonArray(row.weaponProperties),
+});
+
+/**
+ * JSON boundary: Inventory-Container tragen ihre Items in mehreren Ebenen
+ * (items / children / children.children) — rekursiv weaponProperties parsen.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- JSON boundary: Prisma-Include-Baum mit flachen Zeilen
+export const withParsedInventoryItems = (container: any): any => ({
+  ...container,
+  items: (container.items ?? []).map(withParsedWeaponProperties),
+  children: (container.children ?? []).map(withParsedInventoryItems),
+});
 
 export const asJsonObject = (value: any): string => {
   if (!value) return '{}';

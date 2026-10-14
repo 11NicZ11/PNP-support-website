@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/inventory/[containerId]/items/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
 
 export async function POST(
   request: NextRequest,
@@ -46,10 +46,22 @@ export async function POST(
         attackBonus: body.attackBonus || 0,
         damageDice: body.damageDice || null,
         damageType: body.damageType || null,
-        range: body.range || null,
+        rangeType: body.rangeType ?? null,
+        rangeValue: body.rangeValue != null ? parseFloat(body.rangeValue) : null,
+        rangeMaxValue: body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null,
         weaponProperties: body.weaponProperties
           ? JSON.stringify(body.weaponProperties)
           : null,
+        weaponPropertyRows: {
+          create: (Array.isArray(body.weaponPropertyRows) ? body.weaponPropertyRows : []).map(
+            (p: any, i: number) => ({
+              name: p.name,
+              valueNumber: p.valueNumber != null ? parseFloat(p.valueNumber) : null,
+              libraryEntryId: p.libraryEntryId ?? null,
+              order: i,
+            })
+          ),
+        },
         armorClassBonus: body.armorClassBonus || 0,
         armorType: body.armorType || null,
         maxDexBonus: body.maxDexBonus || 0,
@@ -59,9 +71,10 @@ export async function POST(
         attunement: body.attunement || false,
         attuned: body.attuned || false,
       },
+      include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
 
-    return apiSuccess(item, 201);
+    return apiSuccess(withParsedWeaponProperties(item), 201);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Erstellen des Items');
   }

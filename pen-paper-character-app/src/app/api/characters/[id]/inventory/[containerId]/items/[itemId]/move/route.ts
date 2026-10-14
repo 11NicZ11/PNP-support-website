@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/inventory/[containerId]/items/[itemId]/move/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
 
 export async function PUT(
   request: NextRequest,
@@ -34,7 +34,7 @@ export async function PUT(
       where: { id: itemId, containerId: targetContainerId, characterId: id },
     });
     if (!updated) return apiError('Item nicht gefunden', 404);
-    return apiSuccess(updated);
+    return apiSuccess(withParsedWeaponProperties(updated));
   } catch (error) {
     return handleApiError(error, 'Fehler beim Verschieben des Items');
   }
