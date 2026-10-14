@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/inventory/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, withParsedInventoryItems } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
 
 export async function GET(
   request: NextRequest,
@@ -26,7 +26,7 @@ export async function GET(
         },
       },
     });
-    return apiSuccess(containers.map(withParsedInventoryItems));
+    return apiSuccess(containers);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Laden der Container');
   }

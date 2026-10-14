@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/inventory/[containerId]/items/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
 
 export async function POST(
   request: NextRequest,
@@ -71,7 +71,7 @@ export async function POST(
       include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
 
-    return apiSuccess(withParsedWeaponProperties(item), 201);
+    return apiSuccess(item, 201);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Erstellen des Items');
   }

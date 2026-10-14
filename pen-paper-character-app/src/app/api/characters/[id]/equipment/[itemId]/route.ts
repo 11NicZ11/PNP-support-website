@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/[itemId]/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError } from '@/lib/api/helpers';
 import { toInt } from '@/lib/utils';
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
     if (!equipment) {
       return apiError('Gegenstand nicht gefunden', 404);
     }
-    return apiSuccess(withParsedWeaponProperties(equipment));
+    return apiSuccess(equipment);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Laden des Gegenstands');
   }
@@ -95,7 +95,7 @@ export async function PUT(
       include: { weaponPropertyRows: { orderBy: { order: 'asc' } } },
     });
     if (!updated) return apiError('Gegenstand nicht gefunden', 404);
-    return apiSuccess(withParsedWeaponProperties(updated));
+    return apiSuccess(updated);
   } catch (error) {
     return handleApiError(error, 'Fehler beim Aktualisieren des Gegenstands');
   }

@@ -84,26 +84,6 @@ export const asJsonArray = (value: any): string => {
   try { return JSON.stringify(value); } catch { return '[]'; }
 };
 
-/**
- * Weapon-Properties werden jetzt relational über `weaponPropertyRows`
- * (EquipmentWeaponProperty / InventoryItemWeaponProperty) gespeichert.
- * Die alte `weaponProperties`-JSON-Spalte wurde entfernt (Sprint 2d-3a).
- * Dieser Helper bleibt als Identitäts-Pass-Through erhalten, damit die
- * bestehenden API-Routen unverändert weiterfunktionieren.
- */
-export const withParsedWeaponProperties = <T>(row: T): T => row;
-
-/**
- * Inventory-Container tragen ihre Items in mehreren Ebenen
- * (items / children / children.children) — Pass-Through über alle Ebenen.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma-Include-Baum mit flachen Zeilen
-export const withParsedInventoryItems = (container: any): any => ({
-  ...container,
-  items: (container.items ?? []).map(withParsedWeaponProperties),
-  children: (container.children ?? []).map(withParsedInventoryItems),
-});
-
 export const asJsonObject = (value: any): string => {
   if (!value) return '{}';
   if (typeof value === 'string') return value;
