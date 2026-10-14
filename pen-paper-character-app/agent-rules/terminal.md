@@ -4,6 +4,51 @@ Read this when your task involves running commands. Dev environment is
 **Windows PowerShell 5.1** (not bash, not pwsh 7). Most agent friction
 happens here, not in the code.
 
+## Working Directory — the #1 source of wasted time
+
+**Every command runs from `pen-paper-character-app/`.** Do not `cd` to
+the repo root unless the task explicitly requires it. Do not `cd` back
+and forth. Pick the directory once and stay there.
+
+Repo layout:
+
+```
+PNP-support-website/                ← git root. Avoid. No package.json.
+  pen-paper-character-app/          ← WORK HERE. Everything is here.
+    package.json                    ← npm/npx commands run here
+    prisma/                         ← prisma commands run here
+    src/                            ← source code
+    agent-rules/                    ← these rules
+    .clinerules/                    ← Cline rules
+    vitest.config.ts
+```
+
+**Rules:**
+
+1. `npm`, `npx`, `node`, `tsc`, `vitest`, `git`, `prisma` — all run from
+   `pen-paper-character-app/`.
+2. If your session started at the repo root: run
+   `Set-Location pen-paper-character-app` **once**. Not per-command, not
+   with `cd ..`, not in a chain.
+3. **Never** write `cd X; cmd; cd ..; cmd; cd X; cmd`. That's three
+   commands, three chances to lose track. One directory, all commands.
+4. **Never** write files outside `pen-paper-character-app/`. That
+   includes debug temp files (`_debug.mjs`, `_body.json`, etc.).
+
+**Why this is critical:** every wrong-directory switch is a chance to
+run the wrong `npm`, see "missing script", re-`cd`, lose track, and
+waste 2–3 minutes. Over 20 commands per task, that's 40–60 minutes
+lost. One working directory = zero lost time.
+
+### If you're unsure where you are
+
+```powershell
+Get-Location
+```
+
+One command. If it doesn't end in `pen-paper-character-app`,
+`Set-Location pen-paper-character-app`, then continue.
+
 ## The three PowerShell traps
 
 ### Trap 1 — `$` is interpolated inside double quotes
@@ -45,18 +90,28 @@ Remove-Item _body.json
 ### Trap 3 — `[` and `]` in paths are wildcards
 
 Next.js dynamic routes contain brackets. PowerShell treats `[id]` as a
-character class:
+character class — like a regex, not a literal path.
 
 ```powershell
-# ❌ [id] matches 'i' or 'd', not the literal path
+# ❌ [id] matches 'i' or 'd' — file not found
 Get-Content src\app\api\characters\[id]\route.ts
 
-# ✓ Use -LiteralPath
+# ❌ Single quotes don't help — brackets are still wildcards
+Get-Content 'src\app\api\characters\[id]\route.ts'
+
+# ❌ Doubling brackets doesn't help either
+Get-Content 'src\app\api\characters\[[id]]\route.ts'
+
+# ✓ ONLY this works
 Get-Content -LiteralPath "src\app\api\characters\[id]\route.ts"
 ```
 
-Applies to: `Get-Content`, `Set-Content`, `Select-String`, `Test-Path`,
-`Get-Item`, `Copy-Item`, `Move-Item`, `Remove-Item`.
+**Rule:** if a path contains `[` or `]`, ALWAYS use `-LiteralPath`. No
+exceptions, no quote tricks, no doubling.
+
+**Affected cmdlets:** `Get-Content`, `Set-Content`, `Select-String`,
+`Test-Path`, `Get-Item`, `Copy-Item`, `Move-Item`, `Remove-Item`,
+`Get-ChildItem`.
 
 ## Decision table — one-liner vs. temp file
 
@@ -170,12 +225,17 @@ Same for emojis: `🎯` shows as `ðŸŽ¯` in the console but is fine on disk.
 - **No bash syntax.** `echo >>`, `&&`, `$(...)`, `$(cat ...)` do not work.
 - **No `&&` chaining.** PowerShell 5.1 doesn't support it. Use `;` or two
   lines.
+- **No `cd` chains.** `cd a; cmd; cd ..; cmd` = 3 commands, 2 chances
+  to get lost. One directory, all commands.
 - **No piping JSON through `Select-String`.** It mangles structure. Use
   `ConvertFrom-Json` + `Select-Object`.
 - **No `--data` with JSON in PowerShell quoting.** Use `--data-binary @file`.
 - **No one-liner mixing PowerShell + JS + SQL.** Write a temp file.
 - **No leaving temp files behind.** `_debug.mjs`, `_body.json` — clean
   up in the same command.
+- **No `[[id]]` or quote-only workarounds for bracket paths.** Use
+  `-LiteralPath`, always.
+- **No files outside `pen-paper-character-app/`.** Not even temp files.
 - **No `Get-Process node | Stop-Process -Force` without checking first.**
   It kills every Node process on the machine, including other tools.
 
