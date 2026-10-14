@@ -47,7 +47,6 @@ export async function PUT(
         rangeType: body.rangeType !== undefined ? body.rangeType : undefined,
         rangeValue: body.rangeValue !== undefined ? (body.rangeValue != null ? parseFloat(body.rangeValue) : null) : undefined,
         rangeMaxValue: body.rangeMaxValue !== undefined ? (body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null) : undefined,
-        weaponProperties: body.weaponProperties !== undefined ? JSON.stringify(body.weaponProperties) : undefined,
         libraryEntryId:
           body.libraryEntryId !== undefined ? body.libraryEntryId : undefined,
       },

@@ -3,7 +3,6 @@
 
 import { NextResponse } from 'next/server';
 import { ApiError } from './errors';
-import { parseJsonArray } from '@/lib/utils';
 
 export const apiError = (message: string, status: number = 400): NextResponse =>
   NextResponse.json({ error: message }, { status });
@@ -86,21 +85,19 @@ export const asJsonArray = (value: any): string => {
 };
 
 /**
- * JSON boundary: `weaponProperties` liegt als JSON-String in der DB.
- * An jeder API-Grenze zu einem Array parsen (idempotent für Arrays).
+ * Weapon-Properties werden jetzt relational über `weaponPropertyRows`
+ * (EquipmentWeaponProperty / InventoryItemWeaponProperty) gespeichert.
+ * Die alte `weaponProperties`-JSON-Spalte wurde entfernt (Sprint 2d-3a).
+ * Dieser Helper bleibt als Identitäts-Pass-Through erhalten, damit die
+ * bestehenden API-Routen unverändert weiterfunktionieren.
  */
-export const withParsedWeaponProperties = <T extends { weaponProperties?: unknown }>(
-  row: T
-): T & { weaponProperties: unknown[] } => ({
-  ...row,
-  weaponProperties: parseJsonArray(row.weaponProperties),
-});
+export const withParsedWeaponProperties = <T>(row: T): T => row;
 
 /**
- * JSON boundary: Inventory-Container tragen ihre Items in mehreren Ebenen
- * (items / children / children.children) — rekursiv weaponProperties parsen.
+ * Inventory-Container tragen ihre Items in mehreren Ebenen
+ * (items / children / children.children) — Pass-Through über alle Ebenen.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- JSON boundary: Prisma-Include-Baum mit flachen Zeilen
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma-Include-Baum mit flachen Zeilen
 export const withParsedInventoryItems = (container: any): any => ({
   ...container,
   items: (container.items ?? []).map(withParsedWeaponProperties),

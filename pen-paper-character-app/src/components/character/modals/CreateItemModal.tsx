@@ -1,10 +1,10 @@
-// src\components\character\modals\CreateItemModal.tsx
+﻿// src\components\character\modals\CreateItemModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { EquipmentType } from '@/types/equipment';
 import { EQUIPMENT_TYPES, ARMOR_TYPES } from '@/lib/enums/equipmentTypes';
-import { SPELL_SCHOOLS, SPELL_COMPONENTS, ACTION_TYPES } from '@/lib/enums/equipmentTypes';
+import { ACTION_TYPES } from '@/lib/enums/equipmentTypes';
 import { DAMAGE_TYPES } from '@/lib/enums/damageTypes';
 import { diceInfo } from '@/lib/dice';
 import { RECHARGE_TYPES } from '@/lib/enums/rechargeTypes';
@@ -24,7 +24,7 @@ interface CreateItemModalProps {
   onClose: () => void;
   characterId: string;
   onCreated: () => void;
-  itemType: 'equipment' | 'spell' | 'action' | 'inventory';
+  itemType: 'equipment' | 'action' | 'inventory';
   containerId?: string;
   onItemCreated?: (item: any) => void;
   unitSystem: UnitSystem;
@@ -90,19 +90,7 @@ export function CreateItemModal({
         attuned: false,
         notes: '',
         sourceReference: '',
-        level: 0,
-        school: '',
-        castingTime: '',
-        components: [],
-        materialComponent: '',
-        duration: '',
-        higherLevels: '',
         concentration: false,
-        ritual: false,
-        prepared: false,
-        alwaysPrepared: false,
-        SpellType: '',
-        AttackType: '',
         savingThrow: '',
         savingThrowDC: '',
         actionType: 'action',
@@ -143,19 +131,7 @@ export function CreateItemModal({
     attuned: false,
     notes: '',
     sourceReference: '',
-    level: 0,
-    school: '',
-    castingTime: '',
-    components: [],
-    materialComponent: '',
-    duration: '',
-    higherLevels: '',
     concentration: false,
-    ritual: false,
-    prepared: false,
-    alwaysPrepared: false,
-    SpellType: '',
-    AttackType: '',
     savingThrow: '',
     savingThrowDC: '',
     actionType: 'action',
@@ -245,9 +221,6 @@ export function CreateItemModal({
       rangeMaxValue: formData.rangeMaxValue
         ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
         : null,
-      weaponProperties: Array.isArray(formData.weaponProperties)
-        ? formData.weaponProperties
-        : [],
       weaponPropertyRows: (formData.weaponProperties || [])
         .map((name: string) => ({
           name,
@@ -355,9 +328,6 @@ export function CreateItemModal({
       rangeMaxValue: formData.rangeMaxValue
         ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
         : undefined,
-      weaponProperties: Array.isArray(formData.weaponProperties)
-        ? formData.weaponProperties
-        : [],
       weaponPropertyRows: (formData.weaponProperties || [])
         .map((name: string) => ({
           name,
@@ -482,9 +452,6 @@ export function CreateItemModal({
           rangeMaxValue: formData.rangeMaxValue
             ? parseDistanceInput(formData.rangeMaxValue, unitSystem)
             : null,
-          weaponProperties: Array.isArray(formData.weaponProperties)
-            ? formData.weaponProperties
-            : [],
           weaponPropertyRows: (formData.weaponProperties || [])
             .map((name: string) => ({
               name,
@@ -506,20 +473,6 @@ export function CreateItemModal({
           equipped: false,
           costUnit: 'gp',
           libraryEntryId,
-        };
-      } else if (itemType === 'spell') {
-        endpoint = `/api/characters/${characterId}/spells`;
-        // Waffen-Felder gehören zum Item-Type equipment/inventory, nicht zum
-        // Zauber-POST: sie kÃÂ¶nnen sonst als unbekannte Eigenschaften an den
-        // Spell-Endpunkt geraten.
-        const { rangeType, rangeValue, rangeMaxValue, weaponPropertyValues, ...spellFormData } =
-          formData;
-        payload = {
-          ...spellFormData,
-          level: parseInt(spellFormData.level) || 0,
-          components: Array.isArray(spellFormData.components)
-            ? spellFormData.components
-            : [],
         };
       } else if (itemType === 'action') {
         endpoint = `/api/characters/${characterId}/actions`;
@@ -939,188 +892,6 @@ export function CreateItemModal({
     </div>
   );
 
-  const renderSpellFields = () => (
-    <div className="grid grid-cols-2 gap-3 p-3 bg-gray-800/50 rounded-lg">
-      <div>
-        <label className="block text-sm font-medium mb-1">Level</label>
-        <input
-          type="number"
-          value={formData.level}
-          onChange={(e) => handleInputChange('level', parseInt(e.target.value) || 0)}
-          min="0"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Schule</label>
-        <select
-          value={formData.school}
-          onChange={(e) => handleInputChange('school', e.target.value)}
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        >
-          <option value="">Auswählen...</option>
-          {SPELL_SCHOOLS.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Zauberzeit</label>
-        <input
-          type="text"
-          value={formData.castingTime}
-          onChange={(e) => handleInputChange('castingTime', e.target.value)}
-          placeholder="z.B. 1 Aktion"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Reichweite</label>
-        <input
-          type="text"
-          value={formData.range}
-          onChange={(e) => handleInputChange('range', e.target.value)}
-          placeholder="z.B. 30 ft"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Dauer</label>
-        <input
-          type="text"
-          value={formData.duration}
-          onChange={(e) => handleInputChange('duration', e.target.value)}
-          placeholder="z.B. Konzentration, bis zu 1 Minute"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Komponenten</label>
-        <div className="flex flex-wrap gap-2 mt-1">
-          {SPELL_COMPONENTS.map((comp) => (
-            <label key={comp} className="flex items-center gap-1 text-sm">
-              <input
-                type="checkbox"
-                checked={formData.components?.includes(comp)}
-                onChange={(e) => {
-                  const current = formData.components || [];
-                  if (e.target.checked) {
-                    handleInputChange('components', [...current, comp]);
-                  } else {
-                    handleInputChange(
-                      'components',
-                      current.filter((c: string) => c !== comp)
-                    );
-                  }
-                }}
-                className="rounded"
-              />
-              {comp}
-            </label>
-          ))}
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Material-Komponente</label>
-        <input
-          type="text"
-          value={formData.materialComponent}
-          onChange={(e) => handleInputChange('materialComponent', e.target.value)}
-          placeholder="z.B. eine kleine Feder"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div className="flex items-center gap-3">
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={formData.concentration}
-            onChange={(e) => handleInputChange('concentration', e.target.checked)}
-            className="rounded"
-          />
-          Konzentration
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={formData.ritual}
-            onChange={(e) => handleInputChange('ritual', e.target.checked)}
-            className="rounded"
-          />
-          Ritual
-        </label>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Schadenswürfel</label>
-        <input
-          type="text"
-          value={formData.damageDice}
-          onChange={(e) => handleInputChange('damageDice', e.target.value)}
-          placeholder="z.B. 2d6"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Schadenstyp</label>
-        <input
-          type="text"
-          value={formData.damageType}
-          onChange={(e) => handleInputChange('damageType', e.target.value)}
-          placeholder="z.B. Feuer, Kälte"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Rettungswurf</label>
-        <input
-          type="text"
-          value={formData.savingThrow}
-          onChange={(e) => handleInputChange('savingThrow', e.target.value)}
-          placeholder="z.B. Weisheit"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Wirkt auf</label>
-        <select
-          value={formData.SpellType}
-          onChange={(e) => handleInputChange('SpellType', e.target.value)}
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        >
-          <option value="">Auswählen...</option>
-          <option value="melee">Nahkampf</option>
-          <option value="ranged">Fernkampf</option>
-          <option value="Self">Selbst</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Angriffstyp</label>
-        <select
-          value={formData.AttackType}
-          onChange={(e) => handleInputChange('AttackType', e.target.value)}
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        >
-          <option value="">Auswählen...</option>
-          <option value="saving_throw">Rettungswurf</option>
-          <option value="Attack">Angriff</option>
-          <option value="Direct Hit">Direkter Treffer</option>
-        </select>
-      </div>
-      <div className="col-span-2">
-        <label className="block text-sm font-medium mb-1">Höhere Level</label>
-        <input
-          type="text"
-          value={formData.higherLevels}
-          onChange={(e) => handleInputChange('higherLevels', e.target.value)}
-          placeholder="z.B. +1d6 pro Level"
-          className="w-full px-3 py-2 bg-gray-800 rounded-lg border border-gray-700"
-        />
-      </div>
-    </div>
-  );
-
   const renderActionSuggestions = () => (
     <div className="bg-gray-800/50 rounded-lg p-3">
       <div className="text-xs font-semibold text-gray-400 mb-2">
@@ -1317,8 +1088,6 @@ export function CreateItemModal({
       if (selectedType === 'shield') return renderShieldFields();
       if (selectedType === 'clothing') return renderClothingFields();
       return null;
-    } else if (itemType === 'spell') {
-      return renderSpellFields();
     } else if (itemType === 'action') {
       return renderActionFields();
     }
@@ -1327,7 +1096,6 @@ export function CreateItemModal({
 
   const getTitle = () => {
     if (itemType === 'equipment') return 'Neuen Gegenstand erstellen';
-    if (itemType === 'spell') return 'Neuen Zauber erstellen';
     if (itemType === 'action') return 'Neue Aktion erstellen';
     if (itemType === 'inventory') return 'Neues Inventar-Item erstellen';
     return 'Item erstellen';

@@ -30,10 +30,6 @@ export async function PUT(
     const { id, itemId } = await params;
     const body = await request.json();
 
-    const weaponProperties = body.weaponProperties
-      ? JSON.stringify(body.weaponProperties)
-      : undefined;
-
     await prisma.equipment.updateMany({
       where: { id: itemId, characterId: id },
       data: {
@@ -53,7 +49,6 @@ export async function PUT(
         rangeType: body.rangeType !== undefined ? body.rangeType : undefined,
         rangeValue: body.rangeValue !== undefined ? (body.rangeValue != null ? parseFloat(body.rangeValue) : null) : undefined,
         rangeMaxValue: body.rangeMaxValue !== undefined ? (body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null) : undefined,
-        weaponProperties,
         armorClassBonus:
           body.armorClassBonus !== undefined
             ? toInt(body.armorClassBonus, 0)

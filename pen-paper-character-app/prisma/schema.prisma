@@ -392,7 +392,6 @@ model Equipment {
   rangeType   String?   // 'melee' | 'ranged'
   rangeValue  Float?    // Basis-Reichweite in Meter
   rangeMaxValue Float?  // Long-Range in Meter (nur ranged)
-  weaponProperties String?
 
   armorClassBonus Int? @default(0)
   armorType   String?
@@ -652,7 +651,6 @@ model InventoryItem {
   rangeType   String?   // 'melee' | 'ranged'
   rangeValue  Float?    // Basis-Reichweite in Meter
   rangeMaxValue Float?  // Long-Range in Meter (nur ranged)
-  weaponProperties String?
   armorClassBonus Int? @default(0)
   armorType   String?
   maxDexBonus Int?     @default(0)

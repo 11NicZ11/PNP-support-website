@@ -49,9 +49,6 @@ export async function POST(
         rangeType: body.rangeType ?? null,
         rangeValue: body.rangeValue != null ? parseFloat(body.rangeValue) : null,
         rangeMaxValue: body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null,
-        weaponProperties: body.weaponProperties
-          ? JSON.stringify(body.weaponProperties)
-          : null,
         weaponPropertyRows: {
           create: (Array.isArray(body.weaponPropertyRows) ? body.weaponPropertyRows : []).map(
             (p: any, i: number) => ({

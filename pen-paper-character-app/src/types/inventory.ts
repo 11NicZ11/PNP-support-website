@@ -44,7 +44,6 @@ export interface InventoryItem {
   rangeType?: 'melee' | 'ranged' | null;
   rangeValue?: number | null;
   rangeMaxValue?: number | null;
-  weaponProperties?: string[];
   weaponPropertyRows?: WeaponPropertyRow[];
   
   // Rüstungs-spezifisch

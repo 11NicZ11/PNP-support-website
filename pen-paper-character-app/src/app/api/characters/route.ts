@@ -522,9 +522,6 @@ export async function POST(request: NextRequest) {
             rangeType: item.rangeType ?? null,
             rangeValue: item.rangeValue != null ? parseFloat(item.rangeValue) : null,
             rangeMaxValue: item.rangeMaxValue != null ? parseFloat(item.rangeMaxValue) : null,
-            weaponProperties: item.weaponProperties
-              ? asJsonArray(item.weaponProperties)
-              : null,
             weaponPropertyRows: {
               create: (Array.isArray(item.weaponPropertyRows) ? item.weaponPropertyRows : []).map(
                 (p: any, i: number) => ({

@@ -1,7 +1,7 @@
 // src/app/api/characters/[id]/equipment/route.ts
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { apiError, apiSuccess, handleApiError, asJsonArray, withParsedWeaponProperties } from '@/lib/api/helpers';
+import { apiError, apiSuccess, handleApiError, withParsedWeaponProperties } from '@/lib/api/helpers';
 import { toInt } from '@/lib/utils';
 
 export async function GET(
@@ -51,7 +51,6 @@ export async function POST(
         rangeType: body.rangeType ?? null,
         rangeValue: body.rangeValue != null ? parseFloat(body.rangeValue) : null,
         rangeMaxValue: body.rangeMaxValue != null ? parseFloat(body.rangeMaxValue) : null,
-        weaponProperties: body.weaponProperties ? asJsonArray(body.weaponProperties) : null,
         weaponPropertyRows: {
           create: (Array.isArray(body.weaponPropertyRows) ? body.weaponPropertyRows : []).map(
             (p: any, i: number) => ({

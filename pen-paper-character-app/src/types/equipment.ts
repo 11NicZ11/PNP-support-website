@@ -49,7 +49,6 @@ export interface EquipmentItem {
   rangeType?: 'melee' | 'ranged' | null;
   rangeValue?: number | null;
   rangeMaxValue?: number | null;
-  weaponProperties?: string[];
   weaponPropertyRows?: WeaponPropertyRow[];
 
   armorClassBonus?: number;
