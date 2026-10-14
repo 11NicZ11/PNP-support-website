@@ -27,7 +27,9 @@ export interface Action {
   attackBonus?: number;
   damageDice?: string;
   damageType?: string;
-  range?: string;
+  rangeType?: 'melee' | 'ranged' | null;
+  rangeValue?: number | null;
+  rangeMaxValue?: number | null;
   areaOfEffect?: string;
 
   usesPerDay?: number;

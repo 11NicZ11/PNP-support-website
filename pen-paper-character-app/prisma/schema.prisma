@@ -552,7 +552,9 @@ model Action {
   attackBonus Int?
   damageDice  String?
   damageType  String?
-  range       String?
+  rangeType     String?   // 'melee' | 'ranged'
+  rangeValue    Float?    // Basis-Reichweite in Meter
+  rangeMaxValue Float?    // Long-Range in Meter (nur ranged)
   areaOfEffect String?
 
   usesPerDay  Int?

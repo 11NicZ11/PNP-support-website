@@ -139,8 +139,12 @@ export function ActionCard({
               ⚔️ Schaden: {action.damageDice} {action.damageType || ''}
             </div>
           )}
-          {isExpanded && action.range && (
-            <div className="text-xs text-gray-400 mt-0.5">📏 Reichweite: {action.range}</div>
+          {isExpanded && (action.rangeType != null || action.rangeValue != null || action.rangeMaxValue != null) && (
+            <div className="text-xs text-gray-400 mt-0.5">
+              📏 Reichweite: {action.rangeType === 'ranged' ? 'Distanz' : 'Nahkampf'}
+              {typeof action.rangeValue === 'number' && ` ${action.rangeValue} m`}
+              {typeof action.rangeMaxValue === 'number' && ` / ${action.rangeMaxValue} m`}
+            </div>
           )}
           {isExpanded && action.areaOfEffect && (
             <div className="text-xs text-gray-400 mt-0.5">

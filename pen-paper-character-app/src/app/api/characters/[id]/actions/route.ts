@@ -47,7 +47,9 @@ export async function POST(
         attackBonus: body.attackBonus ? toInt(body.attackBonus, 0) : null,
         damageDice: body.damageDice || null,
         damageType: body.damageType || null,
-        range: body.range || null,
+        rangeType: body.rangeType ?? null,
+        rangeValue: body.rangeValue ?? null,
+        rangeMaxValue: body.rangeMaxValue ?? null,
         areaOfEffect: body.areaOfEffect || null,
         usesPerDay: body.usesPerDay ? toInt(body.usesPerDay, 0) : null,
         usesRemaining:

@@ -46,7 +46,9 @@ export async function PUT(
             : null,
         damageDice: body.damageDice,
         damageType: body.damageType,
-        range: body.range,
+        rangeType: body.rangeType,
+        rangeValue: body.rangeValue,
+        rangeMaxValue: body.rangeMaxValue,
         areaOfEffect: body.areaOfEffect,
         usesPerDay:
           body.usesPerDay !== undefined && body.usesPerDay !== null
