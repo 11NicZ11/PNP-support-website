@@ -18,6 +18,13 @@ import { CharacterResource, RESOURCE_RECHARGE_TYPES } from '@/types/resources';
 import { ClassLevel } from '@/components/character/editors/ClassLevelsEditor';
 import { ClassFeature } from '@/types/classFeatures';
 import { UnitSystem } from '@/types/character';
+import {
+  getDistanceUnitLabel,
+  displayDistanceValue,
+  parseDistanceInput,
+  ftToM,
+  mToFt,
+} from '@/lib/units';
 import { FormStatBlock } from '@/components/forms/FormStatBlock';
 
 interface AlternateFormsEditorProps {
@@ -438,13 +445,21 @@ export function AlternateFormsEditor({
                   ] as const
                 ).map(([key, label]) => (
                   <div key={key}>
-                    <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      {label} ({getDistanceUnitLabel(unitSystem)})
+                    </label>
                     <input
                       type="number"
-                      value={(editingForm as any)[key]}
-                      onChange={(e) =>
-                        updateForm(key, parseInt(e.target.value) || 0)
-                      }
+                      step={unitSystem === 'imperial' ? 5 : 0.5}
+                      value={displayDistanceValue(
+                        ftToM((editingForm as any)[key]),
+                        unitSystem
+                      )}
+                      onChange={(e) => {
+                        const meters = parseDistanceInput(e.target.value, unitSystem);
+                        const feet = meters != null ? mToFt(meters) : 0;
+                        updateForm(key, Math.round(feet));
+                      }}
                       className="w-full px-2 py-1 bg-gray-800 rounded text-center"
                     />
                   </div>
