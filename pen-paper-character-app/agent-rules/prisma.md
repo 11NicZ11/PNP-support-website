@@ -1,4 +1,4 @@
-# Prisma / schema rules
+# Prisma.md / schema rules
 
 Read `shared.md` first. Applies to `prisma/schema.prisma`, migrations,
 and any schema-touching code.

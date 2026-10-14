@@ -1,4 +1,4 @@
-# Agent Rules
+# Agent Rules README.md
 
 Task-scoped rules for AI agents (Antigravity, Claude Code, Claude.ai,
 Cursor). Read the file(s) matching your task type — not the whole
